@@ -1,6 +1,6 @@
 import { Link } from "expo-router";
 import { useState } from "react";
-import { Pressable, Text, TextInput, View } from "react-native";
+import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 
 import { LanguagePicker } from "@/components/language-picker";
 import { PairsReview } from "@/components/pairs-review";
@@ -27,13 +27,13 @@ export default function AddWords() {
 
       <View style={shared.row}>
         <TextInput
-          style={shared.input}
+          style={[shared.input, styles.rowInput]}
           placeholder="Source word"
           value={sourceWord}
           onChangeText={setSourceWord}
         />
         <TextInput
-          style={shared.input}
+          style={[shared.input, styles.rowInput]}
           placeholder="Target word"
           value={targetWord}
           onChangeText={setTargetWord}
@@ -52,3 +52,9 @@ export default function AddWords() {
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  rowInput: {
+    flex: 1,
+  },
+});

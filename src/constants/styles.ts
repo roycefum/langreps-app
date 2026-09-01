@@ -38,7 +38,6 @@ export const shared = StyleSheet.create({
     gap: 8,
   },
   input: {
-    flex: 1,
     borderWidth: 1,
     borderColor: colors.border,
     borderRadius: 8,

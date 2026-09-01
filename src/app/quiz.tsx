@@ -52,7 +52,7 @@ export default function Quiz() {
         {phase === "question" ? (
           <>
             <TextInput
-              style={shared.input}
+              style={[shared.input, styles.answerInput]}
               placeholder="Your answer"
               value={answer}
               onChangeText={setAnswer}
@@ -102,6 +102,11 @@ const styles = StyleSheet.create({
   questionText: {
     fontSize: 20,
     textAlign: "center",
+  },
+  answerInput: {
+    fontSize: 24,
+    textAlign: "center",
+    paddingVertical: 14,
   },
   skipButtonText: {
     opacity: 0.6,
