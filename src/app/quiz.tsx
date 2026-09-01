@@ -2,6 +2,7 @@ import { Link, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 
+import { ProgressBar } from "@/components/progress-bar";
 import { colors, shared } from "@/constants/styles";
 import { useQuiz } from "@/lib/quiz-context";
 
@@ -34,58 +35,66 @@ export default function Quiz() {
   }
 
   return (
-    <View style={shared.screenCentered}>
+    <View style={shared.screen}>
       <Link href="/" style={styles.backLink}>
         <Text>← Back to Home</Text>
       </Link>
+
+      <ProgressBar progress={currentIndex / total} />
 
       <Text style={[shared.hint, styles.centerText]}>
         Question {currentIndex + 1} of {total}
       </Text>
 
-      <Text style={styles.questionText}>{currentQuestion.question_text}</Text>
+      <View style={styles.body}>
+        <Text style={styles.questionText}>{currentQuestion.question_text}</Text>
 
-      {phase === "question" ? (
-        <>
-          <TextInput
-            style={shared.input}
-            placeholder="Your answer"
-            value={answer}
-            onChangeText={setAnswer}
-            autoCapitalize="none"
-            autoCorrect={false}
-          />
-          <Pressable style={shared.primaryButton} onPress={handleSubmit}>
-            <Text style={shared.primaryButtonText}>Submit</Text>
-          </Pressable>
-          <Pressable style={shared.backLink} onPress={skipQuestion}>
-            <Text style={styles.skipButtonText}>Skip this question</Text>
-          </Pressable>
-        </>
-      ) : (
-        <>
-          <Text style={styles.centerText}>Your answer: {lastAnswer}</Text>
-          {wasCorrect ? (
-            <Text style={[styles.correct, styles.centerText]}>That&apos;s correct!</Text>
-          ) : (
-            <Text style={[styles.incorrect, styles.centerText]}>
-              Sorry, that&apos;s incorrect. The answer was: {currentQuestion.correct_answer}
-            </Text>
-          )}
-          <Pressable style={shared.primaryButton} onPress={handleNext}>
-            <Text style={shared.primaryButtonText}>Next Question</Text>
-          </Pressable>
-        </>
-      )}
+        {phase === "question" ? (
+          <>
+            <TextInput
+              style={shared.input}
+              placeholder="Your answer"
+              value={answer}
+              onChangeText={setAnswer}
+              autoCapitalize="none"
+              autoCorrect={false}
+            />
+            <Pressable style={shared.primaryButton} onPress={handleSubmit}>
+              <Text style={shared.primaryButtonText}>Submit</Text>
+            </Pressable>
+            <Pressable style={shared.backLink} onPress={skipQuestion}>
+              <Text style={styles.skipButtonText}>Skip this question</Text>
+            </Pressable>
+          </>
+        ) : (
+          <>
+            <Text style={styles.centerText}>Your answer: {lastAnswer}</Text>
+            {wasCorrect ? (
+              <Text style={[styles.correct, styles.centerText]}>That&apos;s correct!</Text>
+            ) : (
+              <Text style={[styles.incorrect, styles.centerText]}>
+                Sorry, that&apos;s incorrect. The answer was: {currentQuestion.correct_answer}
+              </Text>
+            )}
+            <Pressable style={shared.primaryButton} onPress={handleNext}>
+              <Text style={shared.primaryButtonText}>Next Question</Text>
+            </Pressable>
+          </>
+        )}
+      </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   backLink: {
-    position: "absolute",
-    top: 24,
-    left: 24,
+    alignSelf: "center",
+    paddingVertical: 8,
+  },
+  body: {
+    flex: 1,
+    justifyContent: "center",
+    gap: 16,
   },
   centerText: {
     textAlign: "center",
