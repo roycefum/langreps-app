@@ -1,4 +1,5 @@
 import * as DocumentPicker from "expo-document-picker";
+import { File } from "expo-file-system";
 import { Link } from "expo-router";
 import { useState } from "react";
 import { Pressable, Text, View } from "react-native";
@@ -22,17 +23,16 @@ export default function UploadFile() {
     });
     if (result.canceled || !result.assets[0]) return;
 
-    const file = result.assets[0];
-    setLastFileName(file.name);
+    const pickedFile = result.assets[0];
+    setLastFileName(pickedFile.name);
     setIsParsing(true);
     setError(null);
     try {
       const formData = new FormData();
-      formData.append("file", {
-        uri: file.uri,
-        name: file.name,
-        type: file.mimeType ?? "text/plain",
-      } as unknown as Blob);
+      // The classic RN {uri, name, type} object trick doesn't work with
+      // Expo's fetch in this SDK — it needs a real Blob-compatible value,
+      // which expo-file-system's File class provides.
+      formData.append("file", new File(pickedFile.uri) as unknown as Blob);
       const response = await apiRequest<{ pairs: VocabPair[] }>("/parse-vocab-text", {
         method: "POST",
         formData,

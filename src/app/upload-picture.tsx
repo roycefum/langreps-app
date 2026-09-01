@@ -1,3 +1,4 @@
+import { File } from "expo-file-system";
 import { Link } from "expo-router";
 import * as ImagePicker from "expo-image-picker";
 import { useState } from "react";
@@ -24,11 +25,10 @@ export default function UploadPicture() {
     setError(null);
     try {
       const formData = new FormData();
-      formData.append("file", {
-        uri: asset.uri,
-        name: asset.fileName ?? "photo.jpg",
-        type: asset.mimeType ?? "image/jpeg",
-      } as unknown as Blob);
+      // The classic RN {uri, name, type} object trick doesn't work with
+      // Expo's fetch in this SDK — it needs a real Blob-compatible value,
+      // which expo-file-system's File class provides.
+      formData.append("file", new File(asset.uri) as unknown as Blob);
       const response = await apiRequest<{ pairs: ExtractedPair[] }>(
         "/extract-vocab-from-image",
         { method: "POST", formData }
