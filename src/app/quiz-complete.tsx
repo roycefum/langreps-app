@@ -1,6 +1,7 @@
 import { useRouter } from "expo-router";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 
+import { shared } from "@/constants/styles";
 import { usePairs } from "@/lib/pairs-context";
 import { useQuiz } from "@/lib/quiz-context";
 
@@ -16,13 +17,13 @@ export default function QuizComplete() {
   }
 
   return (
-    <View style={styles.container}>
+    <View style={[shared.screenCentered, styles.container]}>
       <Text style={styles.title}>Quiz Complete!</Text>
       <Text style={styles.score}>
         {correctCount} / {questions.length} correct
       </Text>
-      <Pressable style={styles.button} onPress={handleBackToHome}>
-        <Text style={styles.buttonText}>Back to Home</Text>
+      <Pressable style={shared.primaryButton} onPress={handleBackToHome}>
+        <Text style={shared.primaryButtonText}>Back to Home</Text>
       </Pressable>
     </View>
   );
@@ -30,11 +31,7 @@ export default function QuizComplete() {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     alignItems: "center",
-    justifyContent: "center",
-    padding: 24,
-    gap: 16,
   },
   title: {
     fontSize: 28,
@@ -43,17 +40,5 @@ const styles = StyleSheet.create({
   score: {
     fontSize: 20,
     opacity: 0.8,
-  },
-  button: {
-    backgroundColor: "#208AEF",
-    borderRadius: 12,
-    paddingVertical: 14,
-    paddingHorizontal: 32,
-    alignItems: "center",
-  },
-  buttonText: {
-    color: "white",
-    fontSize: 16,
-    fontWeight: "600",
   },
 });

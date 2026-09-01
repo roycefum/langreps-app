@@ -1,20 +1,31 @@
 import { Link } from "expo-router";
 import { StyleSheet, Text, View } from "react-native";
 
+import { shared } from "@/constants/styles";
+
 export default function Home() {
   return (
-    <View style={styles.container}>
+    <View style={[shared.screenCentered, styles.container]}>
       <Text style={styles.title}>LangReps</Text>
       <Text style={styles.subtitle}>
         Build a vocab list, then let AI generate an adaptive quiz for it.
       </Text>
 
       <View style={styles.buttonGroup}>
-        <Link href="/add-words" style={styles.button}>
-          <Text style={styles.buttonText}>Add Words Manually</Text>
+        <Link href="/add-words" style={shared.primaryButton}>
+          <Text style={shared.primaryButtonText}>Add Words Manually</Text>
         </Link>
-        <Link href="/generate-quiz" style={styles.button}>
-          <Text style={styles.buttonText}>Generate Quiz</Text>
+        <Link href="/paste-text" style={shared.primaryButton}>
+          <Text style={shared.primaryButtonText}>Paste Vocab List</Text>
+        </Link>
+        <Link href="/upload-file" style={shared.primaryButton}>
+          <Text style={shared.primaryButtonText}>Upload a File</Text>
+        </Link>
+        <Link href="/upload-picture" style={shared.primaryButton}>
+          <Text style={shared.primaryButtonText}>Share a Picture</Text>
+        </Link>
+        <Link href="/generate-quiz" style={shared.primaryButton}>
+          <Text style={shared.primaryButtonText}>Generate Quiz</Text>
         </Link>
       </View>
     </View>
@@ -23,10 +34,7 @@ export default function Home() {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     alignItems: "center",
-    justifyContent: "center",
-    padding: 24,
     gap: 24,
   },
   title: {
@@ -41,16 +49,5 @@ const styles = StyleSheet.create({
   buttonGroup: {
     width: "100%",
     gap: 12,
-  },
-  button: {
-    backgroundColor: "#208AEF",
-    borderRadius: 12,
-    paddingVertical: 14,
-    alignItems: "center",
-  },
-  buttonText: {
-    color: "white",
-    fontSize: 16,
-    fontWeight: "600",
   },
 });

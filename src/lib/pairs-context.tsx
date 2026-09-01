@@ -5,6 +5,7 @@ export type VocabPair = { "source word": string; "target word": string };
 type PairsState = {
   pairs: VocabPair[];
   addPair: (sourceWord: string, targetWord: string) => void;
+  addPairs: (newPairs: VocabPair[]) => void;
   removePair: (index: number) => void;
   undoLast: () => void;
   clearPairs: () => void;
@@ -23,6 +24,13 @@ export function PairsProvider({ children }: { children: ReactNode }) {
     setPairsState((prev) => [...prev, { "source word": sourceWord, "target word": targetWord }]);
   }, []);
 
+  // Used by the paste/file/photo builder screens, which each produce a
+  // whole batch of pairs from one parse/extraction call rather than one at
+  // a time like manual entry.
+  const addPairs = useCallback((newPairs: VocabPair[]) => {
+    setPairsState((prev) => [...prev, ...newPairs]);
+  }, []);
+
   const removePair = useCallback((index: number) => {
     setPairsState((prev) => prev.filter((_, i) => i !== index));
   }, []);
@@ -37,7 +45,7 @@ export function PairsProvider({ children }: { children: ReactNode }) {
 
   return (
     <PairsContext.Provider
-      value={{ pairs, addPair, removePair, undoLast, clearPairs, setPairs: setPairsState }}
+      value={{ pairs, addPair, addPairs, removePair, undoLast, clearPairs, setPairs: setPairsState }}
     >
       {children}
     </PairsContext.Provider>

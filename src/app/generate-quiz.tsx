@@ -2,6 +2,7 @@ import { Link, useRouter } from "expo-router";
 import { useState } from "react";
 import { ActivityIndicator, Pressable, StyleSheet, Text, View } from "react-native";
 
+import { shared } from "@/constants/styles";
 import { apiRequest } from "@/lib/api";
 import { usePairs } from "@/lib/pairs-context";
 import { useQuiz } from "@/lib/quiz-context";
@@ -47,16 +48,18 @@ export default function GenerateQuiz() {
   }
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Generate Quiz</Text>
+    <View style={[shared.screenCentered, styles.container]}>
+      <Text style={[shared.title, styles.centerText]}>Generate Quiz</Text>
 
       {pairs.length < 3 ? (
-        <Text style={styles.info}>You need at least 3 words to generate a quiz.</Text>
+        <Text style={[shared.hint, styles.centerText]}>
+          You need at least 3 words to generate a quiz.
+        </Text>
       ) : (
-        <Text style={styles.info}>{pairs.length} words ready.</Text>
+        <Text style={[shared.hint, styles.centerText]}>{pairs.length} words ready.</Text>
       )}
 
-      {error && <Text style={styles.error}>{error}</Text>}
+      {error && <Text style={[shared.errorText, styles.centerText]}>{error}</Text>}
 
       {isGenerating ? (
         <View style={styles.generating}>
@@ -65,15 +68,15 @@ export default function GenerateQuiz() {
         </View>
       ) : (
         <Pressable
-          style={[styles.button, pairs.length < 3 && styles.buttonDisabled]}
+          style={[shared.primaryButton, pairs.length < 3 && shared.primaryButtonDisabled]}
           disabled={pairs.length < 3}
           onPress={handleGenerate}
         >
-          <Text style={styles.buttonText}>Generate Quiz</Text>
+          <Text style={shared.primaryButtonText}>Generate Quiz</Text>
         </Pressable>
       )}
 
-      <Link href="/" style={styles.backLink}>
+      <Link href="/" style={shared.backLink}>
         <Text>← Back to Home</Text>
       </Link>
     </View>
@@ -82,45 +85,13 @@ export default function GenerateQuiz() {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    padding: 24,
-    gap: 16,
-    justifyContent: "center",
+    alignItems: "stretch",
   },
-  title: {
-    fontSize: 24,
-    fontWeight: "700",
-    textAlign: "center",
-  },
-  info: {
-    fontSize: 16,
-    textAlign: "center",
-    opacity: 0.7,
-  },
-  error: {
-    color: "#c0392b",
+  centerText: {
     textAlign: "center",
   },
   generating: {
     alignItems: "center",
     gap: 12,
-  },
-  button: {
-    backgroundColor: "#208AEF",
-    borderRadius: 12,
-    paddingVertical: 14,
-    alignItems: "center",
-  },
-  buttonDisabled: {
-    opacity: 0.4,
-  },
-  buttonText: {
-    color: "white",
-    fontSize: 16,
-    fontWeight: "600",
-  },
-  backLink: {
-    alignSelf: "center",
-    paddingVertical: 8,
   },
 });
