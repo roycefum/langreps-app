@@ -2,6 +2,7 @@ import { Link } from "expo-router";
 import { useState } from "react";
 import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 
+import { LanguagePicker } from "@/components/language-picker";
 import { PairsReview } from "@/components/pairs-review";
 import { shared } from "@/constants/styles";
 import { apiRequest } from "@/lib/api";
@@ -37,6 +38,9 @@ export default function PasteText() {
   return (
     <View style={shared.screen}>
       <Text style={shared.title}>Paste Vocab List</Text>
+
+      <LanguagePicker />
+
       <Text style={shared.hint}>
         One pair per line, separated by a tab, &quot;-&gt;&quot;, or &quot;:&quot; — e.g.{"\n"}
         hello -&gt; hola

@@ -4,6 +4,7 @@ import { Link } from "expo-router";
 import { useState } from "react";
 import { Pressable, Text, View } from "react-native";
 
+import { LanguagePicker } from "@/components/language-picker";
 import { PairsReview } from "@/components/pairs-review";
 import { shared } from "@/constants/styles";
 import { apiRequest } from "@/lib/api";
@@ -48,6 +49,9 @@ export default function UploadFile() {
   return (
     <View style={shared.screen}>
       <Text style={shared.title}>Upload a File</Text>
+
+      <LanguagePicker />
+
       <Text style={shared.hint}>
         A plain text or CSV file with one pair per line, separated by a tab, &quot;-&gt;&quot;, or
         &quot;:&quot;.

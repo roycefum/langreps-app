@@ -1,5 +1,7 @@
 import { createContext, useCallback, useContext, useState, type ReactNode } from "react";
 
+import { DEFAULT_SOURCE_LANGUAGE, DEFAULT_TARGET_LANGUAGE } from "./types";
+
 export type VocabPair = { "source word": string; "target word": string };
 
 type PairsState = {
@@ -10,15 +12,25 @@ type PairsState = {
   undoLast: () => void;
   clearPairs: () => void;
   setPairs: (pairs: VocabPair[]) => void;
+  sourceLanguage: string;
+  targetLanguage: string;
+  setSourceLanguage: (language: string) => void;
+  setTargetLanguage: (language: string) => void;
 };
 
 const PairsContext = createContext<PairsState | null>(null);
 
 // Holds the vocab list currently being built, shared across all four
 // builder screens (manual/paste/file/photo) before Save or Generate Quiz —
-// mirrors the Streamlit prototype's st.session_state.vocab_pairs.
+// mirrors the Streamlit prototype's st.session_state.vocab_pairs. Also
+// holds the source/target language for that list, since "source word" is
+// only meaningful in the context of a specific language pair (e.g. a
+// pasted/uploaded list with reversed column order silently produces
+// backwards quiz answers if the language pair doesn't match its data).
 export function PairsProvider({ children }: { children: ReactNode }) {
   const [pairs, setPairsState] = useState<VocabPair[]>([]);
+  const [sourceLanguage, setSourceLanguage] = useState(DEFAULT_SOURCE_LANGUAGE);
+  const [targetLanguage, setTargetLanguage] = useState(DEFAULT_TARGET_LANGUAGE);
 
   const addPair = useCallback((sourceWord: string, targetWord: string) => {
     setPairsState((prev) => [...prev, { "source word": sourceWord, "target word": targetWord }]);
@@ -45,7 +57,19 @@ export function PairsProvider({ children }: { children: ReactNode }) {
 
   return (
     <PairsContext.Provider
-      value={{ pairs, addPair, addPairs, removePair, undoLast, clearPairs, setPairs: setPairsState }}
+      value={{
+        pairs,
+        addPair,
+        addPairs,
+        removePair,
+        undoLast,
+        clearPairs,
+        setPairs: setPairsState,
+        sourceLanguage,
+        targetLanguage,
+        setSourceLanguage,
+        setTargetLanguage,
+      }}
     >
       {children}
     </PairsContext.Provider>

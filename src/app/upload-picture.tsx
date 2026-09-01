@@ -4,6 +4,7 @@ import * as ImagePicker from "expo-image-picker";
 import { useState } from "react";
 import { Pressable, Text, View } from "react-native";
 
+import { LanguagePicker } from "@/components/language-picker";
 import { PairsReview } from "@/components/pairs-review";
 import { shared } from "@/constants/styles";
 import { apiRequest } from "@/lib/api";
@@ -74,6 +75,9 @@ export default function UploadPicture() {
   return (
     <View style={shared.screen}>
       <Text style={shared.title}>Share a Picture</Text>
+
+      <LanguagePicker />
+
       <Text style={shared.hint}>
         A photo or screenshot of word pairs (e.g. &quot;house -&gt; casa&quot;) — AI will read the
         pairs out of it.

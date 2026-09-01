@@ -2,6 +2,7 @@ import { Link } from "expo-router";
 import { useState } from "react";
 import { Pressable, Text, TextInput, View } from "react-native";
 
+import { LanguagePicker } from "@/components/language-picker";
 import { PairsReview } from "@/components/pairs-review";
 import { shared } from "@/constants/styles";
 import { usePairs } from "@/lib/pairs-context";
@@ -21,6 +22,8 @@ export default function AddWords() {
   return (
     <View style={shared.screen}>
       <Text style={shared.title}>Add Words</Text>
+
+      <LanguagePicker />
 
       <View style={shared.row}>
         <TextInput

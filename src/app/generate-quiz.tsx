@@ -2,18 +2,19 @@ import { Link, useRouter } from "expo-router";
 import { useState } from "react";
 import { ActivityIndicator, Pressable, StyleSheet, Text, View } from "react-native";
 
+import { LanguagePickerSummary } from "@/components/language-picker";
 import { shared } from "@/constants/styles";
 import { apiRequest } from "@/lib/api";
 import { usePairs } from "@/lib/pairs-context";
 import { useQuiz } from "@/lib/quiz-context";
 import { chunk } from "@/lib/text";
-import { DEFAULT_SOURCE_LANGUAGE, DEFAULT_TARGET_LANGUAGE, type Question } from "@/lib/types";
+import type { Question } from "@/lib/types";
 
 const BATCH_SIZE = 5;
 
 export default function GenerateQuiz() {
   const router = useRouter();
-  const { pairs } = usePairs();
+  const { pairs, sourceLanguage, targetLanguage } = usePairs();
   const { startQuiz } = useQuiz();
   const [isGenerating, setIsGenerating] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -29,8 +30,8 @@ export default function GenerateQuiz() {
           method: "POST",
           body: {
             pairs: c,
-            source_language: DEFAULT_SOURCE_LANGUAGE,
-            target_language: DEFAULT_TARGET_LANGUAGE,
+            source_language: sourceLanguage,
+            target_language: targetLanguage,
             batch_size: c.length,
           },
         });
@@ -58,6 +59,8 @@ export default function GenerateQuiz() {
       ) : (
         <Text style={[shared.hint, styles.centerText]}>{pairs.length} words ready.</Text>
       )}
+
+      <LanguagePickerSummary />
 
       {error && <Text style={[shared.errorText, styles.centerText]}>{error}</Text>}
 
