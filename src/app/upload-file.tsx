@@ -4,6 +4,7 @@ import { Link } from "expo-router";
 import { useState } from "react";
 import { Pressable, Text, View } from "react-native";
 
+import { CefrLevelPicker } from "@/components/cefr-level-picker";
 import { LanguagePicker } from "@/components/language-picker";
 import { ParsingWarning } from "@/components/parsing-warning";
 import { PairsReview } from "@/components/pairs-review";
@@ -54,6 +55,7 @@ export default function UploadFile() {
       <Text style={shared.title}>Upload a File</Text>
 
       <LanguagePicker />
+      <CefrLevelPicker />
 
       <Text style={shared.hint}>
         A plain text or CSV file, one pair per line — a tab, &quot;-&gt;&quot;, &quot;:&quot;, or

@@ -32,15 +32,14 @@ export function LanguagePicker() {
   );
 }
 
-// Read-only reminder — shown on the builder screens (add/paste/file/photo),
-// so the language pair chosen on Home stays visible while adding words to
-// it, since e.g. a reversed-column-order file only makes sense relative to
-// a specific language pair.
-export function LanguagePickerSummary() {
-  const { sourceLanguage, targetLanguage } = usePairs();
+// Read-only reminder — shown on Generate Quiz, confirming what will
+// actually be sent to the API without inviting an edit there (language and
+// level are both set on the builder screens, where the list is made).
+export function ListSettingsSummary() {
+  const { sourceLanguage, targetLanguage, cefrLevel } = usePairs();
   return (
     <Text style={shared.hint}>
-      {sourceLanguage} → {targetLanguage}
+      {sourceLanguage} → {targetLanguage} · Level {cefrLevel}
     </Text>
   );
 }

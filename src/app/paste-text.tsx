@@ -2,6 +2,7 @@ import { Link } from "expo-router";
 import { useState } from "react";
 import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 
+import { CefrLevelPicker } from "@/components/cefr-level-picker";
 import { LanguagePicker } from "@/components/language-picker";
 import { ParsingWarning } from "@/components/parsing-warning";
 import { PairsReview } from "@/components/pairs-review";
@@ -43,6 +44,7 @@ export default function PasteText() {
       <Text style={shared.title}>Paste Vocab List</Text>
 
       <LanguagePicker />
+      <CefrLevelPicker />
 
       <Text style={shared.hint}>
         One pair per line — a tab, &quot;-&gt;&quot;, &quot;:&quot;, or similar between each word

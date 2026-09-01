@@ -2,7 +2,7 @@ import { Link, useRouter } from "expo-router";
 import { useState } from "react";
 import { ActivityIndicator, Pressable, StyleSheet, Text, View } from "react-native";
 
-import { LanguagePickerSummary } from "@/components/language-picker";
+import { ListSettingsSummary } from "@/components/language-picker";
 import { shared } from "@/constants/styles";
 import { apiRequest } from "@/lib/api";
 import { usePairs } from "@/lib/pairs-context";
@@ -14,7 +14,7 @@ const BATCH_SIZE = 5;
 
 export default function GenerateQuiz() {
   const router = useRouter();
-  const { pairs, sourceLanguage, targetLanguage } = usePairs();
+  const { pairs, sourceLanguage, targetLanguage, cefrLevel } = usePairs();
   const { startQuiz } = useQuiz();
   const [isGenerating, setIsGenerating] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -33,6 +33,7 @@ export default function GenerateQuiz() {
             source_language: sourceLanguage,
             target_language: targetLanguage,
             batch_size: c.length,
+            level: cefrLevel,
           },
         });
         allQuestions.push(...result);
@@ -60,7 +61,7 @@ export default function GenerateQuiz() {
         <Text style={[shared.hint, styles.centerText]}>{pairs.length} words ready.</Text>
       )}
 
-      <LanguagePickerSummary />
+      <ListSettingsSummary />
 
       {error && <Text style={[shared.errorText, styles.centerText]}>{error}</Text>}
 

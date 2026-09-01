@@ -1,6 +1,6 @@
 import { createContext, useCallback, useContext, useState, type ReactNode } from "react";
 
-import { DEFAULT_SOURCE_LANGUAGE, DEFAULT_TARGET_LANGUAGE } from "./types";
+import { DEFAULT_CEFR_LEVEL, DEFAULT_SOURCE_LANGUAGE, DEFAULT_TARGET_LANGUAGE, type CefrLevel } from "./types";
 
 export type VocabPair = { "source word": string; "target word": string };
 
@@ -16,6 +16,8 @@ type PairsState = {
   targetLanguage: string;
   setSourceLanguage: (language: string) => void;
   setTargetLanguage: (language: string) => void;
+  cefrLevel: CefrLevel;
+  setCefrLevel: (level: CefrLevel) => void;
 };
 
 const PairsContext = createContext<PairsState | null>(null);
@@ -31,6 +33,7 @@ export function PairsProvider({ children }: { children: ReactNode }) {
   const [pairs, setPairsState] = useState<VocabPair[]>([]);
   const [sourceLanguage, setSourceLanguage] = useState(DEFAULT_SOURCE_LANGUAGE);
   const [targetLanguage, setTargetLanguage] = useState(DEFAULT_TARGET_LANGUAGE);
+  const [cefrLevel, setCefrLevel] = useState<CefrLevel>(DEFAULT_CEFR_LEVEL);
 
   const addPair = useCallback((sourceWord: string, targetWord: string) => {
     setPairsState((prev) => [...prev, { "source word": sourceWord, "target word": targetWord }]);
@@ -69,6 +72,8 @@ export function PairsProvider({ children }: { children: ReactNode }) {
         targetLanguage,
         setSourceLanguage,
         setTargetLanguage,
+        cefrLevel,
+        setCefrLevel,
       }}
     >
       {children}

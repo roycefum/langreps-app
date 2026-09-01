@@ -2,6 +2,7 @@ import { Link } from "expo-router";
 import { useState } from "react";
 import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 
+import { CefrLevelPicker } from "@/components/cefr-level-picker";
 import { LanguagePicker } from "@/components/language-picker";
 import { PairsReview } from "@/components/pairs-review";
 import { shared } from "@/constants/styles";
@@ -24,6 +25,7 @@ export default function AddWords() {
       <Text style={shared.title}>Add Words</Text>
 
       <LanguagePicker />
+      <CefrLevelPicker />
 
       <View style={shared.row}>
         <TextInput
