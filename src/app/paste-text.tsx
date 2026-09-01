@@ -3,6 +3,7 @@ import { useState } from "react";
 import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 
 import { LanguagePicker } from "@/components/language-picker";
+import { ParsingWarning } from "@/components/parsing-warning";
 import { PairsReview } from "@/components/pairs-review";
 import { shared } from "@/constants/styles";
 import { apiRequest } from "@/lib/api";
@@ -14,6 +15,7 @@ export default function PasteText() {
   const [rawText, setRawText] = useState("");
   const [isParsing, setIsParsing] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [skippedLines, setSkippedLines] = useState<string[]>([]);
 
   async function handleParse() {
     if (!rawText.trim()) return;
@@ -22,11 +24,12 @@ export default function PasteText() {
     try {
       const formData = new FormData();
       formData.append("raw_text", rawText);
-      const result = await apiRequest<{ pairs: VocabPair[] }>("/parse-vocab-text", {
-        method: "POST",
-        formData,
-      });
+      const result = await apiRequest<{ pairs: VocabPair[]; skipped_lines: string[] }>(
+        "/parse-vocab-text",
+        { method: "POST", formData }
+      );
       addPairs(result.pairs);
+      setSkippedLines(result.skipped_lines);
       setRawText("");
     } catch (e) {
       setError(e instanceof Error ? e.message : "Something went wrong parsing that text.");
@@ -42,9 +45,12 @@ export default function PasteText() {
       <LanguagePicker />
 
       <Text style={shared.hint}>
-        One pair per line, separated by a tab, &quot;-&gt;&quot;, or &quot;:&quot; — e.g.{"\n"}
+        One pair per line — a tab, &quot;-&gt;&quot;, &quot;:&quot;, or similar between each word
+        and its translation. e.g.{"\n"}
         hello -&gt; hola
       </Text>
+
+      <ParsingWarning />
 
       <TextInput
         style={styles.textArea}
@@ -56,6 +62,13 @@ export default function PasteText() {
       />
 
       {error && <Text style={shared.errorText}>{error}</Text>}
+
+      {skippedLines.length > 0 && (
+        <Text style={shared.errorText}>
+          Couldn&apos;t parse {skippedLines.length} line{skippedLines.length === 1 ? "" : "s"}:{" "}
+          {skippedLines.join(" / ")}
+        </Text>
+      )}
 
       <Pressable
         style={[shared.secondaryButton, (!rawText.trim() || isParsing) && shared.primaryButtonDisabled]}

@@ -5,6 +5,7 @@ import { useState } from "react";
 import { Pressable, Text, View } from "react-native";
 
 import { LanguagePicker } from "@/components/language-picker";
+import { ParsingWarning } from "@/components/parsing-warning";
 import { PairsReview } from "@/components/pairs-review";
 import { shared } from "@/constants/styles";
 import { apiRequest } from "@/lib/api";
@@ -16,6 +17,7 @@ export default function UploadFile() {
   const [isParsing, setIsParsing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [lastFileName, setLastFileName] = useState<string | null>(null);
+  const [skippedLines, setSkippedLines] = useState<string[]>([]);
 
   async function handlePickFile() {
     const result = await DocumentPicker.getDocumentAsync({
@@ -34,11 +36,12 @@ export default function UploadFile() {
       // Expo's fetch in this SDK — it needs a real Blob-compatible value,
       // which expo-file-system's File class provides.
       formData.append("file", new File(pickedFile.uri) as unknown as Blob);
-      const response = await apiRequest<{ pairs: VocabPair[] }>("/parse-vocab-text", {
-        method: "POST",
-        formData,
-      });
+      const response = await apiRequest<{ pairs: VocabPair[]; skipped_lines: string[] }>(
+        "/parse-vocab-text",
+        { method: "POST", formData }
+      );
       addPairs(response.pairs);
+      setSkippedLines(response.skipped_lines);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Something went wrong parsing that file.");
     } finally {
@@ -53,9 +56,11 @@ export default function UploadFile() {
       <LanguagePicker />
 
       <Text style={shared.hint}>
-        A plain text or CSV file with one pair per line, separated by a tab, &quot;-&gt;&quot;, or
-        &quot;:&quot;.
+        A plain text or CSV file, one pair per line — a tab, &quot;-&gt;&quot;, &quot;:&quot;, or
+        similar between each word and its translation.
       </Text>
+
+      <ParsingWarning />
 
       <Pressable style={shared.secondaryButton} onPress={handlePickFile} disabled={isParsing}>
         <Text style={shared.secondaryButtonText}>{isParsing ? "Parsing…" : "Choose File"}</Text>
@@ -63,6 +68,13 @@ export default function UploadFile() {
 
       {lastFileName && !error && <Text style={shared.hint}>Last file: {lastFileName}</Text>}
       {error && <Text style={shared.errorText}>{error}</Text>}
+
+      {skippedLines.length > 0 && (
+        <Text style={shared.errorText}>
+          Couldn&apos;t parse {skippedLines.length} line{skippedLines.length === 1 ? "" : "s"}:{" "}
+          {skippedLines.join(" / ")}
+        </Text>
+      )}
 
       <PairsReview />
 
