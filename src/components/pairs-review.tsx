@@ -14,10 +14,10 @@ export function PairsReview() {
   return (
     <View style={styles.container}>
       <View style={shared.row}>
-        <Pressable style={shared.secondaryButton} onPress={undoLast}>
+        <Pressable style={[shared.secondaryButton, styles.rowButton]} onPress={undoLast}>
           <Text style={shared.secondaryButtonText}>Undo last</Text>
         </Pressable>
-        <Pressable style={shared.secondaryButton} onPress={clearPairs}>
+        <Pressable style={[shared.secondaryButton, styles.rowButton]} onPress={clearPairs}>
           <Text style={shared.secondaryButtonText}>Clear list</Text>
         </Pressable>
       </View>
@@ -53,6 +53,9 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     gap: 12,
+  },
+  rowButton: {
+    flex: 1,
   },
   list: {
     flex: 1,

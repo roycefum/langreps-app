@@ -70,7 +70,6 @@ export const shared = StyleSheet.create({
     textAlign: "center",
   },
   secondaryButton: {
-    flex: 1,
     backgroundColor: colors.secondaryBackground,
     borderRadius: 8,
     paddingVertical: 10,
