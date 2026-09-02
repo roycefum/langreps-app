@@ -13,6 +13,7 @@ type AuthState = {
   login: (email: string, password: string) => Promise<void>;
   signup: (email: string, password: string) => Promise<{ confirmationRequired: boolean }>;
   logout: () => Promise<void>;
+  deleteAccount: () => Promise<void>;
 };
 
 const AuthContext = createContext<AuthState | null>(null);
@@ -94,8 +95,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     await clearAuth();
   }, [clearAuth]);
 
+  const deleteAccount = useCallback(async () => {
+    // Unlike logout, not best-effort — if this throws, the account (and its
+    // data) may still exist server-side, so local state must NOT be cleared
+    // on failure or the UI would falsely show a logged-out state.
+    await apiRequest("/account", { method: "DELETE" });
+    await clearAuth();
+  }, [clearAuth]);
+
   return (
-    <AuthContext.Provider value={{ userId, email, isLoading, login, signup, logout }}>
+    <AuthContext.Provider
+      value={{ userId, email, isLoading, login, signup, logout, deleteAccount }}
+    >
       {children}
     </AuthContext.Provider>
   );

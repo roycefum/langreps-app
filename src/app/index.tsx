@@ -1,11 +1,35 @@
 import { Link } from "expo-router";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { useState } from "react";
+import { Alert, Pressable, StyleSheet, Text, View } from "react-native";
 
 import { colors, shared } from "@/constants/styles";
 import { useAuth } from "@/lib/auth-context";
 
 export default function Home() {
-  const { userId, email, isLoading, logout } = useAuth();
+  const { userId, email, isLoading, logout, deleteAccount } = useAuth();
+  const [deleteError, setDeleteError] = useState<string | null>(null);
+
+  function confirmDeleteAccount() {
+    Alert.alert(
+      "Delete Account",
+      "This permanently deletes your account and all your saved lists. This can't be undone.",
+      [
+        { text: "Cancel", style: "cancel" },
+        {
+          text: "Delete",
+          style: "destructive",
+          onPress: async () => {
+            setDeleteError(null);
+            try {
+              await deleteAccount();
+            } catch (e) {
+              setDeleteError(e instanceof Error ? e.message : "Something went wrong.");
+            }
+          },
+        },
+      ]
+    );
+  }
 
   return (
     <View style={[shared.screenCentered, styles.container]}>
@@ -22,6 +46,10 @@ export default function Home() {
               <Pressable onPress={logout}>
                 <Text style={styles.authLink}>Log Out</Text>
               </Pressable>
+              <Pressable onPress={confirmDeleteAccount}>
+                <Text style={styles.deleteLink}>Delete Account</Text>
+              </Pressable>
+              {deleteError && <Text style={shared.errorText}>{deleteError}</Text>}
             </>
           ) : (
             <Link href="/login" style={styles.authLink}>
@@ -72,6 +100,10 @@ const styles = StyleSheet.create({
   },
   authLink: {
     color: colors.primary,
+    fontWeight: "600",
+  },
+  deleteLink: {
+    color: colors.error,
     fontWeight: "600",
   },
   buttonGroup: {
