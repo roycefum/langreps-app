@@ -1,15 +1,35 @@
 import { Link } from "expo-router";
-import { StyleSheet, Text, View } from "react-native";
+import { Pressable, StyleSheet, Text, View } from "react-native";
 
-import { shared } from "@/constants/styles";
+import { colors, shared } from "@/constants/styles";
+import { useAuth } from "@/lib/auth-context";
 
 export default function Home() {
+  const { userId, email, isLoading, logout } = useAuth();
+
   return (
     <View style={[shared.screenCentered, styles.container]}>
       <Text style={styles.title}>LangReps</Text>
       <Text style={styles.subtitle}>
         Build a vocab list, then let AI generate an adaptive quiz for it.
       </Text>
+
+      {!isLoading && (
+        <View style={styles.authRow}>
+          {userId ? (
+            <>
+              <Text style={shared.hint}>Signed in as {email}</Text>
+              <Pressable onPress={logout}>
+                <Text style={styles.authLink}>Log Out</Text>
+              </Pressable>
+            </>
+          ) : (
+            <Link href="/login" style={styles.authLink}>
+              Log In / Sign Up
+            </Link>
+          )}
+        </View>
+      )}
 
       <View style={styles.buttonGroup}>
         <Link href="/add-words" style={shared.primaryButton}>
@@ -45,6 +65,14 @@ const styles = StyleSheet.create({
     fontSize: 16,
     textAlign: "center",
     opacity: 0.7,
+  },
+  authRow: {
+    alignItems: "center",
+    gap: 4,
+  },
+  authLink: {
+    color: colors.primary,
+    fontWeight: "600",
   },
   buttonGroup: {
     width: "100%",

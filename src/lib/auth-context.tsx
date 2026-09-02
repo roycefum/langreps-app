@@ -3,11 +3,12 @@ import { createContext, useCallback, useContext, useEffect, useState, type React
 import { apiRequest, setAuthToken, setUnauthorizedHandler } from "./api";
 import { clearSession, getStoredSession, saveSession } from "./auth-storage";
 
-type LoginResponse = { access_token: string; refresh_token: string; user_id: string };
+type LoginResponse = { access_token: string; refresh_token: string; user_id: string; email: string };
 type SignupResponse = { user_id: string | null; email: string | null; confirmation_required: boolean };
 
 type AuthState = {
   userId: string | null;
+  email: string | null;
   isLoading: boolean;
   login: (email: string, password: string) => Promise<void>;
   signup: (email: string, password: string) => Promise<{ confirmationRequired: boolean }>;
@@ -18,11 +19,13 @@ const AuthContext = createContext<AuthState | null>(null);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [userId, setUserId] = useState<string | null>(null);
+  const [email, setEmail] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   const clearAuth = useCallback(async () => {
     setAuthToken(null);
     setUserId(null);
+    setEmail(null);
     await clearSession();
   }, []);
 
@@ -40,6 +43,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (stored) {
         setAuthToken(stored.accessToken);
         setUserId(stored.userId);
+        setEmail(stored.email);
         // No "whoami" endpoint exists yet, so we optimistically trust the
         // stored token here; a 401 on the first real request clears it via
         // the handler above.
@@ -48,24 +52,29 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     })();
   }, []);
 
-  const login = useCallback(async (email: string, password: string) => {
+  const login = useCallback(async (loginEmail: string, password: string) => {
     const result = await apiRequest<LoginResponse>("/login", {
       method: "POST",
-      body: { email, password },
+      body: { email: loginEmail, password },
     });
     setAuthToken(result.access_token);
     setUserId(result.user_id);
+    setEmail(result.email);
     await saveSession({
       accessToken: result.access_token,
       refreshToken: result.refresh_token,
       userId: result.user_id,
+      email: result.email,
     });
   }, []);
 
-  const signup = useCallback(async (email: string, password: string) => {
+  const signup = useCallback(async (signupEmail: string, password: string) => {
+    // /signup never returns a session (even when Supabase doesn't require
+    // email confirmation) — only user info. Caller is expected to follow up
+    // with login() using the same credentials once this resolves.
     const result = await apiRequest<SignupResponse>("/signup", {
       method: "POST",
-      body: { email, password },
+      body: { email: signupEmail, password },
     });
     return { confirmationRequired: result.confirmation_required };
   }, []);
@@ -86,7 +95,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [clearAuth]);
 
   return (
-    <AuthContext.Provider value={{ userId, isLoading, login, signup, logout }}>
+    <AuthContext.Provider value={{ userId, email, isLoading, login, signup, logout }}>
       {children}
     </AuthContext.Provider>
   );
