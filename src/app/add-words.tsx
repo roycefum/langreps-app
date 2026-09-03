@@ -46,7 +46,7 @@ export default function AddWords() {
         <Text style={shared.secondaryButtonText}>Add to list</Text>
       </Pressable>
 
-      <PairsReview />
+      <PairsReview source="manual" />
 
       <Link href="/" style={shared.backLink}>
         <Text>← Back to Home</Text>

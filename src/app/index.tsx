@@ -72,6 +72,11 @@ export default function Home() {
         <Link href="/upload-picture" style={shared.primaryButton}>
           <Text style={shared.primaryButtonText}>Share a Picture</Text>
         </Link>
+        {userId && (
+          <Link href="/my-lists" style={shared.primaryButton}>
+            <Text style={shared.primaryButtonText}>My Lists</Text>
+          </Link>
+        )}
         <Link href="/generate-quiz" style={shared.primaryButton}>
           <Text style={shared.primaryButtonText}>Generate Quiz</Text>
         </Link>

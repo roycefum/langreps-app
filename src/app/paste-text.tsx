@@ -80,7 +80,7 @@ export default function PasteText() {
         <Text style={shared.secondaryButtonText}>{isParsing ? "Parsing…" : "Add to list"}</Text>
       </Pressable>
 
-      <PairsReview />
+      <PairsReview source="paste" />
 
       <Link href="/" style={shared.backLink}>
         <Text>← Back to Home</Text>

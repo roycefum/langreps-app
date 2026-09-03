@@ -4,6 +4,17 @@ import { DEFAULT_CEFR_LEVEL, DEFAULT_SOURCE_LANGUAGE, DEFAULT_TARGET_LANGUAGE, t
 
 export type VocabPair = { "source word": string; "target word": string };
 
+// Matches GET /lists/{id}'s response shape — pairs come back keyed
+// source_term/target_term (the vocab_pairs table's own column names),
+// unlike the app's internal "source word"/"target word" convention.
+export type SavedList = {
+  id: string;
+  name: string;
+  source_language: string;
+  target_language: string;
+  pairs: { source_term: string; target_term: string }[];
+};
+
 type PairsState = {
   pairs: VocabPair[];
   addPair: (sourceWord: string, targetWord: string) => void;
@@ -18,6 +29,9 @@ type PairsState = {
   setTargetLanguage: (language: string) => void;
   cefrLevel: CefrLevel;
   setCefrLevel: (level: CefrLevel) => void;
+  savedListId: string | null;
+  setSavedListId: (id: string | null) => void;
+  loadList: (list: SavedList) => void;
 };
 
 const PairsContext = createContext<PairsState | null>(null);
@@ -34,6 +48,7 @@ export function PairsProvider({ children }: { children: ReactNode }) {
   const [sourceLanguage, setSourceLanguage] = useState(DEFAULT_SOURCE_LANGUAGE);
   const [targetLanguage, setTargetLanguage] = useState(DEFAULT_TARGET_LANGUAGE);
   const [cefrLevel, setCefrLevel] = useState<CefrLevel>(DEFAULT_CEFR_LEVEL);
+  const [savedListId, setSavedListId] = useState<string | null>(null);
 
   const addPair = useCallback((sourceWord: string, targetWord: string) => {
     setPairsState((prev) => [...prev, { "source word": sourceWord, "target word": targetWord }]);
@@ -56,6 +71,24 @@ export function PairsProvider({ children }: { children: ReactNode }) {
 
   const clearPairs = useCallback(() => {
     setPairsState([]);
+    setSavedListId(null);
+  }, []);
+
+  // Loads a previously saved list (from My Lists) as the list currently
+  // being built — replaces pairs/languages/savedListId together so
+  // Generate Quiz can create a real quiz session against it. CEFR level
+  // isn't stored per-list server-side, so it's left as whatever's
+  // currently picked rather than reset.
+  const loadList = useCallback((list: SavedList) => {
+    setPairsState(
+      list.pairs.map((p) => ({
+        "source word": p.source_term,
+        "target word": p.target_term,
+      }))
+    );
+    setSourceLanguage(list.source_language);
+    setTargetLanguage(list.target_language);
+    setSavedListId(list.id);
   }, []);
 
   return (
@@ -74,6 +107,9 @@ export function PairsProvider({ children }: { children: ReactNode }) {
         setTargetLanguage,
         cefrLevel,
         setCefrLevel,
+        savedListId,
+        setSavedListId,
+        loadList,
       }}
     >
       {children}

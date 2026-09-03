@@ -5,6 +5,7 @@ import { ActivityIndicator, Pressable, StyleSheet, Text, View } from "react-nati
 import { ListSettingsSummary } from "@/components/language-picker";
 import { shared } from "@/constants/styles";
 import { apiRequest } from "@/lib/api";
+import { useAuth } from "@/lib/auth-context";
 import { usePairs } from "@/lib/pairs-context";
 import { useQuiz } from "@/lib/quiz-context";
 import { chunk } from "@/lib/text";
@@ -14,7 +15,8 @@ const BATCH_SIZE = 5;
 
 export default function GenerateQuiz() {
   const router = useRouter();
-  const { pairs, sourceLanguage, targetLanguage, cefrLevel } = usePairs();
+  const { pairs, sourceLanguage, targetLanguage, cefrLevel, savedListId } = usePairs();
+  const { userId } = useAuth();
   const { startQuiz } = useQuiz();
   const [isGenerating, setIsGenerating] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -38,9 +40,20 @@ export default function GenerateQuiz() {
         });
         allQuestions.push(...result);
       }
-      // No quiz session created here — this is the anonymous, in-memory
-      // flow. Session creation/resume is added once auth is wired up.
-      startQuiz(allQuestions, null);
+
+      // A quiz session only makes sense for a saved list (quiz_sessions.list_id
+      // isn't nullable server-side) — building an unsaved, ad-hoc list stays
+      // purely ephemeral even while logged in.
+      let sessionId: string | null = null;
+      if (userId && savedListId) {
+        const session = await apiRequest<{ session_id: string }>("/quiz-sessions", {
+          method: "POST",
+          body: { list_id: savedListId, questions: allQuestions },
+        });
+        sessionId = session.session_id;
+      }
+
+      startQuiz(allQuestions, sessionId);
       router.push("/quiz");
     } catch (e) {
       setError(e instanceof Error ? e.message : "Something went wrong generating your quiz.");

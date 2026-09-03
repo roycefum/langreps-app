@@ -14,7 +14,7 @@ type QuizState = {
   wasCorrect: boolean;
   correctCount: number;
   isComplete: boolean;
-  startQuiz: (questions: Question[], sessionId: string | null) => void;
+  startQuiz: (questions: Question[], sessionId: string | null, startIndex?: number) => void;
   submitAnswer: (answer: string) => void;
   skipQuestion: () => void;
   nextQuestion: () => Promise<void>;
@@ -38,13 +38,16 @@ export function QuizProvider({ children }: { children: ReactNode }) {
 
   const isComplete = questions.length > 0 && currentIndex >= questions.length;
 
-  const startQuiz = useCallback((newQuestions: Question[], newSessionId: string | null) => {
-    setQuestions(newQuestions);
-    setCurrentIndex(0);
-    setPhase("question");
-    setCorrectCount(0);
-    setSessionId(newSessionId);
-  }, []);
+  const startQuiz = useCallback(
+    (newQuestions: Question[], newSessionId: string | null, startIndex: number = 0) => {
+      setQuestions(newQuestions);
+      setCurrentIndex(startIndex);
+      setPhase("question");
+      setCorrectCount(0);
+      setSessionId(newSessionId);
+    },
+    []
+  );
 
   const submitAnswer = useCallback(
     (answer: string) => {

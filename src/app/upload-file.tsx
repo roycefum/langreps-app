@@ -78,7 +78,7 @@ export default function UploadFile() {
         </Text>
       )}
 
-      <PairsReview />
+      <PairsReview source="file" />
 
       <Link href="/" style={shared.backLink}>
         <Text>← Back to Home</Text>

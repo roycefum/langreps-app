@@ -100,7 +100,7 @@ export default function UploadPicture() {
 
       {error && <Text style={shared.errorText}>{error}</Text>}
 
-      <PairsReview />
+      <PairsReview source="photo" />
 
       <Link href="/" style={shared.backLink}>
         <Text>← Back to Home</Text>
