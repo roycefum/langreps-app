@@ -82,9 +82,6 @@ export default function Home() {
             <Text style={shared.primaryButtonText}>My Lists</Text>
           </Link>
         )}
-        <Link href="/generate-quiz" style={[shared.primaryButton, shared.generateQuizButton]}>
-          <Text style={shared.primaryButtonText}>Generate Quiz</Text>
-        </Link>
       </View>
     </View>
   );

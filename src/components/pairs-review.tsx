@@ -18,7 +18,7 @@ type PairsReviewProps = {
 // so they all end with the same review/edit/save/generate step.
 export function PairsReview({ source }: PairsReviewProps) {
   const router = useRouter();
-  const { pairs, undoLast, clearPairs, sourceLanguage, targetLanguage, savedListId, setSavedListId } =
+  const { pairs, undoLast, clearPairs, sourceLanguage, targetLanguage, savedListId, setSavedList } =
     usePairs();
   const { userId } = useAuth();
   const [name, setName] = useState("");
@@ -42,7 +42,7 @@ export function PairsReview({ source }: PairsReviewProps) {
           pairs,
         },
       });
-      setSavedListId(result.list_id);
+      setSavedList(result.list_id, name.trim());
       setSaveMessage("Saved!");
     } catch (e) {
       setSaveError(e instanceof Error ? e.message : "Something went wrong saving.");

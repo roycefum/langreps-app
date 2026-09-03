@@ -31,7 +31,10 @@ type PairsState = {
   setSourceLanguage: (language: string) => void;
   setTargetLanguage: (language: string) => void;
   savedListId: string | null;
-  setSavedListId: (id: string | null) => void;
+  // Shown on Generate Quiz so it's never ambiguous which list a quiz is
+  // being generated from — null means "not saved / no name yet".
+  listName: string | null;
+  setSavedList: (id: string, name: string) => void;
   loadList: (list: SavedList) => void;
 };
 
@@ -49,6 +52,7 @@ export function PairsProvider({ children }: { children: ReactNode }) {
   const [sourceLanguage, setSourceLanguage] = useState(DEFAULT_SOURCE_LANGUAGE);
   const [targetLanguage, setTargetLanguage] = useState(DEFAULT_TARGET_LANGUAGE);
   const [savedListId, setSavedListId] = useState<string | null>(null);
+  const [listName, setListName] = useState<string | null>(null);
 
   const addPair = useCallback((sourceWord: string, targetWord: string) => {
     setPairsState((prev) => [...prev, { "source word": sourceWord, "target word": targetWord }]);
@@ -72,11 +76,21 @@ export function PairsProvider({ children }: { children: ReactNode }) {
   const clearPairs = useCallback(() => {
     setPairsState([]);
     setSavedListId(null);
+    setListName(null);
+  }, []);
+
+  // Sets savedListId and listName together — they should never be set
+  // independently, or Generate Quiz could show a stale name for the
+  // current savedListId (or vice versa).
+  const setSavedList = useCallback((id: string, name: string) => {
+    setSavedListId(id);
+    setListName(name);
   }, []);
 
   // Loads a previously saved list (from My Lists) as the list currently
-  // being built — replaces pairs/languages/savedListId together so
-  // Generate Quiz can create a real quiz session against it.
+  // being built — replaces pairs/languages/savedListId/listName together
+  // so Generate Quiz can create a real quiz session against it, and always
+  // show which list it's generating from.
   const loadList = useCallback((list: SavedList) => {
     setPairsState(
       list.pairs.map((p) => ({
@@ -88,6 +102,7 @@ export function PairsProvider({ children }: { children: ReactNode }) {
     setSourceLanguage(list.source_language);
     setTargetLanguage(list.target_language);
     setSavedListId(list.id);
+    setListName(list.name);
   }, []);
 
   return (
@@ -105,7 +120,8 @@ export function PairsProvider({ children }: { children: ReactNode }) {
         setSourceLanguage,
         setTargetLanguage,
         savedListId,
-        setSavedListId,
+        listName,
+        setSavedList,
         loadList,
       }}
     >

@@ -18,7 +18,7 @@ const DEFAULT_QUIZ_LENGTH = 15;
 
 export default function GenerateQuiz() {
   const router = useRouter();
-  const { pairs, sourceLanguage, targetLanguage, savedListId } = usePairs();
+  const { pairs, sourceLanguage, targetLanguage, savedListId, listName } = usePairs();
   const { userId } = useAuth();
   const { startQuiz } = useQuiz();
   const [countText, setCountText] = useState(String(Math.min(pairs.length, DEFAULT_QUIZ_LENGTH)));
@@ -117,6 +117,9 @@ export default function GenerateQuiz() {
         </>
       )}
 
+      <Text style={[shared.hint, styles.centerText, styles.listNameText]}>
+        Generating from: {listName ?? "Unsaved list"}
+      </Text>
       <LanguageSummary />
       <CefrLevelPicker value={cefrLevel} onChange={setCefrLevel} />
 
@@ -168,5 +171,8 @@ const styles = StyleSheet.create({
   generating: {
     alignItems: "center",
     gap: 12,
+  },
+  listNameText: {
+    fontWeight: "600",
   },
 });
