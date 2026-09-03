@@ -38,6 +38,11 @@ export default function Home() {
         Build a vocab list, then let AI generate an adaptive quiz for it.
       </Text>
 
+      {/* Device-local, not account-bound, so shown regardless of auth state. */}
+      <Link href="/settings" style={styles.authLink}>
+        Settings
+      </Link>
+
       {!isLoading && (
         <View style={styles.authRow}>
           {userId ? (

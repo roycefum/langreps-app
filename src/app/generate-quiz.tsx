@@ -1,27 +1,36 @@
 import { Link, useRouter } from "expo-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ActivityIndicator, Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 
-import { ListSettingsSummary } from "@/components/language-picker";
+import { CefrLevelPicker } from "@/components/cefr-level-picker";
+import { LanguageSummary } from "@/components/language-picker";
 import { shared } from "@/constants/styles";
 import { apiRequest } from "@/lib/api";
 import { useAuth } from "@/lib/auth-context";
 import { usePairs, type VocabPair } from "@/lib/pairs-context";
 import { useQuiz } from "@/lib/quiz-context";
+import { getDefaultCefrLevel } from "@/lib/settings-storage";
 import { chunk, sample } from "@/lib/text";
-import type { Question } from "@/lib/types";
+import { DEFAULT_CEFR_LEVEL, type CefrLevel, type Question } from "@/lib/types";
 
 const BATCH_SIZE = 5;
 const DEFAULT_QUIZ_LENGTH = 15;
 
 export default function GenerateQuiz() {
   const router = useRouter();
-  const { pairs, sourceLanguage, targetLanguage, cefrLevel, savedListId } = usePairs();
+  const { pairs, sourceLanguage, targetLanguage, savedListId } = usePairs();
   const { userId } = useAuth();
   const { startQuiz } = useQuiz();
   const [countText, setCountText] = useState(String(Math.min(pairs.length, DEFAULT_QUIZ_LENGTH)));
+  // Defaults from Settings (device-local), but changing it here only
+  // affects this one quiz — it's never written back to the stored default.
+  const [cefrLevel, setCefrLevel] = useState<CefrLevel>(DEFAULT_CEFR_LEVEL);
   const [isGenerating, setIsGenerating] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    getDefaultCefrLevel().then(setCefrLevel);
+  }, []);
 
   const requestedCount = Math.max(1, Math.min(parseInt(countText, 10) || 1, pairs.length));
 
@@ -108,7 +117,8 @@ export default function GenerateQuiz() {
         </>
       )}
 
-      <ListSettingsSummary />
+      <LanguageSummary />
+      <CefrLevelPicker value={cefrLevel} onChange={setCefrLevel} />
 
       {error && <Text style={[shared.errorText, styles.centerText]}>{error}</Text>}
 

@@ -1,6 +1,6 @@
 import { createContext, useCallback, useContext, useState, type ReactNode } from "react";
 
-import { DEFAULT_CEFR_LEVEL, DEFAULT_SOURCE_LANGUAGE, DEFAULT_TARGET_LANGUAGE, type CefrLevel } from "./types";
+import { DEFAULT_SOURCE_LANGUAGE, DEFAULT_TARGET_LANGUAGE } from "./types";
 
 // `id` is present when a pair came from a saved list (needed to record
 // quiz attempts against it and to weight adaptive requiz selection), and
@@ -30,8 +30,6 @@ type PairsState = {
   targetLanguage: string;
   setSourceLanguage: (language: string) => void;
   setTargetLanguage: (language: string) => void;
-  cefrLevel: CefrLevel;
-  setCefrLevel: (level: CefrLevel) => void;
   savedListId: string | null;
   setSavedListId: (id: string | null) => void;
   loadList: (list: SavedList) => void;
@@ -50,7 +48,6 @@ export function PairsProvider({ children }: { children: ReactNode }) {
   const [pairs, setPairsState] = useState<VocabPair[]>([]);
   const [sourceLanguage, setSourceLanguage] = useState(DEFAULT_SOURCE_LANGUAGE);
   const [targetLanguage, setTargetLanguage] = useState(DEFAULT_TARGET_LANGUAGE);
-  const [cefrLevel, setCefrLevel] = useState<CefrLevel>(DEFAULT_CEFR_LEVEL);
   const [savedListId, setSavedListId] = useState<string | null>(null);
 
   const addPair = useCallback((sourceWord: string, targetWord: string) => {
@@ -79,9 +76,7 @@ export function PairsProvider({ children }: { children: ReactNode }) {
 
   // Loads a previously saved list (from My Lists) as the list currently
   // being built — replaces pairs/languages/savedListId together so
-  // Generate Quiz can create a real quiz session against it. CEFR level
-  // isn't stored per-list server-side, so it's left as whatever's
-  // currently picked rather than reset.
+  // Generate Quiz can create a real quiz session against it.
   const loadList = useCallback((list: SavedList) => {
     setPairsState(
       list.pairs.map((p) => ({
@@ -109,8 +104,6 @@ export function PairsProvider({ children }: { children: ReactNode }) {
         targetLanguage,
         setSourceLanguage,
         setTargetLanguage,
-        cefrLevel,
-        setCefrLevel,
         savedListId,
         setSavedListId,
         loadList,

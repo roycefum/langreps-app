@@ -4,7 +4,6 @@ import * as ImagePicker from "expo-image-picker";
 import { useState } from "react";
 import { Pressable, Text, View } from "react-native";
 
-import { CefrLevelPicker } from "@/components/cefr-level-picker";
 import { LanguagePicker } from "@/components/language-picker";
 import { PairsReview } from "@/components/pairs-review";
 import { shared } from "@/constants/styles";
@@ -78,7 +77,6 @@ export default function UploadPicture() {
       <Text style={shared.title}>Share a Picture</Text>
 
       <LanguagePicker />
-      <CefrLevelPicker />
 
       <Text style={shared.hint}>
         A photo or screenshot of word pairs (e.g. &quot;house -&gt; casa&quot;) — AI will read the

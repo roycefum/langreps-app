@@ -1,26 +1,29 @@
 import { Pressable, StyleSheet, Text, View } from "react-native";
 
 import { colors } from "@/constants/styles";
-import { usePairs } from "@/lib/pairs-context";
-import { CEFR_LEVELS } from "@/lib/types";
+import { CEFR_LEVELS, type CefrLevel } from "@/lib/types";
 
-// Editable version — shown on each builder screen (add/paste/file/photo),
-// same placement as LanguagePicker, since level (like the language pair) is
-// set when the list is made and read when the quiz is generated.
-export function CefrLevelPicker() {
-  const { cefrLevel, setCefrLevel } = usePairs();
+type CefrLevelPickerProps = {
+  value: CefrLevel;
+  onChange: (level: CefrLevel) => void;
+};
 
+// Level isn't a property of a list (unlike language) — it's a per-quiz
+// choice that defaults from Settings but can be overridden for one
+// generation, so this is a plain value/onChange component (like Dropdown)
+// rather than reading/writing shared list state directly.
+export function CefrLevelPicker({ value, onChange }: CefrLevelPickerProps) {
   return (
     <View>
       <Text style={styles.label}>Level</Text>
       <View style={styles.row}>
         {CEFR_LEVELS.map((level) => {
-          const selected = level === cefrLevel;
+          const selected = level === value;
           return (
             <Pressable
               key={level}
               style={[styles.pill, selected && styles.pillSelected]}
-              onPress={() => setCefrLevel(level)}
+              onPress={() => onChange(level)}
             >
               <Text style={[styles.pillText, selected && styles.pillTextSelected]}>{level}</Text>
             </Pressable>

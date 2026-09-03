@@ -25,13 +25,15 @@ export function LanguagePicker() {
 }
 
 // Read-only reminder — shown on Generate Quiz, confirming what will
-// actually be sent to the API without inviting an edit there (language and
-// level are both set on the builder screens, where the list is made).
-export function ListSettingsSummary() {
-  const { sourceLanguage, targetLanguage, cefrLevel } = usePairs();
+// actually be sent to the API without inviting an edit there (language is
+// set on the builder screens, where the list is made). Level isn't shown
+// here since it's not a list property — Generate Quiz has its own editable
+// CefrLevelPicker instead.
+export function LanguageSummary() {
+  const { sourceLanguage, targetLanguage } = usePairs();
   return (
     <Text style={shared.hint}>
-      {sourceLanguage} → {targetLanguage} · Level {cefrLevel}
+      {sourceLanguage} → {targetLanguage}
     </Text>
   );
 }
