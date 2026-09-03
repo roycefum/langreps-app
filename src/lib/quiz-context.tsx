@@ -49,6 +49,30 @@ export function QuizProvider({ children }: { children: ReactNode }) {
     []
   );
 
+  // Best-effort, like the progress PATCH below — a failed attempt-record
+  // shouldn't block the user's quiz. Only meaningful when there's a real
+  // session (a saved list); ad-hoc quizzes have no history to build.
+  const recordAttempt = useCallback(
+    async (question: Question, correct: boolean) => {
+      if (!sessionId) return;
+      try {
+        await apiRequest("/quiz-attempts", {
+          method: "POST",
+          body: {
+            session_id: sessionId,
+            vocab_pair_id: question.vocab_pair_id,
+            question_text: question.question_text,
+            skill_category: question.skill_category,
+            was_correct: correct,
+          },
+        });
+      } catch {
+        // best-effort
+      }
+    },
+    [sessionId]
+  );
+
   const submitAnswer = useCallback(
     (answer: string) => {
       const current = questions[currentIndex];
@@ -59,15 +83,18 @@ export function QuizProvider({ children }: { children: ReactNode }) {
       setWasCorrect(correct);
       if (correct) setCorrectCount((prev) => prev + 1);
       setPhase("feedback");
+      recordAttempt(current, correct);
     },
-    [questions, currentIndex]
+    [questions, currentIndex, recordAttempt]
   );
 
   const skipQuestion = useCallback(() => {
+    const current = questions[currentIndex];
     setLastAnswer("(skipped)");
     setWasCorrect(false);
     setPhase("feedback");
-  }, []);
+    recordAttempt(current, false);
+  }, [questions, currentIndex, recordAttempt]);
 
   const nextQuestion = useCallback(async () => {
     const newIndex = currentIndex + 1;

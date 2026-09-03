@@ -77,7 +77,7 @@ export default function Home() {
             <Text style={shared.primaryButtonText}>My Lists</Text>
           </Link>
         )}
-        <Link href="/generate-quiz" style={shared.primaryButton}>
+        <Link href="/generate-quiz" style={[shared.primaryButton, shared.generateQuizButton]}>
           <Text style={shared.primaryButtonText}>Generate Quiz</Text>
         </Link>
       </View>
@@ -104,7 +104,7 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   authLink: {
-    color: colors.primary,
+    color: colors.tertiary,
     fontWeight: "600",
   },
   deleteLink: {

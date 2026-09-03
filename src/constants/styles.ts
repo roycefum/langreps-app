@@ -3,11 +3,23 @@ import { StyleSheet } from "react-native";
 export const colors = {
   primary: "#88B892",
   primaryShadow: "#6f9778",
+  // Triadic accent colors (same three hex bytes, cycled) — accent for
+  // things that should stand apart from primary CTAs (e.g. a selected
+  // picker option), tertiary for secondary links/highlights.
+  accent: "#9288B8",
+  accentShadow: "#787097",
+  tertiary: "#B89288",
+  tertiaryShadow: "#977870",
   secondaryBackground: "#eee",
   secondaryShadow: "#d4d4d4",
   border: "#ccc",
   error: "#c0392b",
   success: "#27ae60",
+  // Generate Quiz specifically gets its own color, distinct from every
+  // other primary button, since it's the one action that actually costs
+  // a Gemini call.
+  generateQuiz: "#3D6646",
+  generateQuizShadow: "#325439",
 };
 
 // Shared building blocks reused across screens (buttons, inputs, layout,
@@ -61,6 +73,10 @@ export const shared = StyleSheet.create({
   },
   primaryButtonDisabled: {
     opacity: 0.4,
+  },
+  generateQuizButton: {
+    backgroundColor: colors.generateQuiz,
+    borderBottomColor: colors.generateQuizShadow,
   },
   primaryButtonText: {
     color: "white",

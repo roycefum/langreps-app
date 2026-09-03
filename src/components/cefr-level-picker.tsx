@@ -49,7 +49,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   pillSelected: {
-    backgroundColor: colors.primary,
+    backgroundColor: colors.accent,
   },
   pillText: {
     fontSize: 13,

@@ -1,7 +1,9 @@
-import { StyleSheet, Text, TextInput, View } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 
+import { Dropdown } from "@/components/dropdown";
 import { shared } from "@/constants/styles";
 import { usePairs } from "@/lib/pairs-context";
+import { LANGUAGES } from "@/lib/types";
 
 // Editable version — shown on each builder screen (add/paste/file/photo),
 // where the language pair for the list being built is chosen.
@@ -12,21 +14,11 @@ export function LanguagePicker() {
     <View style={styles.container}>
       <View style={styles.field}>
         <Text style={shared.hint}>I already know</Text>
-        <TextInput
-          style={shared.input}
-          value={sourceLanguage}
-          onChangeText={setSourceLanguage}
-          placeholder="e.g. English"
-        />
+        <Dropdown value={sourceLanguage} onChange={setSourceLanguage} options={LANGUAGES} />
       </View>
       <View style={styles.field}>
         <Text style={shared.hint}>I'm learning</Text>
-        <TextInput
-          style={shared.input}
-          value={targetLanguage}
-          onChangeText={setTargetLanguage}
-          placeholder="e.g. Spanish"
-        />
+        <Dropdown value={targetLanguage} onChange={setTargetLanguage} options={LANGUAGES} />
       </View>
     </View>
   );

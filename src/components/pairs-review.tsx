@@ -99,7 +99,11 @@ export function PairsReview({ source }: PairsReviewProps) {
       {saveError && <Text style={shared.errorText}>{saveError}</Text>}
 
       <Pressable
-        style={[shared.primaryButton, pairs.length < 3 && shared.primaryButtonDisabled]}
+        style={[
+          shared.primaryButton,
+          shared.generateQuizButton,
+          pairs.length < 3 && shared.primaryButtonDisabled,
+        ]}
         disabled={pairs.length < 3}
         onPress={() => router.push("/generate-quiz")}
       >

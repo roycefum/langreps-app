@@ -2,7 +2,10 @@ import { createContext, useCallback, useContext, useState, type ReactNode } from
 
 import { DEFAULT_CEFR_LEVEL, DEFAULT_SOURCE_LANGUAGE, DEFAULT_TARGET_LANGUAGE, type CefrLevel } from "./types";
 
-export type VocabPair = { "source word": string; "target word": string };
+// `id` is present when a pair came from a saved list (needed to record
+// quiz attempts against it and to weight adaptive requiz selection), and
+// absent for freshly-typed/pasted/ad-hoc pairs that were never saved.
+export type VocabPair = { id?: string; "source word": string; "target word": string };
 
 // Matches GET /lists/{id}'s response shape — pairs come back keyed
 // source_term/target_term (the vocab_pairs table's own column names),
@@ -12,7 +15,7 @@ export type SavedList = {
   name: string;
   source_language: string;
   target_language: string;
-  pairs: { source_term: string; target_term: string }[];
+  pairs: { id: string; source_term: string; target_term: string }[];
 };
 
 type PairsState = {
@@ -82,6 +85,7 @@ export function PairsProvider({ children }: { children: ReactNode }) {
   const loadList = useCallback((list: SavedList) => {
     setPairsState(
       list.pairs.map((p) => ({
+        id: p.id,
         "source word": p.source_term,
         "target word": p.target_term,
       }))
