@@ -1,0 +1,10 @@
+house -> casa
+dog -> perro
+cat -> gato
+book -> libro
+table -> mesa
+chair -> silla
+water -> agua
+food -> comida
+school -> escuela
+friend -> amigo

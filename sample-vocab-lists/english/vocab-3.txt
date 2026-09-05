@@ -1,0 +1,3 @@
+casa -> house
+perro -> dog
+gato -> cat
