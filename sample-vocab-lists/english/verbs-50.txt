@@ -1,0 +1,50 @@
+hablar -> to speak
+comer -> to eat
+vivir -> to live
+tener -> to have
+hacer -> to do
+ir -> to go
+ser -> to be
+estar -> to be
+poder -> to be able to
+querer -> to want
+decir -> to say
+ver -> to see
+dar -> to give
+saber -> to know
+venir -> to come
+salir -> to leave
+poner -> to put
+pensar -> to think
+encontrar -> to find
+llegar -> to arrive
+pasar -> to happen
+deber -> to owe
+seguir -> to follow
+sentir -> to feel
+volver -> to return
+tomar -> to take
+conocer -> to know a person
+llevar -> to carry
+dejar -> to leave something
+llamar -> to call
+entender -> to understand
+pedir -> to ask for
+recibir -> to receive
+mostrar -> to show
+crear -> to create
+trabajar -> to work
+estudiar -> to study
+escribir -> to write
+leer -> to read
+jugar -> to play
+correr -> to run
+caminar -> to walk
+dormir -> to sleep
+despertar -> to wake up
+empezar -> to begin
+terminar -> to finish
+abrir -> to open
+cerrar -> to close
+comprar -> to buy
+vender -> to sell

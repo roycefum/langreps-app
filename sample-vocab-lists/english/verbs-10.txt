@@ -1,0 +1,10 @@
+hablar -> to speak
+comer -> to eat
+vivir -> to live
+tener -> to have
+hacer -> to do
+ir -> to go
+ser -> to be
+estar -> to be
+poder -> to be able to
+querer -> to want

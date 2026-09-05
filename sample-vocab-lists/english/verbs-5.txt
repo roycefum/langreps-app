@@ -1,0 +1,5 @@
+hablar -> to speak
+comer -> to eat
+vivir -> to live
+tener -> to have
+hacer -> to do

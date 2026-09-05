@@ -1,0 +1,50 @@
+to speak -> hablar
+to eat -> comer
+to live -> vivir
+to have -> tener
+to do -> hacer
+to go -> ir
+to be -> ser
+to be -> estar
+to be able to -> poder
+to want -> querer
+to say -> decir
+to see -> ver
+to give -> dar
+to know -> saber
+to come -> venir
+to leave -> salir
+to put -> poner
+to think -> pensar
+to find -> encontrar
+to arrive -> llegar
+to happen -> pasar
+to owe -> deber
+to follow -> seguir
+to feel -> sentir
+to return -> volver
+to take -> tomar
+to know a person -> conocer
+to carry -> llevar
+to leave something -> dejar
+to call -> llamar
+to understand -> entender
+to ask for -> pedir
+to receive -> recibir
+to show -> mostrar
+to create -> crear
+to work -> trabajar
+to study -> estudiar
+to write -> escribir
+to read -> leer
+to play -> jugar
+to run -> correr
+to walk -> caminar
+to sleep -> dormir
+to wake up -> despertar
+to begin -> empezar
+to finish -> terminar
+to open -> abrir
+to close -> cerrar
+to buy -> comprar
+to sell -> vender

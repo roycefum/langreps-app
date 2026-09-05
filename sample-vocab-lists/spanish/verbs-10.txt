@@ -1,0 +1,10 @@
+to speak -> hablar
+to eat -> comer
+to live -> vivir
+to have -> tener
+to do -> hacer
+to go -> ir
+to be -> ser
+to be -> estar
+to be able to -> poder
+to want -> querer
