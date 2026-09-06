@@ -36,6 +36,7 @@ export const colors = {
   // a Gemini call.
   generateQuiz: "#3D6646",
   generateQuizShadow: "#325439",
+  background: "#F5EFD5",
 };
 
 // Shared building blocks reused across screens (buttons, inputs, layout,
@@ -46,12 +47,14 @@ export const shared = StyleSheet.create({
     flex: 1,
     padding: 24,
     gap: 16,
+    backgroundColor: colors.background,
   },
   screenCentered: {
     flex: 1,
     padding: 24,
     gap: 16,
     justifyContent: "center",
+    backgroundColor: colors.background,
   },
   title: {
     fontSize: 24,

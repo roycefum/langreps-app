@@ -1,0 +1,122 @@
+File / Component,Key,English (source),Spanish,French,Notes
+index.tsx,app_name,LangReps,,,Proper name — may stay untranslated
+index.tsx,home_subtitle,"Build a vocab list, then let AI generate an adaptive quiz for it.",,,
+index.tsx,settings_link,Settings,,,
+index.tsx,log_out,Log Out,,,
+index.tsx,delete_account,Delete Account,,,Also used as alert title
+index.tsx,log_in_sign_up,Log In / Sign Up,,,
+index.tsx,signed_in_as,Signed in as {email},,,Template — {email} not translated
+index.tsx,add_words_manually,Add Words Manually,,,
+index.tsx,paste_vocab_list,Paste Vocab List,,,
+index.tsx,upload_a_file,Upload a File,,,
+index.tsx,share_a_picture,Share a Picture,,,
+index.tsx,my_lists,My Lists,,,
+index.tsx,my_quizzes,My Quizzes,,,
+index.tsx,delete_account_confirm,This permanently deletes your account and all your saved lists. This can't be undone.,,,Alert body
+index.tsx,cancel,Cancel,,,Alert button — reused across screens
+index.tsx,delete,Delete,,,Alert button — reused across screens
+index.tsx,error_generic,Something went wrong.,,,Fallback error — reused across screens
+login.tsx,log_in,Log In,,,Screen title + button + toggle target
+login.tsx,sign_up,Sign Up,,,Screen title + button + toggle target
+login.tsx,email_placeholder,Email,,,
+login.tsx,password_placeholder,Password,,,
+login.tsx,please_wait,Please wait…,,,
+login.tsx,switch_to_signup,Don't have an account? Sign up,,,
+login.tsx,switch_to_login,Already have an account? Log in,,,
+login.tsx,confirm_email_message,"Check your email to confirm, then log in below.",,,
+login.tsx,account_created_message,Account created — log in below.,,,
+add-words.tsx,add_words_title,Add Words,,,
+add-words.tsx,source_word_placeholder,Source word,,,
+add-words.tsx,target_word_placeholder,Target word,,,
+add-words.tsx,add_to_list,Add to list,,,Reused on paste-text.tsx
+paste-text.tsx,paste_vocab_list_title,Paste Vocab List,,,
+paste-text.tsx,paste_instructions,"One pair per line — a tab, ""->"", "":"", or similar between each word and its translation. e.g. hello -> hola",,,Contains a literal example — keep example untranslated or localize it
+paste-text.tsx,paste_placeholder,Paste your vocab list here,,,
+paste-text.tsx,parsing_ellipsis,Parsing…,,,Reused on upload-file.tsx
+paste-text.tsx,couldnt_parse_lines,Couldn't parse {n} line(s): {list},,,Template with pluralization (1 line vs N lines)
+paste-text.tsx,error_parsing_text,Something went wrong parsing that text.,,,
+upload-file.tsx,upload_a_file_title,Upload a File,,,
+upload-file.tsx,upload_file_instructions,"A plain text or CSV file, one pair per line — a tab, ""->"", "":"", or similar between each word and its translation.",,,
+upload-file.tsx,choose_file,Choose File,,,
+upload-file.tsx,last_file,Last file: {name},,,Template — filename not translated
+upload-file.tsx,error_parsing_file,Something went wrong parsing that file.,,,
+upload-picture.tsx,share_a_picture_title,Share a Picture,,,
+upload-picture.tsx,share_picture_instructions,"A photo or screenshot of word pairs (e.g. ""house -> casa"") — AI will read the pairs out of it.",,,Contains a literal example
+upload-picture.tsx,take_photo,Take Photo,,,
+upload-picture.tsx,choose_from_library,Choose from Library,,,
+upload-picture.tsx,reading_ellipsis,Reading…,,,
+upload-picture.tsx,error_camera_permission,Camera access is needed to take a photo.,,,
+upload-picture.tsx,error_library_permission,Photo library access is needed to choose an image.,,,
+upload-picture.tsx,error_reading_image,Something went wrong reading that image.,,,
+generate-quiz.tsx,generate_quiz_title,Generate Quiz,,,Also reused as button label
+generate-quiz.tsx,unsaved_list,Unsaved list,,,Fallback when no list name
+generate-quiz.tsx,min_words_warning,You need at least 3 words to generate a quiz.,,,
+generate-quiz.tsx,words_in_list,{n} words in this list.,,,Template with pluralization
+generate-quiz.tsx,how_many_questions,How many questions?,,,
+generate-quiz.tsx,tense_label,Tense,,,
+generate-quiz.tsx,mixed_tense,Mixed,,,Dropdown option meaning vary tense freely
+generate-quiz.tsx,flip_toggle_label,Flip: translate {target} → {source},,,Template — language names not translated here
+generate-quiz.tsx,generating_quiz,Generating your quiz…,,,
+generate-quiz.tsx,target_my_mistakes,Target My Mistakes,,,
+generate-quiz.tsx,generate_similar_quiz,Generate Similar Quiz,,,
+generate-quiz.tsx,error_generating_quiz,Something went wrong generating your quiz.,,,
+my-lists.tsx,my_lists_title,My Lists,,,
+my-lists.tsx,no_saved_lists,No saved lists yet.,,,
+my-lists.tsx,progress_link,Progress,,,Row action label
+my-lists.tsx,delete_list_alert_title,Delete List,,,
+my-lists.tsx,delete_list_confirm,"Delete ""{name}""? This can't be undone.",,,Template
+my-lists.tsx,error_loading_lists,Something went wrong loading your lists.,,,
+my-lists.tsx,error_loading_list,Something went wrong loading that list.,,,
+my-lists.tsx,error_deleting_list,Something went wrong deleting that list.,,,
+my-quizzes.tsx,my_quizzes_title,My Quizzes,,,
+my-quizzes.tsx,no_quizzes_in_progress,No quizzes in progress.,,,
+my-quizzes.tsx,quiz_in_progress_fallback,Quiz in progress,,,
+my-quizzes.tsx,question_n_of_total,Question {n} of {total},,,Template — also used in quiz.tsx
+my-quizzes.tsx,delete_quiz_alert_title,Delete Quiz,,,
+my-quizzes.tsx,delete_quiz_confirm,"Delete this quiz for ""{name}""? This can't be undone.",,,Template
+my-quizzes.tsx,error_loading_quizzes,Something went wrong loading your quizzes.,,,
+my-quizzes.tsx,error_deleting_quiz,Something went wrong deleting that quiz.,,,
+list-history.tsx,progress_title,Progress,,,Title fallback + subtitle label
+list-history.tsx,no_completed_quizzes,No completed quizzes for this list yet.,,,
+list-history.tsx,score_fraction_pct,{correct}/{total} ({pct}%),,,Number formatting conventions vary by locale
+list-history.tsx,error_loading_history,Something went wrong loading quiz history.,,,
+settings.tsx,settings_title,Settings,,,
+settings.tsx,default_level_hint,Default level for new quizzes — you can still change it for any single quiz when generating it.,,,
+settings.tsx,auto_delete_toggle,Auto-delete completed quizzes after 30 days,,,
+settings.tsx,adaptive_quizzes_toggle,"Adaptive quizzes — feedback on patterns you struggle with, and an option to target them",,,
+quiz.tsx,your_answer_placeholder,Your answer,,,
+quiz.tsx,submit,Submit,,,
+quiz.tsx,skip_question,Skip this question,,,
+quiz.tsx,hide_word_list,Hide word list,,,
+quiz.tsx,stuck_see_word_list,Stuck? See the word list,,,
+quiz.tsx,your_answer_was,Your answer: {answer},,,Template
+quiz.tsx,correct_feedback,That's correct!,,,
+quiz.tsx,incorrect_feedback,"Sorry, that's incorrect. The answer was: {answer}",,,Template
+quiz.tsx,finish_quiz,Finish Quiz,,,
+quiz.tsx,next_question,Next Question,,,
+quiz-complete.tsx,quiz_complete_title,Quiz Complete!,,,
+quiz-complete.tsx,score_correct,{n} / {total} correct,,,Template
+quiz-complete.tsx,back_to_home,Back to Home,,,
+pairs-review.tsx,undo_last,Undo last,,,
+pairs-review.tsx,clear_list,Clear list,,,
+pairs-review.tsx,no_words_added,No words added yet.,,,
+pairs-review.tsx,list_name_update_placeholder,List name (saving updates it),,,
+pairs-review.tsx,list_name_placeholder,List name,,,
+pairs-review.tsx,saving_ellipsis,Saving…,,,
+pairs-review.tsx,save_list,Save List,,,
+pairs-review.tsx,saved_message,Saved!,,,
+pairs-review.tsx,error_saving,Something went wrong saving.,,,
+pairs-review.tsx,add_more_words_to_quiz,Add {n} more word(s) to generate a quiz,,,Template with pluralization
+pairs-review.tsx,generate_quiz_button,Generate Quiz,,,Reused label
+pairs-review.tsx,my_lists_link,My Lists,,,Reused label
+cefr-level-picker.tsx,level_label,Level,,,"CEFR codes (A1, B2, etc.) are standard notation, not translated"
+language-picker.tsx,i_already_know,I already know,,,
+language-picker.tsx,i_am_learning,I'm learning,,,
+language-picker.tsx,language_names,English / Spanish / French,,,"Design decision: show in UI language or always native form (Español, Français)?"
+parsing-warning.tsx,parsing_warning_text,"Parsing can make mistakes with unusual formatting. For best results, try Share a Picture instead.",,,Contains an inline link to Share a Picture
+quiz-feedback.ts,trend_improving_a_lot,5 message variants — 'Great progress! Your scores are climbing fast...' etc.,,,"See file directly, too long to list individually"
+quiz-feedback.ts,trend_improving,5 message variants — 'You're improving steadily on this list.' etc.,,,See file directly
+quiz-feedback.ts,trend_steady,5 message variants — 'Your scores are holding steady...' etc.,,,See file directly
+quiz-feedback.ts,trend_declining,5 message variants — 'Your scores dipped a bit recently...' etc.,,,See file directly
+quiz-feedback.ts,trend_declining_a_lot,5 message variants — 'Your scores dropped noticeably...' etc.,,,See file directly
+backend (api errors),backend_error_text,Various FastAPI HTTPException / Pydantic validation messages surfaced via e.message,,,Needs its own translation strategy — see Notes tab
