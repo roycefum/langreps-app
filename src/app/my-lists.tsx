@@ -2,6 +2,7 @@ import { Link, useFocusEffect, useRouter } from "expo-router";
 import { useCallback, useRef, useState } from "react";
 import { Alert, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 
+import { BackButton } from "@/components/back-button";
 import { colors, shared } from "@/constants/styles";
 import { apiRequest } from "@/lib/api";
 import { usePairs, type SavedList } from "@/lib/pairs-context";
@@ -81,6 +82,7 @@ export default function MyLists() {
 
   return (
     <ScrollView style={shared.screen} contentContainerStyle={styles.content}>
+      <BackButton href="/" />
       <Text style={shared.title}>My Lists</Text>
 
       {error && <Text style={shared.errorText}>{error}</Text>}
@@ -115,10 +117,6 @@ export default function MyLists() {
           )}
         </View>
       )}
-
-      <Link href="/" style={shared.backLink}>
-        <Text>← Back to Home</Text>
-      </Link>
     </ScrollView>
   );
 }

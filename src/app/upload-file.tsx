@@ -1,9 +1,9 @@
 import * as DocumentPicker from "expo-document-picker";
 import { File } from "expo-file-system";
-import { Link } from "expo-router";
 import { useState } from "react";
 import { Pressable, Text, View } from "react-native";
 
+import { BackButton } from "@/components/back-button";
 import { LanguagePicker } from "@/components/language-picker";
 import { ParsingWarning } from "@/components/parsing-warning";
 import { PairsReview } from "@/components/pairs-review";
@@ -51,6 +51,7 @@ export default function UploadFile() {
 
   return (
     <View style={shared.screen}>
+      <BackButton href="/" />
       <Text style={shared.title}>Upload a File</Text>
 
       <LanguagePicker />
@@ -83,10 +84,6 @@ export default function UploadFile() {
       )}
 
       <PairsReview source="file" />
-
-      <Link href="/" style={shared.backLink}>
-        <Text>← Back to Home</Text>
-      </Link>
     </View>
   );
 }

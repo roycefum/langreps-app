@@ -1,7 +1,7 @@
-import { Link } from "expo-router";
 import { useEffect, useState } from "react";
-import { Switch, Text, View } from "react-native";
+import { StyleSheet, Switch, Text, View } from "react-native";
 
+import { BackButton } from "@/components/back-button";
 import { CefrLevelPicker } from "@/components/cefr-level-picker";
 import { shared } from "@/constants/styles";
 import {
@@ -42,6 +42,7 @@ export default function Settings() {
 
   return (
     <View style={shared.screen}>
+      <BackButton href="/" />
       <Text style={shared.title}>Settings</Text>
       <Text style={shared.hint}>
         Default level for new quizzes — you can still change it for any single quiz when
@@ -51,20 +52,24 @@ export default function Settings() {
       <CefrLevelPicker value={level} onChange={handleChange} />
 
       <View style={shared.row}>
-        <Text style={shared.hint}>Auto-delete completed quizzes after 30 days</Text>
+        <Text style={[shared.hint, styles.settingText]}>
+          Auto-delete completed quizzes after 30 days
+        </Text>
         <Switch value={autoDelete} onValueChange={handleAutoDeleteChange} />
       </View>
 
       <View style={shared.row}>
-        <Text style={shared.hint}>
+        <Text style={[shared.hint, styles.settingText]}>
           Adaptive quizzes — feedback on patterns you struggle with, and an option to target them
         </Text>
         <Switch value={adaptiveQuizzes} onValueChange={handleAdaptiveQuizzesChange} />
       </View>
-
-      <Link href="/" style={shared.backLink}>
-        <Text>← Back to Home</Text>
-      </Link>
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  settingText: {
+    flex: 1,
+  },
+});

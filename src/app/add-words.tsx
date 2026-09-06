@@ -1,7 +1,7 @@
-import { Link } from "expo-router";
 import { useState } from "react";
 import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 
+import { BackButton } from "@/components/back-button";
 import { LanguagePicker } from "@/components/language-picker";
 import { PairsReview } from "@/components/pairs-review";
 import { shared } from "@/constants/styles";
@@ -21,6 +21,7 @@ export default function AddWords() {
 
   return (
     <View style={shared.screen}>
+      <BackButton href="/" />
       <Text style={shared.title}>Add Words</Text>
 
       <LanguagePicker />
@@ -45,10 +46,6 @@ export default function AddWords() {
       </Pressable>
 
       <PairsReview source="manual" />
-
-      <Link href="/" style={shared.backLink}>
-        <Text>← Back to Home</Text>
-      </Link>
     </View>
   );
 }

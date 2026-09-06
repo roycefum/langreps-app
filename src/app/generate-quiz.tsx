@@ -1,17 +1,21 @@
-import { Link, useRouter } from "expo-router";
+import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
-import { ActivityIndicator, Pressable, StyleSheet, Text, TextInput, View } from "react-native";
+import { ActivityIndicator, Pressable, StyleSheet, Switch, Text, TextInput, View } from "react-native";
 
+import { BackButton } from "@/components/back-button";
 import { CefrLevelPicker } from "@/components/cefr-level-picker";
+import { Dropdown } from "@/components/dropdown";
 import { LanguageSummary } from "@/components/language-picker";
-import { shared } from "@/constants/styles";
+import { colors, shared } from "@/constants/styles";
 import { apiRequest } from "@/lib/api";
 import { useAuth } from "@/lib/auth-context";
 import { usePairs, type VocabPair } from "@/lib/pairs-context";
 import { useQuiz } from "@/lib/quiz-context";
 import { getAdaptiveQuizzesEnabled, getDefaultCefrLevel } from "@/lib/settings-storage";
 import { chunk, dedupePairs, sample } from "@/lib/text";
-import { DEFAULT_CEFR_LEVEL, type CefrLevel, type Question } from "@/lib/types";
+import { DEFAULT_CEFR_LEVEL, TENSES_BY_LANGUAGE, type CefrLevel, type Question } from "@/lib/types";
+
+const MIXED_TENSE_LABEL = "Mixed";
 
 const BATCH_SIZE = 5;
 const DEFAULT_QUIZ_LENGTH = 15;
@@ -23,16 +27,30 @@ type QuizInsight = {
 
 export default function GenerateQuiz() {
   const router = useRouter();
-  const { pairs, sourceLanguage, targetLanguage, savedListId, listName } = usePairs();
+  const { pairs, sourceLanguage, targetLanguage, listType, savedListId, listName } = usePairs();
   const { userId } = useAuth();
   const { startQuiz } = useQuiz();
   const [countText, setCountText] = useState(String(Math.min(pairs.length, DEFAULT_QUIZ_LENGTH)));
   // Defaults from Settings (device-local), but changing it here only
   // affects this one quiz — it's never written back to the stored default.
   const [cefrLevel, setCefrLevel] = useState<CefrLevel>(DEFAULT_CEFR_LEVEL);
+  // Only meaningful for a "Verb" list — defaults to that language's present
+  // tense (the first entry in TENSES_BY_LANGUAGE) rather than "Mixed", since
+  // present tense is the most useful starting point for most learners.
+  const [verbTense, setVerbTense] = useState<string | null>(
+    () => TENSES_BY_LANGUAGE[targetLanguage]?.[0]?.value ?? null
+  );
+  // Vocab-only reversed-direction mode — shows the target word and asks for
+  // its source-language translation. Not offered for verb lists.
+  const [flip, setFlip] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [insight, setInsight] = useState<QuizInsight | null>(null);
+
+  const tenseOptions = TENSES_BY_LANGUAGE[targetLanguage] ?? [];
+  const tenseLabels = [MIXED_TENSE_LABEL, ...tenseOptions.map((t) => t.label)];
+  const selectedTenseLabel =
+    tenseOptions.find((t) => t.value === verbTense)?.label ?? MIXED_TENSE_LABEL;
 
   useEffect(() => {
     getDefaultCefrLevel().then(setCefrLevel);
@@ -122,6 +140,8 @@ export default function GenerateQuiz() {
             target_language: targetLanguage,
             batch_size: c.length,
             level: cefrLevel,
+            verb_tense: listType === "Verb" ? verbTense : null,
+            flip: listType === "Vocab" && flip,
           },
         });
         allQuestions.push(...result);
@@ -150,7 +170,9 @@ export default function GenerateQuiz() {
 
   return (
     <View style={[shared.screenCentered, styles.container]}>
+      <BackButton href="/" />
       <Text style={[shared.title, styles.centerText]}>Generate Quiz</Text>
+      <Text style={[styles.centerText, styles.listNameHeading]}>{listName ?? "Unsaved list"}</Text>
 
       {pairs.length < 3 ? (
         <Text style={[shared.hint, styles.centerText]}>
@@ -171,11 +193,35 @@ export default function GenerateQuiz() {
         </>
       )}
 
-      <Text style={[shared.hint, styles.centerText, styles.listNameText]}>
-        Generating from: {listName ?? "Unsaved list"}
-      </Text>
       <LanguageSummary />
       <CefrLevelPicker value={cefrLevel} onChange={setCefrLevel} />
+
+      {listType === "Vocab" && (
+        <View style={styles.countRow}>
+          <Text style={shared.hint}>
+            Flip: translate {targetLanguage} → {sourceLanguage}
+          </Text>
+          <Switch value={flip} onValueChange={setFlip} />
+        </View>
+      )}
+
+      {listType === "Verb" && tenseOptions.length > 0 && (
+        <View style={styles.countRow}>
+          <Text style={shared.hint}>Tense</Text>
+          <Dropdown
+            value={selectedTenseLabel}
+            onChange={(label) => {
+              if (label === MIXED_TENSE_LABEL) {
+                setVerbTense(null);
+                return;
+              }
+              const match = tenseOptions.find((t) => t.label === label);
+              setVerbTense(match ? match.value : null);
+            }}
+            options={tenseLabels}
+          />
+        </View>
+      )}
 
       {error && <Text style={[shared.errorText, styles.centerText]}>{error}</Text>}
 
@@ -224,10 +270,6 @@ export default function GenerateQuiz() {
           <Text style={shared.primaryButtonText}>Generate Quiz</Text>
         </Pressable>
       )}
-
-      <Link href="/" style={shared.backLink}>
-        <Text>← Back to Home</Text>
-      </Link>
     </View>
   );
 }
@@ -253,8 +295,10 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: 12,
   },
-  listNameText: {
-    fontWeight: "600",
+  listNameHeading: {
+    fontSize: 20,
+    fontWeight: "700",
+    color: colors.generateQuiz,
   },
   insightMessage: {
     fontWeight: "600",

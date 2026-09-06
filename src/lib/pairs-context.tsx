@@ -1,6 +1,6 @@
 import { createContext, useCallback, useContext, useState, type ReactNode } from "react";
 
-import { DEFAULT_SOURCE_LANGUAGE, DEFAULT_TARGET_LANGUAGE } from "./types";
+import { DEFAULT_LIST_TYPE, DEFAULT_SOURCE_LANGUAGE, DEFAULT_TARGET_LANGUAGE, type ListType } from "./types";
 
 // `id` is present when a pair came from a saved list (needed to record
 // quiz attempts against it and to weight adaptive requiz selection), and
@@ -15,6 +15,7 @@ export type SavedList = {
   name: string;
   source_language: string;
   target_language: string;
+  list_type: string;
   pairs: { id: string; source_term: string; target_term: string }[];
 };
 
@@ -30,6 +31,11 @@ type PairsState = {
   targetLanguage: string;
   setSourceLanguage: (language: string) => void;
   setTargetLanguage: (language: string) => void;
+  // Chosen at save time (see pairs-review.tsx) — "verb" unlocks the tense
+  // selector on Generate Quiz. Defaults to "vocab" for a list that hasn't
+  // been saved yet.
+  listType: ListType;
+  setListType: (type: ListType) => void;
   savedListId: string | null;
   // Shown on Generate Quiz so it's never ambiguous which list a quiz is
   // being generated from — null means "not saved / no name yet".
@@ -51,6 +57,7 @@ export function PairsProvider({ children }: { children: ReactNode }) {
   const [pairs, setPairsState] = useState<VocabPair[]>([]);
   const [sourceLanguage, setSourceLanguage] = useState(DEFAULT_SOURCE_LANGUAGE);
   const [targetLanguage, setTargetLanguage] = useState(DEFAULT_TARGET_LANGUAGE);
+  const [listType, setListType] = useState<ListType>(DEFAULT_LIST_TYPE);
   const [savedListId, setSavedListId] = useState<string | null>(null);
   const [listName, setListName] = useState<string | null>(null);
 
@@ -77,6 +84,7 @@ export function PairsProvider({ children }: { children: ReactNode }) {
     setPairsState([]);
     setSavedListId(null);
     setListName(null);
+    setListType(DEFAULT_LIST_TYPE);
   }, []);
 
   // Sets savedListId and listName together — they should never be set
@@ -103,6 +111,7 @@ export function PairsProvider({ children }: { children: ReactNode }) {
     setTargetLanguage(list.target_language);
     setSavedListId(list.id);
     setListName(list.name);
+    setListType(list.list_type === "verb" ? "Verb" : DEFAULT_LIST_TYPE);
   }, []);
 
   return (
@@ -119,6 +128,8 @@ export function PairsProvider({ children }: { children: ReactNode }) {
         targetLanguage,
         setSourceLanguage,
         setTargetLanguage,
+        listType,
+        setListType,
         savedListId,
         listName,
         setSavedList,

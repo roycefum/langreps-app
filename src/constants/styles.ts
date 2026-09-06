@@ -153,4 +153,14 @@ export const shared = StyleSheet.create({
     alignSelf: "center",
     paddingVertical: 8,
   },
+  topBackButton: {
+    alignSelf: "flex-start",
+    paddingVertical: 4,
+    paddingHorizontal: 4,
+  },
+  topBackButtonText: {
+    fontSize: 32,
+    lineHeight: 32,
+    fontWeight: "600",
+  },
 });

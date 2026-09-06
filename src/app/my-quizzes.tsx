@@ -1,7 +1,8 @@
-import { Link, useFocusEffect, useRouter } from "expo-router";
+import { useFocusEffect, useRouter } from "expo-router";
 import { useCallback, useRef, useState } from "react";
 import { Alert, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 
+import { BackButton } from "@/components/back-button";
 import { colors, shared } from "@/constants/styles";
 import { apiRequest } from "@/lib/api";
 import { useQuiz } from "@/lib/quiz-context";
@@ -88,6 +89,7 @@ export default function MyQuizzes() {
 
   return (
     <ScrollView style={shared.screen} contentContainerStyle={styles.content}>
+      <BackButton href="/" />
       <Text style={shared.title}>My Quizzes</Text>
 
       {error && <Text style={shared.errorText}>{error}</Text>}
@@ -116,10 +118,6 @@ export default function MyQuizzes() {
             })}
           </View>
         ))}
-
-      <Link href="/" style={shared.backLink}>
-        <Text>← Back to Home</Text>
-      </Link>
     </ScrollView>
   );
 }

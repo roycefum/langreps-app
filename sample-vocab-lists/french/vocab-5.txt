@@ -1,0 +1,5 @@
+house -> maison
+dog -> chien
+cat -> chat
+book -> livre
+table -> table

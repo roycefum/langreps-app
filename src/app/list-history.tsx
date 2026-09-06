@@ -1,8 +1,9 @@
-import { Link, useFocusEffect, useLocalSearchParams } from "expo-router";
+import { useFocusEffect, useLocalSearchParams } from "expo-router";
 import { useCallback, useMemo, useState } from "react";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 import Svg, { Circle, Polyline } from "react-native-svg";
 
+import { BackButton } from "@/components/back-button";
 import { colors, shared } from "@/constants/styles";
 import { apiRequest } from "@/lib/api";
 import { getTrendFeedback, type QuizHistoryEntry } from "@/lib/quiz-feedback";
@@ -68,6 +69,7 @@ export default function ListHistory() {
 
   return (
     <ScrollView style={shared.screen} contentContainerStyle={styles.content}>
+      <BackButton href="/my-lists" />
       <Text style={shared.title}>{listName ?? "Progress"}</Text>
       <Text style={shared.hint}>Progress</Text>
 
@@ -111,10 +113,6 @@ export default function ListHistory() {
           </View>
         </>
       )}
-
-      <Link href="/my-lists" style={shared.backLink}>
-        <Text>← Back to My Lists</Text>
-      </Link>
     </ScrollView>
   );
 }

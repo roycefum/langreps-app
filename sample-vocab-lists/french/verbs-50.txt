@@ -1,0 +1,50 @@
+to speak -> parler
+to eat -> manger
+to live -> vivre
+to have -> avoir
+to do -> faire
+to go -> aller
+to be -> être
+to be -> être
+to be able to -> pouvoir
+to want -> vouloir
+to say -> dire
+to see -> voir
+to give -> donner
+to know -> savoir
+to come -> venir
+to leave -> partir
+to put -> mettre
+to think -> penser
+to find -> trouver
+to arrive -> arriver
+to happen -> se passer
+to owe -> devoir
+to follow -> suivre
+to feel -> sentir
+to return -> retourner
+to take -> prendre
+to know a person -> connaître
+to carry -> porter
+to leave something -> laisser
+to call -> appeler
+to understand -> comprendre
+to ask for -> demander
+to receive -> recevoir
+to show -> montrer
+to create -> créer
+to work -> travailler
+to study -> étudier
+to write -> écrire
+to read -> lire
+to play -> jouer
+to run -> courir
+to walk -> marcher
+to sleep -> dormir
+to wake up -> se réveiller
+to begin -> commencer
+to finish -> finir
+to open -> ouvrir
+to close -> fermer
+to buy -> acheter
+to sell -> vendre

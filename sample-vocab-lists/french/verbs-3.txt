@@ -1,0 +1,3 @@
+to speak -> parler
+to eat -> manger
+to live -> vivre

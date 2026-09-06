@@ -1,0 +1,5 @@
+to speak -> parler
+to eat -> manger
+to live -> vivre
+to have -> avoir
+to do -> faire

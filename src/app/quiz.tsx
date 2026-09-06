@@ -1,7 +1,8 @@
-import { Link, useRouter } from "expo-router";
+import { useRouter } from "expo-router";
 import { useEffect, useMemo, useState } from "react";
 import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
 
+import { BackButton } from "@/components/back-button";
 import { ProgressBar } from "@/components/progress-bar";
 import { colors, shared } from "@/constants/styles";
 import { useQuiz } from "@/lib/quiz-context";
@@ -47,9 +48,7 @@ export default function Quiz() {
 
   return (
     <View style={shared.screen}>
-      <Link href="/" style={styles.backLink}>
-        <Text>← Back to Home</Text>
-      </Link>
+      <BackButton href="/" />
 
       <ProgressBar progress={currentIndex / total} />
 
@@ -110,10 +109,6 @@ export default function Quiz() {
 }
 
 const styles = StyleSheet.create({
-  backLink: {
-    alignSelf: "center",
-    paddingVertical: 8,
-  },
   body: {
     flex: 1,
     justifyContent: "center",

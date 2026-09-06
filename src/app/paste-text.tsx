@@ -1,7 +1,7 @@
-import { Link } from "expo-router";
 import { useState } from "react";
 import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 
+import { BackButton } from "@/components/back-button";
 import { LanguagePicker } from "@/components/language-picker";
 import { ParsingWarning } from "@/components/parsing-warning";
 import { PairsReview } from "@/components/pairs-review";
@@ -40,6 +40,7 @@ export default function PasteText() {
 
   return (
     <View style={shared.screen}>
+      <BackButton href="/" />
       <Text style={shared.title}>Paste Vocab List</Text>
 
       <LanguagePicker />
@@ -85,10 +86,6 @@ export default function PasteText() {
       </Pressable>
 
       <PairsReview source="paste" />
-
-      <Link href="/" style={shared.backLink}>
-        <Text>← Back to Home</Text>
-      </Link>
     </View>
   );
 }

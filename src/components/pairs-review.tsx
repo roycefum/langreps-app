@@ -2,10 +2,12 @@ import { Link, useRouter } from "expo-router";
 import { useState } from "react";
 import { FlatList, Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 
+import { Dropdown } from "@/components/dropdown";
 import { shared } from "@/constants/styles";
 import { apiRequest } from "@/lib/api";
 import { useAuth } from "@/lib/auth-context";
 import { usePairs } from "@/lib/pairs-context";
+import { LIST_TYPES } from "@/lib/types";
 
 type PairsReviewProps = {
   // Matches the Streamlit prototype's render_save_button(source, ...)
@@ -18,8 +20,17 @@ type PairsReviewProps = {
 // so they all end with the same review/edit/save/generate step.
 export function PairsReview({ source }: PairsReviewProps) {
   const router = useRouter();
-  const { pairs, undoLast, clearPairs, sourceLanguage, targetLanguage, savedListId, setSavedList } =
-    usePairs();
+  const {
+    pairs,
+    undoLast,
+    clearPairs,
+    sourceLanguage,
+    targetLanguage,
+    listType,
+    setListType,
+    savedListId,
+    setSavedList,
+  } = usePairs();
   const { userId } = useAuth();
   const [name, setName] = useState("");
   const [isSaving, setIsSaving] = useState(false);
@@ -40,6 +51,7 @@ export function PairsReview({ source }: PairsReviewProps) {
           source_language: sourceLanguage,
           target_language: targetLanguage,
           pairs,
+          list_type: listType.toLowerCase(),
         },
       });
       setSavedList(result.list_id, name.trim());
@@ -74,6 +86,16 @@ export function PairsReview({ source }: PairsReviewProps) {
         ListEmptyComponent={<Text style={styles.emptyText}>No words added yet.</Text>}
       />
 
+      {userId && (
+        <View style={styles.typeRow}>
+          <Text style={shared.hint}>List type</Text>
+          <Dropdown
+            value={listType}
+            onChange={(value) => setListType(value as typeof listType)}
+            options={LIST_TYPES}
+          />
+        </View>
+      )}
       {userId && (
         <View style={shared.row}>
           <TextInput
@@ -153,5 +175,11 @@ const styles = StyleSheet.create({
   myListsButton: {
     alignSelf: "center",
     paddingHorizontal: 24,
+  },
+  typeRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 8,
   },
 });

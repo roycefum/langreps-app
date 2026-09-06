@@ -1,9 +1,9 @@
 import { File } from "expo-file-system";
-import { Link } from "expo-router";
 import * as ImagePicker from "expo-image-picker";
 import { useState } from "react";
 import { Pressable, Text, View } from "react-native";
 
+import { BackButton } from "@/components/back-button";
 import { LanguagePicker } from "@/components/language-picker";
 import { PairsReview } from "@/components/pairs-review";
 import { shared } from "@/constants/styles";
@@ -74,6 +74,7 @@ export default function UploadPicture() {
 
   return (
     <View style={shared.screen}>
+      <BackButton href="/" />
       <Text style={shared.title}>Share a Picture</Text>
 
       <LanguagePicker />
@@ -105,10 +106,6 @@ export default function UploadPicture() {
       {error && <Text style={shared.errorText}>{error}</Text>}
 
       <PairsReview source="photo" />
-
-      <Link href="/" style={shared.backLink}>
-        <Text>← Back to Home</Text>
-      </Link>
     </View>
   );
 }
