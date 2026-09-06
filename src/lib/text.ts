@@ -14,6 +14,23 @@ export function chunk<T>(items: T[], size: number): T[][] {
   return chunks;
 }
 
+// Collapses pairs that share the same target word (case/whitespace
+// insensitive) down to one representative — mirrors the backend's
+// _dedupe_pairs_by_target(), for ad-hoc/unsaved lists that never go
+// through that endpoint. Without this, a quiz could ask the same target
+// word more than once even when plenty of other words are available.
+export function dedupePairs<T extends { "target word": string }>(items: T[]): T[] {
+  const seen = new Set<string>();
+  const deduped: T[] = [];
+  for (const item of items) {
+    const key = item["target word"].trim().toLowerCase();
+    if (seen.has(key)) continue;
+    seen.add(key);
+    deduped.push(item);
+  }
+  return deduped;
+}
+
 // Plain (unweighted) random sample without replacement, for ad-hoc/unsaved
 // lists — there's no attempt history to weight by, unlike the backend's
 // select_quiz_pairs_for_list() used for saved lists.

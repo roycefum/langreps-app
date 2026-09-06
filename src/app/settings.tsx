@@ -1,22 +1,43 @@
 import { Link } from "expo-router";
 import { useEffect, useState } from "react";
-import { Text, View } from "react-native";
+import { Switch, Text, View } from "react-native";
 
 import { CefrLevelPicker } from "@/components/cefr-level-picker";
 import { shared } from "@/constants/styles";
-import { getDefaultCefrLevel, setDefaultCefrLevel } from "@/lib/settings-storage";
+import {
+  getAdaptiveQuizzesEnabled,
+  getAutoDeleteOldQuizzes,
+  getDefaultCefrLevel,
+  setAdaptiveQuizzesEnabled,
+  setAutoDeleteOldQuizzes,
+  setDefaultCefrLevel,
+} from "@/lib/settings-storage";
 import { DEFAULT_CEFR_LEVEL, type CefrLevel } from "@/lib/types";
 
 export default function Settings() {
   const [level, setLevel] = useState<CefrLevel>(DEFAULT_CEFR_LEVEL);
+  const [autoDelete, setAutoDelete] = useState(false);
+  const [adaptiveQuizzes, setAdaptiveQuizzes] = useState(true);
 
   useEffect(() => {
     getDefaultCefrLevel().then(setLevel);
+    getAutoDeleteOldQuizzes().then(setAutoDelete);
+    getAdaptiveQuizzesEnabled().then(setAdaptiveQuizzes);
   }, []);
 
   async function handleChange(newLevel: CefrLevel) {
     setLevel(newLevel);
     await setDefaultCefrLevel(newLevel);
+  }
+
+  async function handleAutoDeleteChange(enabled: boolean) {
+    setAutoDelete(enabled);
+    await setAutoDeleteOldQuizzes(enabled);
+  }
+
+  async function handleAdaptiveQuizzesChange(enabled: boolean) {
+    setAdaptiveQuizzes(enabled);
+    await setAdaptiveQuizzesEnabled(enabled);
   }
 
   return (
@@ -28,6 +49,18 @@ export default function Settings() {
       </Text>
 
       <CefrLevelPicker value={level} onChange={handleChange} />
+
+      <View style={shared.row}>
+        <Text style={shared.hint}>Auto-delete completed quizzes after 30 days</Text>
+        <Switch value={autoDelete} onValueChange={handleAutoDeleteChange} />
+      </View>
+
+      <View style={shared.row}>
+        <Text style={shared.hint}>
+          Adaptive quizzes — feedback on patterns you struggle with, and an option to target them
+        </Text>
+        <Switch value={adaptiveQuizzes} onValueChange={handleAdaptiveQuizzesChange} />
+      </View>
 
       <Link href="/" style={shared.backLink}>
         <Text>← Back to Home</Text>

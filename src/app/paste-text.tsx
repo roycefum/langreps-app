@@ -71,11 +71,17 @@ export default function PasteText() {
       )}
 
       <Pressable
-        style={[shared.secondaryButton, (!rawText.trim() || isParsing) && shared.primaryButtonDisabled]}
+        style={[
+          shared.secondaryButton,
+          shared.addActionButton,
+          (!rawText.trim() || isParsing) && shared.primaryButtonDisabled,
+        ]}
         disabled={!rawText.trim() || isParsing}
         onPress={handleParse}
       >
-        <Text style={shared.secondaryButtonText}>{isParsing ? "Parsing…" : "Add to list"}</Text>
+        <Text style={[shared.secondaryButtonText, shared.accentButtonText]}>
+          {isParsing ? "Parsing…" : "Add to list"}
+        </Text>
       </Pressable>
 
       <PairsReview source="paste" />

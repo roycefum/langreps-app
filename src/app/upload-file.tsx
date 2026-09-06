@@ -62,8 +62,14 @@ export default function UploadFile() {
 
       <ParsingWarning />
 
-      <Pressable style={shared.secondaryButton} onPress={handlePickFile} disabled={isParsing}>
-        <Text style={shared.secondaryButtonText}>{isParsing ? "Parsing…" : "Choose File"}</Text>
+      <Pressable
+        style={[shared.secondaryButton, shared.fileActionButton]}
+        onPress={handlePickFile}
+        disabled={isParsing}
+      >
+        <Text style={[shared.secondaryButtonText, shared.accentButtonText]}>
+          {isParsing ? "Parsing…" : "Choose File"}
+        </Text>
       </Pressable>
 
       {lastFileName && !error && <Text style={shared.hint}>Last file: {lastFileName}</Text>}

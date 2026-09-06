@@ -73,6 +73,32 @@ export function QuizProvider({ children }: { children: ReactNode }) {
     [sessionId]
   );
 
+  // Persists that this question is answered as soon as it's graded, not
+  // when "Next Question" is pressed — otherwise navigating away from the
+  // feedback screen without pressing Next leaves current_index stuck on
+  // the just-answered question, letting it be re-answered on resume.
+  const persistProgress = useCallback(
+    async (newIndex: number) => {
+      if (!sessionId) return;
+      try {
+        await apiRequest(`/quiz-sessions/${sessionId}`, {
+          method: "PATCH",
+          body: {
+            current_index: newIndex,
+            // Marks the session done once the last question's been
+            // answered, so it drops off "Continue a Quiz" and starts
+            // counting toward this list's score history.
+            status: newIndex >= questions.length ? "completed" : undefined,
+          },
+        });
+      } catch {
+        // Progress persistence is best-effort — don't block the user's
+        // quiz flow on a transient network error.
+      }
+    },
+    [sessionId, questions.length]
+  );
+
   const submitAnswer = useCallback(
     (answer: string) => {
       const current = questions[currentIndex];
@@ -84,8 +110,9 @@ export function QuizProvider({ children }: { children: ReactNode }) {
       if (correct) setCorrectCount((prev) => prev + 1);
       setPhase("feedback");
       recordAttempt(current, correct);
+      persistProgress(currentIndex + 1);
     },
-    [questions, currentIndex, recordAttempt]
+    [questions, currentIndex, recordAttempt, persistProgress]
   );
 
   const skipQuestion = useCallback(() => {
@@ -94,24 +121,13 @@ export function QuizProvider({ children }: { children: ReactNode }) {
     setWasCorrect(false);
     setPhase("feedback");
     recordAttempt(current, false);
-  }, [questions, currentIndex, recordAttempt]);
+    persistProgress(currentIndex + 1);
+  }, [questions, currentIndex, recordAttempt, persistProgress]);
 
   const nextQuestion = useCallback(async () => {
-    const newIndex = currentIndex + 1;
-    setCurrentIndex(newIndex);
+    setCurrentIndex((prev) => prev + 1);
     setPhase("question");
-    if (sessionId) {
-      try {
-        await apiRequest(`/quiz-sessions/${sessionId}`, {
-          method: "PATCH",
-          body: { current_index: newIndex },
-        });
-      } catch {
-        // Progress persistence is best-effort — don't block the user's
-        // quiz flow on a transient network error.
-      }
-    }
-  }, [currentIndex, sessionId]);
+  }, []);
 
   const resetQuiz = useCallback(() => {
     setQuestions([]);

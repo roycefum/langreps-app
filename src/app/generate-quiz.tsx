@@ -9,12 +9,17 @@ import { apiRequest } from "@/lib/api";
 import { useAuth } from "@/lib/auth-context";
 import { usePairs, type VocabPair } from "@/lib/pairs-context";
 import { useQuiz } from "@/lib/quiz-context";
-import { getDefaultCefrLevel } from "@/lib/settings-storage";
-import { chunk, sample } from "@/lib/text";
+import { getAdaptiveQuizzesEnabled, getDefaultCefrLevel } from "@/lib/settings-storage";
+import { chunk, dedupePairs, sample } from "@/lib/text";
 import { DEFAULT_CEFR_LEVEL, type CefrLevel, type Question } from "@/lib/types";
 
 const BATCH_SIZE = 5;
 const DEFAULT_QUIZ_LENGTH = 15;
+
+type QuizInsight = {
+  message: string | null;
+  targetedPairIds: string[];
+};
 
 export default function GenerateQuiz() {
   const router = useRouter();
@@ -27,24 +32,72 @@ export default function GenerateQuiz() {
   const [cefrLevel, setCefrLevel] = useState<CefrLevel>(DEFAULT_CEFR_LEVEL);
   const [isGenerating, setIsGenerating] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [insight, setInsight] = useState<QuizInsight | null>(null);
 
   useEffect(() => {
     getDefaultCefrLevel().then(setCefrLevel);
   }, []);
 
+  // Fetched once per list, using the default quiz length — not tied to
+  // later edits to countText, so typing in the count field doesn't fire
+  // repeat Gemini calls. Only runs at all when adaptive quizzes are
+  // enabled in Settings, and only shows anything once the backend confirms
+  // there's enough wrong-answer history for a real pattern (see
+  // MIN_WRONG_ATTEMPTS_FOR_INSIGHT/MIN_DISTINCT_MISSED_WORDS_FOR_INSIGHT
+  // in api/main.py).
+  useEffect(() => {
+    if (!userId || !savedListId) return;
+    let cancelled = false;
+    (async () => {
+      const adaptiveEnabled = await getAdaptiveQuizzesEnabled();
+      if (!adaptiveEnabled || cancelled) return;
+      try {
+        const initialCount = Math.max(1, Math.min(pairs.length, DEFAULT_QUIZ_LENGTH));
+        const result = await apiRequest<{
+          available: boolean;
+          message: string | null;
+          targeted_pair_ids: string[];
+        }>(`/lists/${savedListId}/quiz-insight?count=${initialCount}`);
+        if (!cancelled && result.available) {
+          setInsight({ message: result.message, targetedPairIds: result.targeted_pair_ids });
+        }
+      } catch {
+        // best-effort — insight is a nice-to-have, never blocks quiz generation
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [userId, savedListId, pairs.length]);
+
   const requestedCount = Math.max(1, Math.min(parseInt(countText, 10) || 1, pairs.length));
 
-  async function handleGenerate() {
+  async function handleGenerate(mode: "similar" | "targeted" = "similar") {
     setIsGenerating(true);
     setError(null);
     try {
-      // If this list is saved, let the backend pick which pairs to quiz —
-      // weighted toward ones this user has gotten wrong before, so
-      // requizzing the same list leans more toward weak words over time.
-      // An unsaved/ad-hoc list has no attempt history to weight by, so it's
-      // just a plain random sample.
       let selectedPairs: VocabPair[];
-      if (userId && savedListId) {
+      if (mode === "targeted" && insight) {
+        // Reuses the pair ids from the insight call already made when this
+        // screen loaded — no second Gemini call needed. If the requested
+        // count was raised since then, or fewer targeted pairs exist than
+        // requested, fill the rest from the remainder of the list.
+        const targetedIds = new Set(insight.targetedPairIds);
+        const targeted = pairs.filter((p) => p.id && targetedIds.has(p.id));
+        if (targeted.length >= requestedCount) {
+          selectedPairs = targeted.slice(0, requestedCount);
+        } else {
+          const remaining = dedupePairs(pairs.filter((p) => !p.id || !targetedIds.has(p.id)));
+          selectedPairs = [
+            ...targeted,
+            ...sample(remaining, requestedCount - targeted.length),
+          ];
+        }
+      } else if (userId && savedListId) {
+        // Weighted toward previously-wrong pairs — see
+        // select_quiz_pairs_for_list()'s docstring for the formula. This is
+        // what makes requizzing the same list "get smarter" over time even
+        // without picking "Target My Mistakes" specifically.
         const result = await apiRequest<{
           pairs: { id: string; source_term: string; target_term: string }[];
         }>(`/lists/${savedListId}/quiz-pairs?count=${requestedCount}`);
@@ -54,7 +107,8 @@ export default function GenerateQuiz() {
           "target word": p.target_term,
         }));
       } else {
-        selectedPairs = sample(pairs, requestedCount);
+        // Unsaved/ad-hoc list — no attempt history to weight by.
+        selectedPairs = sample(dedupePairs(pairs), requestedCount);
       }
 
       const chunks = chunk(selectedPairs, BATCH_SIZE);
@@ -125,11 +179,38 @@ export default function GenerateQuiz() {
 
       {error && <Text style={[shared.errorText, styles.centerText]}>{error}</Text>}
 
+      {insight?.message && !isGenerating && (
+        <Text style={[shared.hint, styles.centerText, styles.insightMessage]}>
+          {insight.message}
+        </Text>
+      )}
+
       {isGenerating ? (
         <View style={styles.generating}>
           <ActivityIndicator size="large" />
           <Text>Generating your quiz…</Text>
         </View>
+      ) : insight?.message ? (
+        <>
+          <Pressable
+            style={[
+              shared.primaryButton,
+              shared.generateQuizButton,
+              pairs.length < 3 && shared.primaryButtonDisabled,
+            ]}
+            disabled={pairs.length < 3}
+            onPress={() => handleGenerate("targeted")}
+          >
+            <Text style={shared.primaryButtonText}>Target My Mistakes</Text>
+          </Pressable>
+          <Pressable
+            style={[shared.secondaryButton, pairs.length < 3 && shared.primaryButtonDisabled]}
+            disabled={pairs.length < 3}
+            onPress={() => handleGenerate("similar")}
+          >
+            <Text style={shared.secondaryButtonText}>Generate Similar Quiz</Text>
+          </Pressable>
+        </>
       ) : (
         <Pressable
           style={[
@@ -138,7 +219,7 @@ export default function GenerateQuiz() {
             pairs.length < 3 && shared.primaryButtonDisabled,
           ]}
           disabled={pairs.length < 3}
-          onPress={handleGenerate}
+          onPress={() => handleGenerate("similar")}
         >
           <Text style={shared.primaryButtonText}>Generate Quiz</Text>
         </Pressable>
@@ -174,5 +255,9 @@ const styles = StyleSheet.create({
   },
   listNameText: {
     fontWeight: "600",
+  },
+  insightMessage: {
+    fontWeight: "600",
+    fontStyle: "italic",
   },
 });

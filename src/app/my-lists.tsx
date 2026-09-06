@@ -1,12 +1,10 @@
 import { Link, useFocusEffect, useRouter } from "expo-router";
-import { useCallback, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import { Alert, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 
 import { colors, shared } from "@/constants/styles";
 import { apiRequest } from "@/lib/api";
 import { usePairs, type SavedList } from "@/lib/pairs-context";
-import { useQuiz } from "@/lib/quiz-context";
-import type { Question } from "@/lib/types";
 
 type ListSummary = {
   id: string;
@@ -15,19 +13,10 @@ type ListSummary = {
   target_language: string;
 };
 
-type QuizSessionRow = {
-  id: string;
-  list_id: string;
-  questions: Question[];
-  current_index: number;
-};
-
 export default function MyLists() {
   const router = useRouter();
   const { loadList } = usePairs();
-  const { startQuiz } = useQuiz();
   const [lists, setLists] = useState<ListSummary[]>([]);
-  const [sessions, setSessions] = useState<QuizSessionRow[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -35,12 +24,8 @@ export default function MyLists() {
     setIsLoading(true);
     setError(null);
     try {
-      const [listsResult, sessionsResult] = await Promise.all([
-        apiRequest<{ lists: ListSummary[] }>("/lists"),
-        apiRequest<{ sessions: QuizSessionRow[] }>("/quiz-sessions"),
-      ]);
+      const listsResult = await apiRequest<{ lists: ListSummary[] }>("/lists");
       setLists(listsResult.lists);
-      setSessions(sessionsResult.sessions);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Something went wrong loading your lists.");
     } finally {
@@ -54,18 +39,21 @@ export default function MyLists() {
     }, [load])
   );
 
-  function resumeSession(session: QuizSessionRow) {
-    startQuiz(session.questions, session.id, session.current_index);
-    router.push("/quiz");
-  }
+  // Guards against a double-tap firing the open/delete request twice before
+  // the first one resolves (e.g. navigation away is slightly delayed).
+  const isBusyRef = useRef(false);
 
   async function openList(listId: string) {
+    if (isBusyRef.current) return;
+    isBusyRef.current = true;
     try {
       const list = await apiRequest<SavedList>(`/lists/${listId}`);
       loadList(list);
       router.push("/generate-quiz");
     } catch (e) {
       setError(e instanceof Error ? e.message : "Something went wrong loading that list.");
+    } finally {
+      isBusyRef.current = false;
     }
   }
 
@@ -76,11 +64,15 @@ export default function MyLists() {
         text: "Delete",
         style: "destructive",
         onPress: async () => {
+          if (isBusyRef.current) return;
+          isBusyRef.current = true;
           try {
             await apiRequest(`/lists/${list.id}`, { method: "DELETE" });
             load();
           } catch (e) {
             setError(e instanceof Error ? e.message : "Something went wrong deleting that list.");
+          } finally {
+            isBusyRef.current = false;
           }
         },
       },
@@ -94,30 +86,8 @@ export default function MyLists() {
       {error && <Text style={shared.errorText}>{error}</Text>}
       {isLoading && <Text style={shared.hint}>Loading…</Text>}
 
-      {!isLoading && sessions.length > 0 && (
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Continue a Quiz</Text>
-          {sessions.map((session) => {
-            const list = lists.find((l) => l.id === session.list_id);
-            return (
-              <Pressable
-                key={session.id}
-                style={styles.row}
-                onPress={() => resumeSession(session)}
-              >
-                <Text style={styles.rowTitle}>{list?.name ?? "Quiz in progress"}</Text>
-                <Text style={shared.hint}>
-                  Question {session.current_index + 1} of {session.questions.length}
-                </Text>
-              </Pressable>
-            );
-          })}
-        </View>
-      )}
-
       {!isLoading && (
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Your Lists</Text>
           {lists.length === 0 ? (
             <Text style={shared.hint}>No saved lists yet.</Text>
           ) : (
@@ -129,6 +99,14 @@ export default function MyLists() {
                     {list.source_language} → {list.target_language}
                   </Text>
                 </Pressable>
+                <Link
+                  href={{
+                    pathname: "/list-history",
+                    params: { listId: list.id, listName: list.name },
+                  }}
+                >
+                  <Text style={styles.historyText}>Progress</Text>
+                </Link>
                 <Pressable onPress={() => confirmDelete(list)}>
                   <Text style={styles.deleteText}>Delete</Text>
                 </Pressable>
@@ -153,10 +131,6 @@ const styles = StyleSheet.create({
   section: {
     gap: 8,
   },
-  sectionTitle: {
-    fontSize: 16,
-    fontWeight: "700",
-  },
   row: {
     flexDirection: "row",
     alignItems: "center",
@@ -173,6 +147,10 @@ const styles = StyleSheet.create({
   },
   rowTitle: {
     fontSize: 16,
+    fontWeight: "600",
+  },
+  historyText: {
+    color: colors.tertiary,
     fontWeight: "600",
   },
   deleteText: {

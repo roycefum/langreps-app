@@ -1,6 +1,6 @@
 import { Link, useRouter } from "expo-router";
-import { useEffect, useState } from "react";
-import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
+import { useEffect, useMemo, useState } from "react";
+import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
 
 import { ProgressBar } from "@/components/progress-bar";
 import { colors, shared } from "@/constants/styles";
@@ -11,6 +11,16 @@ export default function Quiz() {
   const { questions, currentIndex, phase, lastAnswer, wasCorrect, isComplete, submitAnswer, skipQuestion, nextQuestion } =
     useQuiz();
   const [answer, setAnswer] = useState("");
+  const [showWordList, setShowWordList] = useState(false);
+
+  // Every possible answer in this quiz, for the optional "stuck?" reveal —
+  // an occasionally-ambiguous question can still be figured out by
+  // elimination against the actual word list, and there's no way to game
+  // yourself out of actually learning the words.
+  const wordList = useMemo(
+    () => [...new Set(questions.map((q) => q.correct_answer))].sort((a, b) => a.localeCompare(b)),
+    [questions]
+  );
 
   useEffect(() => {
     if (isComplete) {
@@ -31,6 +41,7 @@ export default function Quiz() {
 
   async function handleNext() {
     setAnswer("");
+    setShowWordList(false);
     await nextQuestion();
   }
 
@@ -65,6 +76,16 @@ export default function Quiz() {
             <Pressable style={shared.backLink} onPress={skipQuestion}>
               <Text style={styles.skipButtonText}>Skip this question</Text>
             </Pressable>
+            <Pressable style={shared.backLink} onPress={() => setShowWordList((v) => !v)}>
+              <Text style={styles.skipButtonText}>
+                {showWordList ? "Hide word list" : "Stuck? See the word list"}
+              </Text>
+            </Pressable>
+            {showWordList && (
+              <ScrollView style={styles.wordList}>
+                <Text style={styles.centerText}>{wordList.join(", ")}</Text>
+              </ScrollView>
+            )}
           </>
         ) : (
           <>
@@ -77,7 +98,9 @@ export default function Quiz() {
               </Text>
             )}
             <Pressable style={shared.primaryButton} onPress={handleNext}>
-              <Text style={shared.primaryButtonText}>Next Question</Text>
+              <Text style={shared.primaryButtonText}>
+                {currentIndex + 1 >= total ? "Finish Quiz" : "Next Question"}
+              </Text>
             </Pressable>
           </>
         )}
@@ -120,5 +143,11 @@ const styles = StyleSheet.create({
     color: colors.error,
     fontSize: 16,
     fontWeight: "600",
+  },
+  wordList: {
+    maxHeight: 100,
+    backgroundColor: colors.secondaryBackground,
+    borderRadius: 8,
+    padding: 12,
   },
 });

@@ -83,15 +83,21 @@ export default function UploadPicture() {
         pairs out of it.
       </Text>
 
-      <Pressable style={shared.secondaryButton} onPress={handleTakePhoto} disabled={isExtracting}>
-        <Text style={shared.secondaryButtonText}>{isExtracting ? "Reading…" : "Take Photo"}</Text>
+      <Pressable
+        style={[shared.secondaryButton, shared.photoActionButton]}
+        onPress={handleTakePhoto}
+        disabled={isExtracting}
+      >
+        <Text style={[shared.secondaryButtonText, shared.accentButtonText]}>
+          {isExtracting ? "Reading…" : "Take Photo"}
+        </Text>
       </Pressable>
       <Pressable
-        style={shared.secondaryButton}
+        style={[shared.secondaryButton, shared.photoActionButton]}
         onPress={handleChooseFromLibrary}
         disabled={isExtracting}
       >
-        <Text style={shared.secondaryButtonText}>
+        <Text style={[shared.secondaryButtonText, shared.accentButtonText]}>
           {isExtracting ? "Reading…" : "Choose from Library"}
         </Text>
       </Pressable>

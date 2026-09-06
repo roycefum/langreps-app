@@ -10,6 +10,22 @@ export const colors = {
   accentShadow: "#787097",
   tertiary: "#B89288",
   tertiaryShadow: "#977870",
+  // One color per distinct action on the vocab-builder screens — "Add to
+  // list" (add-words, paste-text), "Choose File" (upload-file), and
+  // "Take Photo"/"Choose from Library" (upload-picture, same function:
+  // extract pairs from an image) each get their own color so the builder
+  // screens don't all look like plain grey secondary buttons.
+  addAction: "#88B892",
+  addActionShadow: "#6f9778",
+  fileAction: "#8896B8",
+  fileActionShadow: "#707b97",
+  photoAction: "#B888AE",
+  photoActionShadow: "#97708f",
+  // Every builder screen's Save List button shares this one color, since
+  // it's the same save function everywhere (PairsReview is one shared
+  // component) — distinct from the per-screen action colors above.
+  saveAction: "#B8AA88",
+  saveActionShadow: "#978b70",
   secondaryBackground: "#eee",
   secondaryShadow: "#d4d4d4",
   border: "#ccc",
@@ -103,6 +119,32 @@ export const shared = StyleSheet.create({
     fontSize: 14,
     fontWeight: "600",
     textAlign: "center",
+  },
+  // Colorful variants of secondaryButton for the vocab-builder screens'
+  // action buttons — plain grey read as too dull/inactive-looking for the
+  // main action on those screens.
+  addActionButton: {
+    backgroundColor: colors.addAction,
+    borderBottomColor: colors.addActionShadow,
+  },
+  fileActionButton: {
+    backgroundColor: colors.fileAction,
+    borderBottomColor: colors.fileActionShadow,
+  },
+  photoActionButton: {
+    backgroundColor: colors.photoAction,
+    borderBottomColor: colors.photoActionShadow,
+  },
+  saveActionButton: {
+    backgroundColor: colors.saveAction,
+    borderBottomColor: colors.saveActionShadow,
+  },
+  myListsButton: {
+    backgroundColor: colors.tertiary,
+    borderBottomColor: colors.tertiaryShadow,
+  },
+  accentButtonText: {
+    color: "white",
   },
   errorText: {
     color: colors.error,

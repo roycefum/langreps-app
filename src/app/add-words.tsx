@@ -40,8 +40,8 @@ export default function AddWords() {
         />
       </View>
 
-      <Pressable style={shared.secondaryButton} onPress={handleAdd}>
-        <Text style={shared.secondaryButtonText}>Add to list</Text>
+      <Pressable style={[shared.secondaryButton, shared.addActionButton]} onPress={handleAdd}>
+        <Text style={[shared.secondaryButtonText, shared.accentButtonText]}>Add to list</Text>
       </Pressable>
 
       <PairsReview source="manual" />

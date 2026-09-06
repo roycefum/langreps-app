@@ -1,4 +1,4 @@
-import { useRouter } from "expo-router";
+import { Link, useRouter } from "expo-router";
 import { useState } from "react";
 import { FlatList, Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 
@@ -85,13 +85,16 @@ export function PairsReview({ source }: PairsReviewProps) {
           <Pressable
             style={[
               shared.secondaryButton,
+              shared.saveActionButton,
               styles.rowButton,
               (!name.trim() || isSaving || pairs.length === 0) && shared.primaryButtonDisabled,
             ]}
             disabled={!name.trim() || isSaving || pairs.length === 0}
             onPress={handleSave}
           >
-            <Text style={shared.secondaryButtonText}>{isSaving ? "Saving…" : "Save List"}</Text>
+            <Text style={[shared.secondaryButtonText, shared.accentButtonText]}>
+              {isSaving ? "Saving…" : "Save List"}
+            </Text>
           </Pressable>
         </View>
       )}
@@ -113,6 +116,17 @@ export function PairsReview({ source }: PairsReviewProps) {
             : "Generate Quiz"}
         </Text>
       </Pressable>
+
+      {/* Saves a trip back to Home for the common case of jumping straight
+          to a previously saved list from any builder screen. */}
+      {userId && (
+        <Link
+          href="/my-lists"
+          style={[shared.secondaryButton, shared.myListsButton, styles.myListsButton]}
+        >
+          <Text style={[shared.secondaryButtonText, shared.accentButtonText]}>My Lists</Text>
+        </Link>
+      )}
     </View>
   );
 }
@@ -135,5 +149,9 @@ const styles = StyleSheet.create({
   emptyText: {
     opacity: 0.5,
     paddingVertical: 12,
+  },
+  myListsButton: {
+    alignSelf: "center",
+    paddingHorizontal: 24,
   },
 });
