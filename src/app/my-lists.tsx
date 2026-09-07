@@ -75,6 +75,7 @@ export default function MyLists() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [addingKey, setAddingKey] = useState<string | null>(null);
+  const [showSampleLists, setShowSampleLists] = useState(false);
 
   const load = useCallback(async () => {
     setIsLoading(true);
@@ -199,31 +200,44 @@ export default function MyLists() {
 
       {!isLoading && (
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Sample Lists</Text>
-          <Text style={shared.hint}>
-            Add a ready-made 50-word list for any language pair — add as many as you want,
-            whenever you want.
-          </Text>
-          {SAMPLE_LISTS.map((entry) => {
-            const alreadyAdded = lists.some((l) => l.name === entry.name);
-            return (
-              <View key={entry.key} style={styles.row}>
-                <View style={styles.rowMain}>
-                  <Text style={styles.rowTitle}>{entry.name}</Text>
-                  <Text style={shared.hint}>{entry.listType === "vocab" ? "Vocab" : "Verbs"}</Text>
-                </View>
-                <Pressable
-                  style={[shared.secondaryButton, shared.saveActionButton, styles.addButton]}
-                  disabled={addingKey === entry.key}
-                  onPress={() => handleAddSample(entry)}
-                >
-                  <Text style={[shared.secondaryButtonText, shared.accentButtonText]}>
-                    {addingKey === entry.key ? "Adding…" : alreadyAdded ? "Added" : "Add"}
-                  </Text>
-                </Pressable>
-              </View>
-            );
-          })}
+          <Pressable
+            style={styles.sectionToggle}
+            onPress={() => setShowSampleLists((v) => !v)}
+          >
+            <Text style={styles.sectionTitle}>
+              {showSampleLists ? "▾" : "▸"} Sample Lists
+            </Text>
+          </Pressable>
+          {showSampleLists && (
+            <>
+              <Text style={shared.hint}>
+                Add a ready-made 50-word list for any language pair — add as many as you want,
+                whenever you want.
+              </Text>
+              {SAMPLE_LISTS.map((entry) => {
+                const alreadyAdded = lists.some((l) => l.name === entry.name);
+                return (
+                  <View key={entry.key} style={styles.row}>
+                    <View style={styles.rowMain}>
+                      <Text style={styles.rowTitle}>{entry.name}</Text>
+                      <Text style={shared.hint}>
+                        {entry.listType === "vocab" ? "Vocab" : "Verbs"}
+                      </Text>
+                    </View>
+                    <Pressable
+                      style={[shared.secondaryButton, shared.saveActionButton, styles.addButton]}
+                      disabled={addingKey === entry.key}
+                      onPress={() => handleAddSample(entry)}
+                    >
+                      <Text style={[shared.secondaryButtonText, shared.accentButtonText]}>
+                        {addingKey === entry.key ? "Adding…" : alreadyAdded ? "Added" : "Add"}
+                      </Text>
+                    </Pressable>
+                  </View>
+                );
+              })}
+            </>
+          )}
         </View>
       )}
     </ScrollView>
@@ -241,6 +255,9 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 16,
     fontWeight: "700",
+  },
+  sectionToggle: {
+    paddingVertical: 4,
   },
   addButton: {
     paddingHorizontal: 20,
