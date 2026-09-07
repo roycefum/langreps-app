@@ -2,6 +2,7 @@ import { useRouter } from "expo-router";
 import { useRef, useState } from "react";
 import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 
+import { BackButton } from "@/components/back-button";
 import { CefrLevelPicker } from "@/components/cefr-level-picker";
 import { Dropdown } from "@/components/dropdown";
 import { shared } from "@/constants/styles";
@@ -96,6 +97,7 @@ export default function Login() {
 
   return (
     <View style={shared.screenCentered}>
+      <BackButton href="/" />
       <Text style={[shared.title, styles.centerText]}>
         {mode === "login" ? "Log In" : "Sign Up"}
       </Text>
