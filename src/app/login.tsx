@@ -155,11 +155,15 @@ export default function Login() {
 
       {mode === "login" ? (
         <Pressable style={shared.backLink} onPress={() => switchMode("signup")}>
-          <Text>Don&apos;t have an account? Sign up</Text>
+          <Text>
+            Don&apos;t have an account? <Text style={shared.linkText}>Sign up</Text>
+          </Text>
         </Pressable>
       ) : (
         <Pressable style={shared.backLink} onPress={() => switchMode("login")}>
-          <Text>Already have an account? Log in</Text>
+          <Text>
+            Already have an account? <Text style={shared.linkText}>Log in</Text>
+          </Text>
         </Pressable>
       )}
     </View>

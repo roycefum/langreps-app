@@ -164,6 +164,13 @@ export const shared = StyleSheet.create({
     alignSelf: "center",
     paddingVertical: 8,
   },
+  // Plain-text links that need to visibly read as clickable — underline is
+  // the clearest, most conventional affordance beyond just a color change.
+  linkText: {
+    color: colors.tertiary,
+    fontWeight: "600",
+    textDecorationLine: "underline",
+  },
   topBackButton: {
     alignSelf: "flex-start",
     paddingVertical: 4,

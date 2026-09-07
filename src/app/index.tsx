@@ -57,7 +57,7 @@ export default function Home() {
               {deleteError && <Text style={shared.errorText}>{deleteError}</Text>}
             </>
           ) : (
-            <Link href="/login" style={styles.authLink}>
+            <Link href="/login" style={[styles.authLink, shared.linkText]}>
               Log In / Sign Up
             </Link>
           )}
