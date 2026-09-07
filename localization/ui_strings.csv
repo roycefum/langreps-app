@@ -120,6 +120,12 @@ quiz-feedback.ts,trend_steady,5 message variants — 'Your scores are holding st
 quiz-feedback.ts,trend_declining,5 message variants — 'Your scores dipped a bit recently...' etc.,,,See file directly
 quiz-feedback.ts,trend_declining_a_lot,5 message variants — 'Your scores dropped noticeably...' etc.,,,See file directly
 backend (api errors),backend_error_text,Various FastAPI HTTPException / Pydantic validation messages surfaced via e.message,,,Needs its own translation strategy — see Notes tab
-login.tsx,starter_vocab_list_name,{language} Starter Vocab,,,Auto-generated list name for the signup-seeded starter vocab list; template
-login.tsx,i_already_know_reused,I already know,,,Reuses language-picker.tsx wording — shown in signup mode
-login.tsx,i_am_learning_reused,I'm learning,,,Reuses language-picker.tsx wording — shown in signup mode
+my-lists.tsx,sample_lists_title,Sample Lists,,,
+my-lists.tsx,sample_lists_hint,"Add a ready-made 50-word list for any language pair — add as many as you want, whenever you want.",,,
+my-lists.tsx,sample_list_name_template,{source} → {target} Vocab / {source} → {target} Verbs,,,Template — used as both display label and saved list name
+my-lists.tsx,sample_list_type_vocab,Vocab,,,Reused label under each sample list row
+my-lists.tsx,sample_list_type_verbs,Verbs,,,Reused label under each sample list row
+my-lists.tsx,sample_list_add,Add,,,
+my-lists.tsx,sample_list_adding,Adding…,,,
+my-lists.tsx,sample_list_added,Added,,,Shown once a list with the same name already exists; still tappable to re-sync
+my-lists.tsx,error_adding_sample,Something went wrong adding that sample list.,,,

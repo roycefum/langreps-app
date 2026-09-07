@@ -5,7 +5,9 @@ import { Alert, Pressable, ScrollView, StyleSheet, Text, View } from "react-nati
 import { BackButton } from "@/components/back-button";
 import { colors, shared } from "@/constants/styles";
 import { apiRequest } from "@/lib/api";
-import { usePairs, type SavedList } from "@/lib/pairs-context";
+import { usePairs, type SavedList, type VocabPair } from "@/lib/pairs-context";
+import { getStarterPairs } from "@/lib/starter-vocab";
+import { getStarterVerbPairs } from "@/lib/starter-verbs";
 
 type ListSummary = {
   id: string;
@@ -14,12 +16,65 @@ type ListSummary = {
   target_language: string;
 };
 
+// Every direction between the app's supported languages — the underlying
+// data (starter-vocab.ts / starter-verbs.ts) has all three languages for
+// each concept, so any of these 6 directions works, not just ones that
+// happen to include English.
+const LANGUAGE_PAIRS: [string, string][] = [
+  ["English", "Spanish"],
+  ["Spanish", "English"],
+  ["English", "French"],
+  ["French", "English"],
+  ["Spanish", "French"],
+  ["French", "Spanish"],
+];
+
+type SampleListEntry = {
+  key: string;
+  name: string;
+  sourceLanguage: string;
+  targetLanguage: string;
+  listType: "vocab" | "verb";
+  pairs: VocabPair[];
+};
+
+// A fixed catalog, not a single auto-picked list — the user can add as
+// many of these as they want, in any order, whenever they want, instead
+// of the app assuming up front which one language pair they're studying.
+const SAMPLE_LISTS: SampleListEntry[] = LANGUAGE_PAIRS.flatMap(([source, target]) => {
+  const entries: SampleListEntry[] = [];
+  const vocabPairs = getStarterPairs(source, target);
+  if (vocabPairs) {
+    entries.push({
+      key: `${source}-${target}-vocab`,
+      name: `${source} → ${target} Vocab`,
+      sourceLanguage: source,
+      targetLanguage: target,
+      listType: "vocab",
+      pairs: vocabPairs,
+    });
+  }
+  const verbPairs = getStarterVerbPairs(source, target);
+  if (verbPairs) {
+    entries.push({
+      key: `${source}-${target}-verb`,
+      name: `${source} → ${target} Verbs`,
+      sourceLanguage: source,
+      targetLanguage: target,
+      listType: "verb",
+      pairs: verbPairs,
+    });
+  }
+  return entries;
+});
+
 export default function MyLists() {
   const router = useRouter();
   const { loadList } = usePairs();
   const [lists, setLists] = useState<ListSummary[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [addingKey, setAddingKey] = useState<string | null>(null);
 
   const load = useCallback(async () => {
     setIsLoading(true);
@@ -80,6 +135,30 @@ export default function MyLists() {
     ]);
   }
 
+  async function handleAddSample(entry: SampleListEntry) {
+    if (addingKey) return;
+    setAddingKey(entry.key);
+    setError(null);
+    try {
+      await apiRequest("/save-list", {
+        method: "POST",
+        body: {
+          name: entry.name,
+          source: "sample",
+          source_language: entry.sourceLanguage,
+          target_language: entry.targetLanguage,
+          pairs: entry.pairs,
+          list_type: entry.listType,
+        },
+      });
+      await load();
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Something went wrong adding that sample list.");
+    } finally {
+      setAddingKey(null);
+    }
+  }
+
   return (
     <ScrollView style={shared.screen} contentContainerStyle={styles.content}>
       <BackButton href="/" />
@@ -117,6 +196,36 @@ export default function MyLists() {
           )}
         </View>
       )}
+
+      {!isLoading && (
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Sample Lists</Text>
+          <Text style={shared.hint}>
+            Add a ready-made 50-word list for any language pair — add as many as you want,
+            whenever you want.
+          </Text>
+          {SAMPLE_LISTS.map((entry) => {
+            const alreadyAdded = lists.some((l) => l.name === entry.name);
+            return (
+              <View key={entry.key} style={styles.row}>
+                <View style={styles.rowMain}>
+                  <Text style={styles.rowTitle}>{entry.name}</Text>
+                  <Text style={shared.hint}>{entry.listType === "vocab" ? "Vocab" : "Verbs"}</Text>
+                </View>
+                <Pressable
+                  style={[shared.secondaryButton, shared.saveActionButton, styles.addButton]}
+                  disabled={addingKey === entry.key}
+                  onPress={() => handleAddSample(entry)}
+                >
+                  <Text style={[shared.secondaryButtonText, shared.accentButtonText]}>
+                    {addingKey === entry.key ? "Adding…" : alreadyAdded ? "Added" : "Add"}
+                  </Text>
+                </Pressable>
+              </View>
+            );
+          })}
+        </View>
+      )}
     </ScrollView>
   );
 }
@@ -128,6 +237,13 @@ const styles = StyleSheet.create({
   },
   section: {
     gap: 8,
+  },
+  sectionTitle: {
+    fontSize: 16,
+    fontWeight: "700",
+  },
+  addButton: {
+    paddingHorizontal: 20,
   },
   row: {
     flexDirection: "row",
