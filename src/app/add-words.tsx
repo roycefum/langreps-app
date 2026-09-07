@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
+import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
 
 import { BackButton } from "@/components/back-button";
 import { LanguagePicker } from "@/components/language-picker";
@@ -20,7 +20,7 @@ export default function AddWords() {
   }
 
   return (
-    <View style={shared.screen}>
+    <ScrollView style={shared.screen} contentContainerStyle={styles.content}>
       <BackButton href="/" />
       <Text style={shared.title}>Add Words</Text>
 
@@ -46,12 +46,16 @@ export default function AddWords() {
       </Pressable>
 
       <PairsReview source="manual" />
-    </View>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   rowInput: {
     flex: 1,
+  },
+  content: {
+    gap: 16,
+    paddingBottom: 32,
   },
 });

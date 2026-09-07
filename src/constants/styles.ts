@@ -28,7 +28,9 @@ export const colors = {
   saveActionShadow: "#978b70",
   secondaryBackground: "#eee",
   secondaryShadow: "#d4d4d4",
-  border: "#ccc",
+  // Darker than a typical light-grey border/text — the parchment
+  // background (colors.background) washes out anything too pale.
+  border: "#9C8F6E",
   error: "#c0392b",
   success: "#27ae60",
   // Generate Quiz specifically gets its own color, distinct from every
@@ -37,6 +39,9 @@ export const colors = {
   generateQuiz: "#3D6646",
   generateQuizShadow: "#325439",
   background: "#F5EFD5",
+  // Default body text color — dark brown rather than pure black, to sit
+  // better against the parchment background than stark black would.
+  text: "#2E2718",
 };
 
 // Shared building blocks reused across screens (buttons, inputs, layout,
@@ -59,10 +64,12 @@ export const shared = StyleSheet.create({
   title: {
     fontSize: 24,
     fontWeight: "700",
+    color: colors.text,
   },
   hint: {
     fontSize: 13,
-    opacity: 0.6,
+    color: colors.text,
+    opacity: 0.7,
   },
   row: {
     flexDirection: "row",
@@ -74,6 +81,7 @@ export const shared = StyleSheet.create({
     borderRadius: 8,
     paddingHorizontal: 12,
     paddingVertical: 10,
+    color: colors.text,
   },
   primaryButton: {
     backgroundColor: colors.primary,

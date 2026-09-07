@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
+import { Pressable, ScrollView, StyleSheet, Text, TextInput } from "react-native";
 
 import { BackButton } from "@/components/back-button";
 import { LanguagePicker } from "@/components/language-picker";
@@ -39,7 +39,7 @@ export default function PasteText() {
   }
 
   return (
-    <View style={shared.screen}>
+    <ScrollView style={shared.screen} contentContainerStyle={styles.content}>
       <BackButton href="/" />
       <Text style={shared.title}>Paste Vocab List</Text>
 
@@ -86,7 +86,7 @@ export default function PasteText() {
       </Pressable>
 
       <PairsReview source="paste" />
-    </View>
+    </ScrollView>
   );
 }
 
@@ -99,5 +99,9 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     minHeight: 120,
     textAlignVertical: "top",
+  },
+  content: {
+    gap: 16,
+    paddingBottom: 32,
   },
 });

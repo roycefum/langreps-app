@@ -1,7 +1,7 @@
 import * as DocumentPicker from "expo-document-picker";
 import { File } from "expo-file-system";
 import { useState } from "react";
-import { Pressable, Text, View } from "react-native";
+import { Pressable, ScrollView, StyleSheet, Text } from "react-native";
 
 import { BackButton } from "@/components/back-button";
 import { LanguagePicker } from "@/components/language-picker";
@@ -50,7 +50,7 @@ export default function UploadFile() {
   }
 
   return (
-    <View style={shared.screen}>
+    <ScrollView style={shared.screen} contentContainerStyle={styles.content}>
       <BackButton href="/" />
       <Text style={shared.title}>Upload a File</Text>
 
@@ -84,6 +84,13 @@ export default function UploadFile() {
       )}
 
       <PairsReview source="file" />
-    </View>
+    </ScrollView>
   );
 }
+
+const styles = StyleSheet.create({
+  content: {
+    gap: 16,
+    paddingBottom: 32,
+  },
+});

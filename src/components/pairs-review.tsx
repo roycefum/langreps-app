@@ -1,6 +1,6 @@
 import { Link, useRouter } from "expo-router";
 import { useState } from "react";
-import { FlatList, Pressable, StyleSheet, Text, TextInput, View } from "react-native";
+import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 
 import { Dropdown } from "@/components/dropdown";
 import { shared } from "@/constants/styles";
@@ -74,17 +74,17 @@ export function PairsReview({ source }: PairsReviewProps) {
         </Pressable>
       </View>
 
-      <FlatList
-        style={styles.list}
-        data={pairs}
-        keyExtractor={(_, index) => String(index)}
-        renderItem={({ item }) => (
-          <Text style={styles.listItem}>
-            {item["source word"]} → {item["target word"]}
-          </Text>
-        )}
-        ListEmptyComponent={<Text style={styles.emptyText}>No words added yet.</Text>}
-      />
+      {pairs.length === 0 ? (
+        <Text style={styles.emptyText}>No words added yet.</Text>
+      ) : (
+        <View style={styles.list}>
+          {pairs.map((pair, index) => (
+            <Text key={index} style={styles.listItem}>
+              {pair["source word"]} → {pair["target word"]}
+            </Text>
+          ))}
+        </View>
+      )}
 
       {userId && (
         <View style={styles.typeRow}>
@@ -155,14 +155,13 @@ export function PairsReview({ source }: PairsReviewProps) {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     gap: 12,
   },
   rowButton: {
     flex: 1,
   },
   list: {
-    flex: 1,
+    gap: 2,
   },
   listItem: {
     fontSize: 16,

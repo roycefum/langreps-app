@@ -1,7 +1,7 @@
 import { File } from "expo-file-system";
 import * as ImagePicker from "expo-image-picker";
 import { useState } from "react";
-import { Pressable, Text, View } from "react-native";
+import { Pressable, ScrollView, StyleSheet, Text } from "react-native";
 
 import { BackButton } from "@/components/back-button";
 import { LanguagePicker } from "@/components/language-picker";
@@ -73,7 +73,7 @@ export default function UploadPicture() {
   }
 
   return (
-    <View style={shared.screen}>
+    <ScrollView style={shared.screen} contentContainerStyle={styles.content}>
       <BackButton href="/" />
       <Text style={shared.title}>Share a Picture</Text>
 
@@ -106,6 +106,13 @@ export default function UploadPicture() {
       {error && <Text style={shared.errorText}>{error}</Text>}
 
       <PairsReview source="photo" />
-    </View>
+    </ScrollView>
   );
 }
+
+const styles = StyleSheet.create({
+  content: {
+    gap: 16,
+    paddingBottom: 32,
+  },
+});
