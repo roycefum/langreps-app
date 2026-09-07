@@ -120,3 +120,6 @@ quiz-feedback.ts,trend_steady,5 message variants — 'Your scores are holding st
 quiz-feedback.ts,trend_declining,5 message variants — 'Your scores dipped a bit recently...' etc.,,,See file directly
 quiz-feedback.ts,trend_declining_a_lot,5 message variants — 'Your scores dropped noticeably...' etc.,,,See file directly
 backend (api errors),backend_error_text,Various FastAPI HTTPException / Pydantic validation messages surfaced via e.message,,,Needs its own translation strategy — see Notes tab
+login.tsx,starter_vocab_list_name,{language} Starter Vocab,,,Auto-generated list name for the signup-seeded starter vocab list; template
+login.tsx,i_already_know_reused,I already know,,,Reuses language-picker.tsx wording — shown in signup mode
+login.tsx,i_am_learning_reused,I'm learning,,,Reuses language-picker.tsx wording — shown in signup mode
