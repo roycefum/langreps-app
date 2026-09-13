@@ -1,13 +1,21 @@
-import { Link } from "expo-router";
-import { useState } from "react";
+import { Link, useRouter } from "expo-router";
+import { useEffect, useState } from "react";
 import { Alert, Pressable, StyleSheet, Text, View } from "react-native";
 
 import { colors, shared } from "@/constants/styles";
 import { useAuth } from "@/lib/auth-context";
+import { getHasSeenOnboarding } from "@/lib/settings-storage";
 
 export default function Home() {
+  const router = useRouter();
   const { userId, email, isLoading, logout, deleteAccount } = useAuth();
   const [deleteError, setDeleteError] = useState<string | null>(null);
+
+  useEffect(() => {
+    getHasSeenOnboarding().then((seen) => {
+      if (!seen) router.replace("/onboarding");
+    });
+  }, [router]);
 
   function confirmDeleteAccount() {
     Alert.alert(

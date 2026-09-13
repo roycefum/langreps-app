@@ -6,6 +6,7 @@ import { DEFAULT_CEFR_LEVEL, type CefrLevel } from "./types";
 const DEFAULT_CEFR_LEVEL_KEY = "langreps_default_cefr_level";
 const AUTO_DELETE_OLD_QUIZZES_KEY = "langreps_auto_delete_old_quizzes";
 const ADAPTIVE_QUIZZES_ENABLED_KEY = "langreps_adaptive_quizzes_enabled";
+const HAS_SEEN_ONBOARDING_KEY = "langreps_has_seen_onboarding";
 
 // Same web guard as auth-storage.ts — expo-secure-store throws (not
 // no-ops) on web, and this is a device-local setting anyway (explicitly
@@ -49,4 +50,19 @@ export async function getAdaptiveQuizzesEnabled(): Promise<boolean> {
 export async function setAdaptiveQuizzesEnabled(enabled: boolean): Promise<void> {
   if (isWeb) return;
   await SecureStore.setItemAsync(ADAPTIVE_QUIZZES_ENABLED_KEY, String(enabled));
+}
+
+// Off by default (i.e. "not seen yet") — gates the one-time onboarding
+// screen shown on first launch. Web has no persistence for this (see
+// isWeb guard above), so it would show every time on web — acceptable
+// since web isn't a real distribution target for this app.
+export async function getHasSeenOnboarding(): Promise<boolean> {
+  if (isWeb) return true;
+  const stored = await SecureStore.getItemAsync(HAS_SEEN_ONBOARDING_KEY);
+  return stored === "true";
+}
+
+export async function setHasSeenOnboarding(seen: boolean): Promise<void> {
+  if (isWeb) return;
+  await SecureStore.setItemAsync(HAS_SEEN_ONBOARDING_KEY, String(seen));
 }

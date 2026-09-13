@@ -1,3 +1,4 @@
+import { Link } from "expo-router";
 import { useEffect, useState } from "react";
 import { StyleSheet, Switch, Text, View } from "react-native";
 
@@ -64,6 +65,10 @@ export default function Settings() {
         </Text>
         <Switch value={adaptiveQuizzes} onValueChange={handleAdaptiveQuizzesChange} />
       </View>
+
+      <Link href="/onboarding" style={[shared.backLink, shared.linkText]}>
+        About LangReps
+      </Link>
     </View>
   );
 }
