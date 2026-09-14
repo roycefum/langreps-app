@@ -33,6 +33,14 @@ const LANGUAGE_PAIRS: [string, string][] = [
   ["French", "Spanish"],
 ];
 
+// Flags sidestep language-name capitalization entirely, and read faster
+// when scanning a list of 12 sample entries anyway.
+const LANGUAGE_FLAGS: Record<string, string> = {
+  English: "🇬🇧",
+  Spanish: "🇪🇸",
+  French: "🇫🇷",
+};
+
 type SampleListEntry = {
   key: string;
   name: string;
@@ -260,7 +268,12 @@ export default function MyLists() {
                 return (
                   <View key={entry.key} style={styles.row}>
                     <View style={styles.rowMain}>
-                      <Text style={styles.rowTitle}>{entry.name}</Text>
+                      <Text style={styles.rowTitle}>
+                        {entry.listType === "vocab" ? "Vocab" : "Verb"} {entry.pairs.length}
+                      </Text>
+                      <Text style={shared.hint}>
+                        {LANGUAGE_FLAGS[entry.sourceLanguage]} → {LANGUAGE_FLAGS[entry.targetLanguage]}
+                      </Text>
                     </View>
                     <Pressable
                       style={[shared.secondaryButton, shared.saveActionButton, styles.addButton]}
