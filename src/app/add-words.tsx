@@ -7,7 +7,7 @@ import { colors, shared } from "@/constants/styles";
 import { usePairs } from "@/lib/pairs-context";
 
 export default function AddWords() {
-  const { pairs, addPair, savedListId } = usePairs();
+  const { pairs, addPair, savedListId, sourceLanguage, targetLanguage } = usePairs();
   const [sourceWord, setSourceWord] = useState("");
   const [targetWord, setTargetWord] = useState("");
 
@@ -27,14 +27,14 @@ export default function AddWords() {
         <View style={shared.row}>
           <TextInput
             style={[shared.input, styles.rowInput]}
-            placeholder="Source word"
+            placeholder={`Word in ${sourceLanguage} (known)`}
             placeholderTextColor={colors.placeholder}
             value={sourceWord}
             onChangeText={setSourceWord}
           />
           <TextInput
             style={[shared.input, styles.rowInput]}
-            placeholder="Target word"
+            placeholder={`Word in ${targetLanguage} (learning)`}
             placeholderTextColor={colors.placeholder}
             value={targetWord}
             onChangeText={setTargetWord}

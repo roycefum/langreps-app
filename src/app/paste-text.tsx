@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Pressable, ScrollView, StyleSheet, Text, TextInput } from "react-native";
 
 import { BackButton } from "@/components/back-button";
+import { LanguageOrderConfirm } from "@/components/language-order-confirm";
 import { PairsReview } from "@/components/pairs-review";
 import { TranslateSkippedLines } from "@/components/translate-skipped-lines";
 import { colors, shared } from "@/constants/styles";
@@ -9,13 +10,34 @@ import { apiRequest } from "@/lib/api";
 import { detectLanguages } from "@/lib/language-detect";
 import { usePairs } from "@/lib/pairs-context";
 import type { VocabPair } from "@/lib/pairs-context";
+import { swapPairLanguages } from "@/lib/text";
+
+type PendingOrder = { firstLanguage: string; secondLanguage: string };
 
 export default function PasteText() {
-  const { pairs, addPairs, setSourceLanguage, setTargetLanguage } = usePairs();
+  const { pairs, addPairs, setPairs, setSourceLanguage, setTargetLanguage } = usePairs();
   const [rawText, setRawText] = useState("");
   const [isParsing, setIsParsing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [skippedLines, setSkippedLines] = useState<string[]>([]);
+  // Set right after a fresh parse detects the two languages involved —
+  // never assumed to be known-then-learning order (a textbook list often
+  // puts the foreign/learning word first) until the user confirms which
+  // one they actually know.
+  const [pendingOrder, setPendingOrder] = useState<PendingOrder | null>(null);
+
+  function confirmLanguageOrder(knownIsFirst: boolean) {
+    if (!pendingOrder) return;
+    if (knownIsFirst) {
+      setSourceLanguage(pendingOrder.firstLanguage);
+      setTargetLanguage(pendingOrder.secondLanguage);
+    } else {
+      setSourceLanguage(pendingOrder.secondLanguage);
+      setTargetLanguage(pendingOrder.firstLanguage);
+      setPairs(swapPairLanguages(pairs));
+    }
+    setPendingOrder(null);
+  }
 
   async function handleParse() {
     if (!rawText.trim()) return;
@@ -35,11 +57,13 @@ export default function PasteText() {
       addPairs(result.pairs);
       setSkippedLines(result.skipped_lines);
       setRawText("");
-      if (wasEmpty) {
+      if (wasEmpty && result.pairs.length > 0) {
         const detected = await detectLanguages(result.pairs);
         if (detected) {
-          setSourceLanguage(detected.source_language);
-          setTargetLanguage(detected.target_language);
+          setPendingOrder({
+            firstLanguage: detected.source_language,
+            secondLanguage: detected.target_language,
+          });
         }
       }
     } catch (e) {
@@ -79,13 +103,26 @@ export default function PasteText() {
         </Text>
       )}
 
+      {pendingOrder && (
+        <LanguageOrderConfirm
+          firstLanguage={pendingOrder.firstLanguage}
+          secondLanguage={pendingOrder.secondLanguage}
+          onConfirm={confirmLanguageOrder}
+        />
+      )}
+
       <TranslateSkippedLines
         lines={skippedLines}
         onTranslated={(newPairs, detectedSource, chosenTarget) => {
+          const wasEmptyBeforeTranslate = pairs.length === 0;
           addPairs(newPairs);
-          setSourceLanguage(detectedSource);
-          setTargetLanguage(chosenTarget);
           setSkippedLines([]);
+          if (wasEmptyBeforeTranslate) {
+            setPendingOrder({ firstLanguage: detectedSource, secondLanguage: chosenTarget });
+          } else {
+            setSourceLanguage(detectedSource);
+            setTargetLanguage(chosenTarget);
+          }
         }}
       />
 

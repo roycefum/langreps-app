@@ -16,6 +16,19 @@ export function displayListName(name: string): string {
   return name.replace(/ \(from .+\)$/, "");
 }
 
+// Flips which side of each pair is "known" vs "learning" — used when a
+// user tells LanguageOrderConfirm the app's initial column-order guess was
+// backwards (e.g. a textbook list puts the foreign/learning word first).
+export function swapPairLanguages<T extends { "source word": string; "target word": string }>(
+  pairs: T[]
+): T[] {
+  return pairs.map((p) => ({
+    ...p,
+    "source word": p["target word"],
+    "target word": p["source word"],
+  }));
+}
+
 export function chunk<T>(items: T[], size: number): T[][] {
   const chunks: T[][] = [];
   for (let i = 0; i < items.length; i += size) {

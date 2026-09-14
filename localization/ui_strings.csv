@@ -26,8 +26,8 @@ login.tsx,switch_to_login,Already have an account? Log in,¿Ya tienes una cuenta
 login.tsx,confirm_email_message,"Check your email to confirm, then log in below.",Revisa tu correo para confirmar y luego inicia sesión abajo.,"Vérifie tes e-mails pour confirmer, puis connecte-toi ci-dessous.",
 login.tsx,account_created_message,Account created — log in below.,Cuenta creada — inicia sesión abajo.,Compte créé — connecte-toi ci-dessous.,
 add-words.tsx,add_words_title,Add Words,Añadir palabras,Ajouter des mots,
-add-words.tsx,source_word_placeholder,Source word,Palabra de origen,Mot source,
-add-words.tsx,target_word_placeholder,Target word,Palabra de destino,Mot cible,
+add-words.tsx,source_word_placeholder,Source word,,,"Superseded by source_word_placeholder_dynamic — was static, replaced with actual language name + known/learning framing"
+add-words.tsx,target_word_placeholder,Target word,,,Superseded by target_word_placeholder_dynamic
 add-words.tsx,add_to_list,Add to list,Añadir a la lista,Ajouter à la liste,Reused on paste-text.tsx
 paste-text.tsx,paste_vocab_list_title,Paste Vocab List,Pegar lista de vocabulario,Coller une liste de vocabulaire,
 paste-text.tsx,paste_instructions,"One pair per line — a tab, ""->"", "":"", or similar between each word and its translation. e.g. hello -> hola","Un par por línea — un tabulador, ""->"", "":"", o algo similar entre cada palabra y su traducción. p. ej. hello -> hola","Une paire par ligne — une tabulation, ""->"", "":"", ou un symbole similaire entre chaque mot et sa traduction. ex. hello -> hola",Contains a literal example — keep example untranslated or localize it
@@ -218,3 +218,7 @@ my-quizzes.tsx,deleted_list_fallback,Deleted list,Lista eliminada,Liste supprim�
 back-button.tsx,discard_unsaved_alert_title,Discard unsaved words?,¿Descartar palabras sin guardar?,Abandonner les mots non enregistrés ?,New — shown when backing out of Add Words with 3+ unsaved words
 back-button.tsx,discard_unsaved_alert_message,You've added words that haven't been saved yet. Leaving now will lose them.,"Has añadido palabras que aún no se han guardado. Si sales ahora, se perderán.","Tu as ajouté des mots qui n'ont pas encore été enregistrés. Si tu quittes maintenant, tu les perdras.",
 back-button.tsx,leave_without_saving,Leave Without Saving,Salir sin guardar,Quitter sans enregistrer,Destructive confirm action
+language-order-confirm.tsx,order_confirm_prompt_template,Detected {first} and {second}. Which one do you already know?,Detectamos {first} y {second}. ¿Cuál de los dos ya conoces?,Nous avons détecté {first} et {second}. Lequel connais-tu déjà ?,"New — shown once after a fresh parse/translation detects two languages, replaces blindly assuming column order = known-then-learning"
+language-order-confirm.tsx,order_confirm_option_template,I know {language},Ya sé {language},Je connais déjà {language},Two buttons, one per detected language
+add-words.tsx,source_word_placeholder_dynamic,Word in {language} (known),Palabra en {language} (conocido),Mot en {language} (connu),"Replaces static ""Source word"" placeholder — shows actual selected language + known/learning framing instead of source/target jargon"
+add-words.tsx,target_word_placeholder_dynamic,Word in {language} (learning),Palabra en {language} (aprendiendo),Mot en {language} (en apprentissage),Replaces static "Target word" placeholder
