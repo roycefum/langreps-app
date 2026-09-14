@@ -215,3 +215,6 @@ my-quizzes.tsx,past_quizzes_section_title,Past Quizzes,,,New section showing com
 my-quizzes.tsx,no_completed_quizzes,No completed quizzes yet.,,,
 my-quizzes.tsx,past_quiz_score_template,{correct}/{total} correct ({pct}%),,,Template
 my-quizzes.tsx,deleted_list_fallback,Deleted list,,,Shown when a past quiz's list no longer exists
+back-button.tsx,discard_unsaved_alert_title,Discard unsaved words?,,,New — shown when backing out of Add Words with 3+ unsaved words
+back-button.tsx,discard_unsaved_alert_message,You've added words that haven't been saved yet. Leaving now will lose them.,,,
+back-button.tsx,leave_without_saving,Leave Without Saving,,,Destructive confirm action

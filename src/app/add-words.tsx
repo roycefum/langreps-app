@@ -7,7 +7,7 @@ import { colors, shared } from "@/constants/styles";
 import { usePairs } from "@/lib/pairs-context";
 
 export default function AddWords() {
-  const { addPair } = usePairs();
+  const { pairs, addPair, savedListId } = usePairs();
   const [sourceWord, setSourceWord] = useState("");
   const [targetWord, setTargetWord] = useState("");
 
@@ -20,7 +20,7 @@ export default function AddWords() {
 
   return (
     <ScrollView style={shared.screen} contentContainerStyle={styles.content}>
-      <BackButton href="/" />
+      <BackButton href="/" confirmLeave={() => !savedListId && pairs.length >= 3} />
       <Text style={shared.title}>Add Words</Text>
 
       <PairsReview source="manual">
