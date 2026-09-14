@@ -153,7 +153,7 @@ settings.tsx,auto_delete_title,Auto-Delete Old Quizzes,,,New section title
 settings.tsx,auto_delete_desc,Completed quizzes are removed after 30 days,,,Description moved under the bold title
 settings.tsx,adaptive_quizzes_title,Adaptive Quizzes,,,New section title
 settings.tsx,adaptive_quizzes_desc,"Get feedback on patterns you struggle with, and an option to target them",,,Description moved under the bold title
-settings.tsx,require_accents_title,Require Accents,,,New toggle
+settings.tsx,require_accents_title,Require Diacritics,,,New toggle — renamed from "Require Accents"
 settings.tsx,require_accents_desc,"Off accepts ""cafe"" for ""café""",,,"Off by default — grading strips accents; app is a reinforcement tool, not a strict teaching tool"
 my-lists.tsx,your_lists_section_title,Your Lists,,,New section title alongside bulk-select controls
 my-lists.tsx,bulk_select_toggle,Select / Done,,,"Toggles bulk-select mode in the header row — rows keep their normal content, just gain a checkbox (shared pattern, My Lists and My Quizzes)"

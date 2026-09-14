@@ -75,7 +75,7 @@ export default function Settings() {
 
       <View style={[shared.row, styles.settingBlock]}>
         <View style={styles.settingText}>
-          <Text style={styles.settingTitle}>Require Accents</Text>
+          <Text style={styles.settingTitle}>Require Diacritics</Text>
           <Text style={shared.hint}>Off accepts &quot;cafe&quot; for &quot;café&quot;</Text>
         </View>
         <Switch value={requireAccents} onValueChange={handleRequireAccentsChange} />
