@@ -165,29 +165,37 @@ export default function MyQuizzes() {
           <View style={styles.section}>
             <View style={styles.sectionHeaderRow}>
               <Text style={shared.hint}>{sessions.length} in progress</Text>
-              <Pressable onPress={toggleSelectMode}>
-                <Text style={shared.linkText}>{selectMode ? "Cancel" : "Select"}</Text>
-              </Pressable>
+              {selectMode ? (
+                <View style={styles.headerActions}>
+                  <Pressable onPress={toggleSelectAll}>
+                    <Text style={styles.headerActionText}>
+                      {selectedIds.size === sessions.length ? "Deselect All" : "Select All"}
+                    </Text>
+                  </Pressable>
+                  <Pressable
+                    disabled={selectedIds.size === 0 || isBulkDeleting}
+                    onPress={confirmBulkDelete}
+                  >
+                    <Text
+                      style={[
+                        styles.headerActionText,
+                        styles.headerDeleteText,
+                        selectedIds.size === 0 && styles.disabled,
+                      ]}
+                    >
+                      {isBulkDeleting ? "Deleting…" : `Delete (${selectedIds.size})`}
+                    </Text>
+                  </Pressable>
+                  <Pressable onPress={toggleSelectMode}>
+                    <Text style={styles.headerActionText}>Done</Text>
+                  </Pressable>
+                </View>
+              ) : (
+                <Pressable onPress={toggleSelectMode}>
+                  <Text style={shared.linkText}>Select</Text>
+                </Pressable>
+              )}
             </View>
-
-            {selectMode && (
-              <View style={styles.bulkBar}>
-                <Pressable onPress={toggleSelectAll}>
-                  <Text style={shared.linkText}>
-                    {selectedIds.size === sessions.length ? "Deselect All" : "Select All"}
-                  </Text>
-                </Pressable>
-                <Pressable
-                  style={[styles.bulkDeleteButton, selectedIds.size === 0 && styles.disabled]}
-                  disabled={selectedIds.size === 0 || isBulkDeleting}
-                  onPress={confirmBulkDelete}
-                >
-                  <Text style={styles.bulkDeleteText}>
-                    {isBulkDeleting ? "Deleting…" : `Delete Selected (${selectedIds.size})`}
-                  </Text>
-                </Pressable>
-              </View>
-            )}
 
             {sessions.map((session) => {
               const list = lists.find((l) => l.id === session.list_id);
@@ -215,11 +223,9 @@ export default function MyQuizzes() {
                       Question {session.current_index + 1} of {session.questions.length}
                     </Text>
                   </Pressable>
-                  {!selectMode && (
-                    <Pressable onPress={() => confirmDelete(session)}>
-                      <Text style={styles.deleteText}>Delete</Text>
-                    </Pressable>
-                  )}
+                  <Pressable onPress={() => confirmDelete(session)}>
+                    <Text style={styles.deleteText}>Delete</Text>
+                  </Pressable>
                 </View>
               );
             })}
@@ -242,22 +248,18 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
   },
-  bulkBar: {
+  headerActions: {
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "space-between",
-    marginBottom: 4,
+    gap: 12,
   },
-  bulkDeleteButton: {
-    backgroundColor: colors.error,
-    borderRadius: 8,
-    paddingVertical: 6,
-    paddingHorizontal: 12,
-  },
-  bulkDeleteText: {
-    color: "white",
+  headerActionText: {
+    color: colors.tertiary,
     fontWeight: "600",
     fontSize: 13,
+  },
+  headerDeleteText: {
+    color: colors.error,
   },
   disabled: {
     opacity: 0.4,

@@ -266,14 +266,40 @@ export default function MyLists() {
         <View style={styles.section}>
           <View style={styles.sectionHeaderRow}>
             <Text style={styles.sectionTitle}>Your Lists</Text>
-            {lists.length > 0 && (
-              <Pressable onPress={toggleSelectMode}>
-                <Text style={shared.linkText}>{selectMode ? "Cancel" : "Select"}</Text>
-              </Pressable>
-            )}
+            {lists.length > 0 &&
+              (selectMode ? (
+                <View style={styles.headerActions}>
+                  <Pressable onPress={toggleSelectAll}>
+                    <Text style={styles.headerActionText}>
+                      {selectedIds.size === lists.length ? "Deselect All" : "Select All"}
+                    </Text>
+                  </Pressable>
+                  <Pressable
+                    disabled={selectedIds.size === 0 || isBulkDeleting}
+                    onPress={confirmBulkDelete}
+                  >
+                    <Text
+                      style={[
+                        styles.headerActionText,
+                        styles.headerDeleteText,
+                        selectedIds.size === 0 && styles.disabled,
+                      ]}
+                    >
+                      {isBulkDeleting ? "Deleting…" : `Delete (${selectedIds.size})`}
+                    </Text>
+                  </Pressable>
+                  <Pressable onPress={toggleSelectMode}>
+                    <Text style={styles.headerActionText}>Done</Text>
+                  </Pressable>
+                </View>
+              ) : (
+                <Pressable onPress={toggleSelectMode}>
+                  <Text style={shared.linkText}>Select</Text>
+                </Pressable>
+              ))}
           </View>
 
-          {lists.length > 0 && !selectMode && (
+          {lists.length > 0 && (
             <View style={styles.sortRow}>
               <Text style={shared.hint}>Sort by</Text>
               <Pressable onPress={() => setSortBy("date")}>
@@ -284,25 +310,6 @@ export default function MyLists() {
               <Pressable onPress={() => setSortBy("name")}>
                 <Text style={[styles.sortOption, sortBy === "name" && styles.sortOptionActive]}>
                   Name
-                </Text>
-              </Pressable>
-            </View>
-          )}
-
-          {selectMode && lists.length > 0 && (
-            <View style={styles.bulkBar}>
-              <Pressable onPress={toggleSelectAll}>
-                <Text style={shared.linkText}>
-                  {selectedIds.size === lists.length ? "Deselect All" : "Select All"}
-                </Text>
-              </Pressable>
-              <Pressable
-                style={[styles.bulkDeleteButton, selectedIds.size === 0 && styles.disabled]}
-                disabled={selectedIds.size === 0 || isBulkDeleting}
-                onPress={confirmBulkDelete}
-              >
-                <Text style={styles.bulkDeleteText}>
-                  {isBulkDeleting ? "Deleting…" : `Delete Selected (${selectedIds.size})`}
                 </Text>
               </Pressable>
             </View>
@@ -338,21 +345,17 @@ export default function MyLists() {
                     Last uploaded: {new Date(list.last_modified).toLocaleDateString()}
                   </Text>
                 </Pressable>
-                {!selectMode && (
-                  <>
-                    <Link
-                      href={{
-                        pathname: "/list-history",
-                        params: { listId: list.id, listName: list.name },
-                      }}
-                    >
-                      <Text style={styles.historyText}>Progress</Text>
-                    </Link>
-                    <Pressable onPress={() => confirmDelete(list)}>
-                      <Text style={styles.deleteText}>Delete</Text>
-                    </Pressable>
-                  </>
-                )}
+                <Link
+                  href={{
+                    pathname: "/list-history",
+                    params: { listId: list.id, listName: list.name },
+                  }}
+                >
+                  <Text style={styles.historyText}>Progress</Text>
+                </Link>
+                <Pressable onPress={() => confirmDelete(list)}>
+                  <Text style={styles.deleteText}>Delete</Text>
+                </Pressable>
               </View>
             ))
           )}
@@ -436,22 +439,18 @@ const styles = StyleSheet.create({
     gap: 12,
     marginBottom: 4,
   },
-  bulkBar: {
+  headerActions: {
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "space-between",
-    marginBottom: 4,
+    gap: 12,
   },
-  bulkDeleteButton: {
-    backgroundColor: colors.error,
-    borderRadius: 8,
-    paddingVertical: 6,
-    paddingHorizontal: 12,
-  },
-  bulkDeleteText: {
-    color: "white",
+  headerActionText: {
+    color: colors.tertiary,
     fontWeight: "600",
     fontSize: 13,
+  },
+  headerDeleteText: {
+    color: colors.error,
   },
   disabled: {
     opacity: 0.4,
