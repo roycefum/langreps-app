@@ -16,6 +16,10 @@ type QuizState = {
   wasCorrect: boolean;
   correctCount: number;
   isComplete: boolean;
+  // Exposed so Quiz Complete can link to a full results view fetched from
+  // GET /quiz-sessions/{sessionId}/attempts — null for an anonymous/unsaved
+  // quiz, which has no persisted attempt history to show.
+  sessionId: string | null;
   startQuiz: (questions: Question[], sessionId: string | null, startIndex?: number) => void;
   submitAnswer: (answer: string) => void;
   skipQuestion: () => void;
@@ -59,7 +63,7 @@ export function QuizProvider({ children }: { children: ReactNode }) {
   // shouldn't block the user's quiz. Only meaningful when there's a real
   // session (a saved list); ad-hoc quizzes have no history to build.
   const recordAttempt = useCallback(
-    async (question: Question, correct: boolean) => {
+    async (question: Question, correct: boolean, userAnswer: string) => {
       if (!sessionId) return;
       try {
         await apiRequest("/quiz-attempts", {
@@ -70,6 +74,8 @@ export function QuizProvider({ children }: { children: ReactNode }) {
             question_text: question.question_text,
             skill_category: question.skill_category,
             was_correct: correct,
+            user_answer: userAnswer,
+            correct_answer: question.correct_answer,
           },
         });
       } catch {
@@ -117,7 +123,7 @@ export function QuizProvider({ children }: { children: ReactNode }) {
       setWasCorrect(correct);
       if (correct) setCorrectCount((prev) => prev + 1);
       setPhase("feedback");
-      recordAttempt(current, correct);
+      recordAttempt(current, correct, answer);
       persistProgress(currentIndex + 1);
       Haptics.notificationAsync(
         correct
@@ -135,7 +141,7 @@ export function QuizProvider({ children }: { children: ReactNode }) {
     setLastAnswer("(skipped)");
     setWasCorrect(false);
     setPhase("feedback");
-    recordAttempt(current, false);
+    recordAttempt(current, false, "(skipped)");
     persistProgress(currentIndex + 1);
   }, [questions, currentIndex, recordAttempt, persistProgress]);
 
@@ -164,6 +170,7 @@ export function QuizProvider({ children }: { children: ReactNode }) {
       wasCorrect,
       correctCount,
       isComplete,
+      sessionId,
       startQuiz,
       submitAnswer,
       skipQuestion,
@@ -178,6 +185,7 @@ export function QuizProvider({ children }: { children: ReactNode }) {
       wasCorrect,
       correctCount,
       isComplete,
+      sessionId,
       startQuiz,
       submitAnswer,
       skipQuestion,

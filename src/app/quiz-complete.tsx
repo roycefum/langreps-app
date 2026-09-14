@@ -1,4 +1,4 @@
-import { useRouter } from "expo-router";
+import { Link, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 
@@ -30,7 +30,7 @@ function cannedFeedback(correct: number, total: number): string {
 
 export default function QuizComplete() {
   const router = useRouter();
-  const { questions, correctCount, resetQuiz } = useQuiz();
+  const { questions, correctCount, resetQuiz, sessionId } = useQuiz();
   const { clearPairs, savedListId } = usePairs();
   const { userId } = useAuth();
   const [feedback, setFeedback] = useState<string | null>(null);
@@ -74,6 +74,11 @@ export default function QuizComplete() {
         {correctCount} / {questions.length} correct
       </Text>
       <Text style={styles.feedback}>{feedback ?? " "}</Text>
+      {sessionId && (
+        <Link href={{ pathname: "/quiz-results", params: { sessionId } }} style={shared.linkText}>
+          See Full Results
+        </Link>
+      )}
       <Pressable style={shared.primaryButton} onPress={handleBackToHome}>
         <Text style={shared.primaryButtonText}>Back to Home</Text>
       </Pressable>

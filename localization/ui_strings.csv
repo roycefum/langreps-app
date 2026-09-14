@@ -183,3 +183,10 @@ cefr-level-picker.tsx,cefr_c2_explanation,"Mastery — near-native fluency with 
 app-splash.tsx,splash_title,LangReps,,,"Animated splash shown on every app launch (not a navigable screen) — proper name, may stay untranslated"
 app-splash.tsx,splash_tagline,Language reps that stick.,,,
 app-splash.tsx,splash_copyright,© 2026 MarApps Development,,,Pinned bottom-right corner
+quiz-complete.tsx,see_full_results,See Full Results,,,"Link to the new quiz-results.tsx screen, only shown for saved-list quizzes (a session exists)"
+quiz-results.tsx,full_results_title,Full Results,,,
+quiz-results.tsx,no_recorded_answers,No recorded answers for this quiz.,,,
+quiz-results.tsx,your_answer_label,Your answer:,,,
+quiz-results.tsx,correct_answer_label,Correct answer:,,,Shown only for incorrect rows
+quiz-results.tsx,blank_answer_fallback,(blank),,,Shown when a skipped/empty answer was recorded
+quiz-results.tsx,error_loading_results,Something went wrong loading results.,,,
