@@ -206,7 +206,7 @@ export default function MyLists() {
               <Text style={shared.hint}>Sort by</Text>
               <Pressable onPress={() => setSortBy("date")}>
                 <Text style={[styles.sortOption, sortBy === "date" && styles.sortOptionActive]}>
-                  Date
+                  Last Uploaded
                 </Text>
               </Pressable>
               <Pressable onPress={() => setSortBy("name")}>
