@@ -173,3 +173,10 @@ quiz-complete.tsx,canned_feedback_mastery,"You show mastery of the material and 
 quiz-complete.tsx,canned_feedback_solid,"You have a solid grasp of this list — most of these words are sticking. A few are still slipping through, so one more pass at this level should lock them in before you move up or take on a new list.",,,70-89% correct
 quiz-complete.tsx,canned_feedback_building,"You're recognizing some of these words, but a good chunk aren't sticking yet. That's normal at this stage — stick with this list at the same level for now rather than adding new words.",,,40-69% correct
 quiz-complete.tsx,canned_feedback_struggling,"This list is still tripping you up more than not — that's useful information, not a setback. Try lowering the CEFR level or running a shorter, more focused quiz on just this list before moving on.",,,Below 40% correct
+cefr-level-picker.tsx,cefr_info_alert_title,CEFR Levels,,,Alert title triggered by new info icon next to the Level label
+cefr-level-picker.tsx,cefr_a1_explanation,Breakthrough — basic words and phrases for everyday needs.,,,
+cefr-level-picker.tsx,cefr_a2_explanation,Waystage — simple sentences about familiar topics like family and shopping.,,,
+cefr-level-picker.tsx,cefr_b1_explanation,"Threshold — comfortable with everyday situations, travel, and routine topics.",,,
+cefr-level-picker.tsx,cefr_b2_explanation,Vantage — can discuss general and some abstract topics with varied vocabulary.,,,
+cefr-level-picker.tsx,cefr_c1_explanation,"Advanced — fluent, spontaneous use for social, academic, or work purposes.",,,
+cefr-level-picker.tsx,cefr_c2_explanation,"Mastery — near-native fluency with precise, nuanced expression.",,,
