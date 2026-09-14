@@ -204,3 +204,8 @@ translate-skipped-lines.tsx,translating_ellipsis,Translating…,,,
 translate-skipped-lines.tsx,error_translating,Something went wrong translating those words.,,,
 onboarding.tsx,slide1_body_updated,"Type words, paste a list, or upload a file — AI reads it for you. Or jump right in with a few ready-made sample lists in My Lists.",,,Updated — removed "or snap a photo" since Upload Photo was tabled
 pairs-review.tsx,saved_list_heading,,,,"Not new text — shows the list's own saved name prominently at the top of PairsReview once saved (Edit flow especially), styled like Generate Quiz's list-name heading"
+pairs-review.tsx,rename_link,Rename,,,New — separates renaming an already-saved list from saving its pairs
+pairs-review.tsx,rename_save_button,Save,,,Inline rename confirm button
+pairs-review.tsx,rename_cancel_button,Cancel,,,Inline rename cancel button
+pairs-review.tsx,error_renaming,Something went wrong renaming.,,,
+pairs-review.tsx,save_changes_button,Save Changes,,,"Replaces ""Save List""+name field once a list is already saved — updates pairs by id, no name field"

@@ -55,7 +55,14 @@ export function PairsReview({ source, children }: PairsReviewProps) {
   const [isSaving, setIsSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
   const [saveMessage, setSaveMessage] = useState<string | null>(null);
+  const [isRenaming, setIsRenaming] = useState(false);
+  const [renameValue, setRenameValue] = useState("");
+  const [isSavingRename, setIsSavingRename] = useState(false);
+  const [renameError, setRenameError] = useState<string | null>(null);
 
+  // Creates a brand-new list — only reachable when there's no savedListId
+  // yet, since an already-saved list is updated by id (see
+  // handleSaveChanges) rather than re-upserted by name.
   async function handleSave() {
     if (!name.trim()) return;
     setIsSaving(true);
@@ -82,10 +89,100 @@ export function PairsReview({ source, children }: PairsReviewProps) {
     }
   }
 
+  // Updates an already-saved list's pairs/metadata by id — never touches
+  // the name, so editing words can't accidentally create a duplicate list
+  // under a different name the way the old name-based upsert could.
+  async function handleSaveChanges() {
+    if (!savedListId) return;
+    setIsSaving(true);
+    setSaveError(null);
+    setSaveMessage(null);
+    try {
+      await apiRequest(`/lists/${savedListId}`, {
+        method: "PUT",
+        body: {
+          source,
+          source_language: sourceLanguage,
+          target_language: targetLanguage,
+          pairs,
+          list_type: listType.toLowerCase(),
+        },
+      });
+      setSaveMessage("Saved!");
+    } catch (e) {
+      setSaveError(e instanceof Error ? e.message : "Something went wrong saving.");
+    } finally {
+      setIsSaving(false);
+    }
+  }
+
+  function startRenaming() {
+    setRenameValue(listName ?? "");
+    setRenameError(null);
+    setIsRenaming(true);
+  }
+
+  async function handleRename() {
+    if (!savedListId || !renameValue.trim()) return;
+    setIsSavingRename(true);
+    setRenameError(null);
+    try {
+      await apiRequest(`/lists/${savedListId}`, {
+        method: "PATCH",
+        body: { name: renameValue.trim() },
+      });
+      setSavedList(savedListId, renameValue.trim());
+      setIsRenaming(false);
+    } catch (e) {
+      setRenameError(e instanceof Error ? e.message : "Something went wrong renaming.");
+    } finally {
+      setIsSavingRename(false);
+    }
+  }
+
   return (
     <View style={styles.container}>
-      {savedListId && listName && (
-        <Text style={styles.savedListHeading}>{displayListName(listName)}</Text>
+      {savedListId && listName && !isRenaming && (
+        <View style={styles.headingRow}>
+          <Text style={styles.savedListHeading}>{displayListName(listName)}</Text>
+          <Pressable onPress={startRenaming} hitSlop={8}>
+            <Text style={styles.renameLink}>Rename</Text>
+          </Pressable>
+        </View>
+      )}
+
+      {savedListId && isRenaming && (
+        <View style={styles.renameBlock}>
+          <View style={shared.row}>
+            <TextInput
+              style={[shared.input, styles.rowButton]}
+              value={renameValue}
+              onChangeText={setRenameValue}
+              autoFocus
+            />
+            <Pressable
+              style={[
+                shared.secondaryButton,
+                shared.saveActionButton,
+                styles.renameButton,
+                (!renameValue.trim() || isSavingRename) && shared.primaryButtonDisabled,
+              ]}
+              disabled={!renameValue.trim() || isSavingRename}
+              onPress={handleRename}
+            >
+              <Text style={[shared.secondaryButtonText, shared.accentButtonText]}>
+                {isSavingRename ? "…" : "Save"}
+              </Text>
+            </Pressable>
+            <Pressable
+              style={[shared.secondaryButton, styles.renameButton]}
+              onPress={() => setIsRenaming(false)}
+            >
+              <Text style={shared.secondaryButtonText}>Cancel</Text>
+            </Pressable>
+          </View>
+          {renameError && <Text style={shared.errorText}>{renameError}</Text>}
+        </View>
       )}
 
       {userId && (
@@ -112,11 +209,11 @@ export function PairsReview({ source, children }: PairsReviewProps) {
           </Link>
         </View>
       )}
-      {userId && (
+      {userId && !savedListId && (
         <View style={shared.row}>
           <TextInput
             style={[shared.input, styles.rowButton]}
-            placeholder={savedListId ? "List name (updates it)" : "Name this list"}
+            placeholder="Name this list"
             placeholderTextColor={colors.placeholder}
             value={name}
             onChangeText={setName}
@@ -136,6 +233,21 @@ export function PairsReview({ source, children }: PairsReviewProps) {
             </Text>
           </Pressable>
         </View>
+      )}
+      {userId && savedListId && (
+        <Pressable
+          style={[
+            shared.secondaryButton,
+            shared.saveActionButton,
+            pairs.length === 0 && shared.primaryButtonDisabled,
+          ]}
+          disabled={isSaving || pairs.length === 0}
+          onPress={handleSaveChanges}
+        >
+          <Text style={[shared.secondaryButtonText, shared.accentButtonText]}>
+            {isSaving ? "Saving…" : "Save Changes"}
+          </Text>
+        </Pressable>
       )}
       {saveMessage && <Text style={shared.hint}>{saveMessage}</Text>}
       {saveError && <Text style={shared.errorText}>{saveError}</Text>}
@@ -196,12 +308,27 @@ const styles = StyleSheet.create({
   container: {
     gap: 12,
   },
+  headingRow: {
+    alignItems: "center",
+    gap: 2,
+  },
   savedListHeading: {
     fontSize: 28,
     fontWeight: "800",
     color: colors.generateQuiz,
     textAlign: "center",
-    marginBottom: 4,
+  },
+  renameLink: {
+    fontSize: 13,
+    fontWeight: "600",
+    color: colors.tertiary,
+    textDecorationLine: "underline",
+  },
+  renameBlock: {
+    gap: 4,
+  },
+  renameButton: {
+    paddingHorizontal: 16,
   },
   rowButton: {
     flex: 1,
