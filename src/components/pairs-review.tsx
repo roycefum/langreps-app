@@ -92,7 +92,10 @@ export function PairsReview({ source, children }: PairsReviewProps) {
         <View style={styles.typeRow}>
           <View style={styles.typeGroup}>
             <Text style={styles.typeLabel}>List type</Text>
-            <Pressable onPress={showListTypeExplanation} hitSlop={8}>
+            <Pressable
+              onPress={showListTypeExplanation}
+              hitSlop={{ top: 8, bottom: 8, left: 8, right: 2 }}
+            >
               <Text style={styles.infoIcon}>ⓘ</Text>
             </Pressable>
             <Dropdown
@@ -194,10 +197,11 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   savedListHeading: {
-    fontSize: 20,
-    fontWeight: "700",
+    fontSize: 28,
+    fontWeight: "800",
     color: colors.generateQuiz,
     textAlign: "center",
+    marginBottom: 4,
   },
   rowButton: {
     flex: 1,
