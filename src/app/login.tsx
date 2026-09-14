@@ -1,4 +1,4 @@
-import { useRouter } from "expo-router";
+import { Link, useRouter } from "expo-router";
 import { useState } from "react";
 import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 
@@ -95,11 +95,16 @@ export default function Login() {
       </Pressable>
 
       {mode === "login" ? (
-        <Pressable style={shared.backLink} onPress={() => switchMode("signup")}>
-          <Text>
-            Don&apos;t have an account? <Text style={shared.linkText}>Sign up</Text>
-          </Text>
-        </Pressable>
+        <>
+          <Pressable style={shared.backLink} onPress={() => switchMode("signup")}>
+            <Text>
+              Don&apos;t have an account? <Text style={shared.linkText}>Sign up</Text>
+            </Text>
+          </Pressable>
+          <Link href="/forgot-password" style={shared.backLink}>
+            <Text style={shared.linkText}>Forgot password?</Text>
+          </Link>
+        </>
       ) : (
         <Pressable style={shared.backLink} onPress={() => switchMode("login")}>
           <Text>
