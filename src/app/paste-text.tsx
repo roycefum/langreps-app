@@ -6,11 +6,12 @@ import { ParsingWarning } from "@/components/parsing-warning";
 import { PairsReview } from "@/components/pairs-review";
 import { shared } from "@/constants/styles";
 import { apiRequest } from "@/lib/api";
+import { detectLanguages } from "@/lib/language-detect";
 import { usePairs } from "@/lib/pairs-context";
 import type { VocabPair } from "@/lib/pairs-context";
 
 export default function PasteText() {
-  const { addPairs } = usePairs();
+  const { pairs, addPairs, setSourceLanguage, setTargetLanguage } = usePairs();
   const [rawText, setRawText] = useState("");
   const [isParsing, setIsParsing] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -18,6 +19,10 @@ export default function PasteText() {
 
   async function handleParse() {
     if (!rawText.trim()) return;
+    // Captured before this parse's pairs are added — only auto-detect
+    // language when starting a fresh list, never when appending to one
+    // that already has an established language pair.
+    const wasEmpty = pairs.length === 0;
     setIsParsing(true);
     setError(null);
     try {
@@ -30,6 +35,13 @@ export default function PasteText() {
       addPairs(result.pairs);
       setSkippedLines(result.skipped_lines);
       setRawText("");
+      if (wasEmpty) {
+        const detected = await detectLanguages(result.pairs);
+        if (detected) {
+          setSourceLanguage(detected.source_language);
+          setTargetLanguage(detected.target_language);
+        }
+      }
     } catch (e) {
       setError(e instanceof Error ? e.message : "Something went wrong parsing that text.");
     } finally {

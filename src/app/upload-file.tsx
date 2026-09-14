@@ -8,11 +8,12 @@ import { ParsingWarning } from "@/components/parsing-warning";
 import { PairsReview } from "@/components/pairs-review";
 import { shared } from "@/constants/styles";
 import { apiRequest } from "@/lib/api";
+import { detectLanguages } from "@/lib/language-detect";
 import { usePairs } from "@/lib/pairs-context";
 import type { VocabPair } from "@/lib/pairs-context";
 
 export default function UploadFile() {
-  const { addPairs } = usePairs();
+  const { pairs, addPairs, setSourceLanguage, setTargetLanguage } = usePairs();
   const [isParsing, setIsParsing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [lastFileName, setLastFileName] = useState<string | null>(null);
@@ -26,6 +27,10 @@ export default function UploadFile() {
     if (result.canceled || !result.assets[0]) return;
 
     const pickedFile = result.assets[0];
+    // Captured before this parse's pairs are added — only auto-detect
+    // language when starting a fresh list, never when appending to one
+    // that already has an established language pair.
+    const wasEmpty = pairs.length === 0;
     setLastFileName(pickedFile.name);
     setIsParsing(true);
     setError(null);
@@ -41,6 +46,13 @@ export default function UploadFile() {
       );
       addPairs(response.pairs);
       setSkippedLines(response.skipped_lines);
+      if (wasEmpty) {
+        const detected = await detectLanguages(response.pairs);
+        if (detected) {
+          setSourceLanguage(detected.source_language);
+          setTargetLanguage(detected.target_language);
+        }
+      }
     } catch (e) {
       setError(e instanceof Error ? e.message : "Something went wrong parsing that file.");
     } finally {

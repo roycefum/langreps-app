@@ -7,6 +7,7 @@ import { BackButton } from "@/components/back-button";
 import { PairsReview } from "@/components/pairs-review";
 import { shared } from "@/constants/styles";
 import { apiRequest } from "@/lib/api";
+import { detectLanguages } from "@/lib/language-detect";
 import { usePairs } from "@/lib/pairs-context";
 
 // The extraction endpoint returns {source_term, target_term} (matching
@@ -16,11 +17,15 @@ import { usePairs } from "@/lib/pairs-context";
 type ExtractedPair = { source_term: string; target_term: string };
 
 export default function UploadPicture() {
-  const { addPairs } = usePairs();
+  const { pairs, addPairs, setSourceLanguage, setTargetLanguage } = usePairs();
   const [isExtracting, setIsExtracting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   async function extractFromAsset(asset: ImagePicker.ImagePickerAsset) {
+    // Captured before this extraction's pairs are added — only auto-detect
+    // language when starting a fresh list, never when appending to one
+    // that already has an established language pair.
+    const wasEmpty = pairs.length === 0;
     setIsExtracting(true);
     setError(null);
     try {
@@ -33,12 +38,18 @@ export default function UploadPicture() {
         "/extract-vocab-from-image",
         { method: "POST", formData }
       );
-      addPairs(
-        response.pairs.map((p) => ({
-          "source word": p.source_term,
-          "target word": p.target_term,
-        }))
-      );
+      const newPairs = response.pairs.map((p) => ({
+        "source word": p.source_term,
+        "target word": p.target_term,
+      }));
+      addPairs(newPairs);
+      if (wasEmpty) {
+        const detected = await detectLanguages(newPairs);
+        if (detected) {
+          setSourceLanguage(detected.source_language);
+          setTargetLanguage(detected.target_language);
+        }
+      }
     } catch (e) {
       setError(e instanceof Error ? e.message : "Something went wrong reading that image.");
     } finally {
