@@ -74,18 +74,6 @@ export function PairsReview({ source }: PairsReviewProps) {
         </Pressable>
       </View>
 
-      {pairs.length === 0 ? (
-        <Text style={styles.emptyText}>No words added yet.</Text>
-      ) : (
-        <View style={styles.list}>
-          {pairs.map((pair, index) => (
-            <Text key={index} style={styles.listItem}>
-              {pair["source word"]} → {pair["target word"]}
-            </Text>
-          ))}
-        </View>
-      )}
-
       {userId && (
         <View style={styles.typeRow}>
           <Text style={shared.hint}>List type</Text>
@@ -148,6 +136,21 @@ export function PairsReview({ source }: PairsReviewProps) {
         >
           <Text style={[shared.secondaryButtonText, shared.accentButtonText]}>My Lists</Text>
         </Link>
+      )}
+
+      {/* Deliberately last — with a long list, the actions above (Save,
+          Generate Quiz) would otherwise sit below the whole word list,
+          forcing a scroll just to reach them. */}
+      {pairs.length === 0 ? (
+        <Text style={styles.emptyText}>No words added yet.</Text>
+      ) : (
+        <View style={styles.list}>
+          {pairs.map((pair, index) => (
+            <Text key={index} style={styles.listItem}>
+              {pair["source word"]} → {pair["target word"]}
+            </Text>
+          ))}
+        </View>
       )}
     </View>
   );
