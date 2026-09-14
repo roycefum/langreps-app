@@ -4,7 +4,7 @@ import { Pressable, ScrollView, StyleSheet, Text, TextInput } from "react-native
 import { BackButton } from "@/components/back-button";
 import { ParsingWarning } from "@/components/parsing-warning";
 import { PairsReview } from "@/components/pairs-review";
-import { shared } from "@/constants/styles";
+import { colors, shared } from "@/constants/styles";
 import { apiRequest } from "@/lib/api";
 import { detectLanguages } from "@/lib/language-detect";
 import { usePairs } from "@/lib/pairs-context";
@@ -65,6 +65,7 @@ export default function PasteText() {
       <TextInput
         style={styles.textArea}
         placeholder="Paste your vocab list here"
+        placeholderTextColor={colors.placeholder}
         value={rawText}
         onChangeText={setRawText}
         multiline

@@ -106,7 +106,8 @@ export function PairsReview({ source, children }: PairsReviewProps) {
         <View style={shared.row}>
           <TextInput
             style={[shared.input, styles.rowButton]}
-            placeholder={savedListId ? "List name (saving updates it)" : "Name this list to save it"}
+            placeholder={savedListId ? "List name (updates it)" : "Name this list"}
+            placeholderTextColor={colors.placeholder}
             value={name}
             onChangeText={setName}
           />

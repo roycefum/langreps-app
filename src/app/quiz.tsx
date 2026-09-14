@@ -64,6 +64,7 @@ export default function Quiz() {
             <TextInput
               style={[shared.input, styles.answerInput]}
               placeholder="Your answer"
+              placeholderTextColor={colors.placeholder}
               value={answer}
               onChangeText={setAnswer}
               autoCapitalize="none"

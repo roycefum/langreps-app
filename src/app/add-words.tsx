@@ -3,7 +3,7 @@ import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from "react-
 
 import { BackButton } from "@/components/back-button";
 import { PairsReview } from "@/components/pairs-review";
-import { shared } from "@/constants/styles";
+import { colors, shared } from "@/constants/styles";
 import { usePairs } from "@/lib/pairs-context";
 
 export default function AddWords() {
@@ -28,12 +28,14 @@ export default function AddWords() {
           <TextInput
             style={[shared.input, styles.rowInput]}
             placeholder="Source word"
+            placeholderTextColor={colors.placeholder}
             value={sourceWord}
             onChangeText={setSourceWord}
           />
           <TextInput
             style={[shared.input, styles.rowInput]}
             placeholder="Target word"
+            placeholderTextColor={colors.placeholder}
             value={targetWord}
             onChangeText={setTargetWord}
           />

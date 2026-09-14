@@ -3,7 +3,7 @@ import { useState } from "react";
 import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 
 import { BackButton } from "@/components/back-button";
-import { shared } from "@/constants/styles";
+import { colors, shared } from "@/constants/styles";
 import { useAuth } from "@/lib/auth-context";
 
 type Mode = "login" | "signup";
@@ -63,6 +63,7 @@ export default function Login() {
       <TextInput
         style={shared.input}
         placeholder="Email"
+        placeholderTextColor={colors.placeholder}
         value={email}
         onChangeText={setEmail}
         autoCapitalize="none"
@@ -72,6 +73,7 @@ export default function Login() {
       <TextInput
         style={shared.input}
         placeholder="Password"
+        placeholderTextColor={colors.placeholder}
         value={password}
         onChangeText={setPassword}
         secureTextEntry

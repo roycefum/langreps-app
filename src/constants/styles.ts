@@ -42,6 +42,10 @@ export const colors = {
   // Default body text color — dark brown rather than pure black, to sit
   // better against the parchment background than stark black would.
   text: "#2E2718",
+  // TextInput's default placeholder color (a light system gray) has poor
+  // contrast against the parchment background and is nearly invisible —
+  // every TextInput's placeholderTextColor should use this instead.
+  placeholder: "#8C7F63",
 };
 
 // Shared building blocks reused across screens (buttons, inputs, layout,
