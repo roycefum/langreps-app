@@ -8,6 +8,7 @@ import { colors, shared } from "@/constants/styles";
 import { apiRequest } from "@/lib/api";
 import { useAuth } from "@/lib/auth-context";
 import { usePairs } from "@/lib/pairs-context";
+import { displayListName } from "@/lib/text";
 import { LIST_TYPES } from "@/lib/types";
 
 function showListTypeExplanation() {
@@ -46,6 +47,7 @@ export function PairsReview({ source, children }: PairsReviewProps) {
     listType,
     setListType,
     savedListId,
+    listName,
     setSavedList,
   } = usePairs();
   const { userId } = useAuth();
@@ -82,6 +84,10 @@ export function PairsReview({ source, children }: PairsReviewProps) {
 
   return (
     <View style={styles.container}>
+      {savedListId && listName && (
+        <Text style={styles.savedListHeading}>{displayListName(listName)}</Text>
+      )}
+
       {userId && (
         <View style={styles.typeRow}>
           <View style={styles.typeGroup}>
@@ -186,6 +192,12 @@ export function PairsReview({ source, children }: PairsReviewProps) {
 const styles = StyleSheet.create({
   container: {
     gap: 12,
+  },
+  savedListHeading: {
+    fontSize: 20,
+    fontWeight: "700",
+    color: colors.generateQuiz,
+    textAlign: "center",
   },
   rowButton: {
     flex: 1,
