@@ -7,18 +7,22 @@ type DropdownProps = {
   value: string;
   onChange: (value: string) => void;
   options: readonly string[];
+  disabled?: boolean;
 };
 
 // A compact, closed-by-default dropdown — RN has no built-in <select>, and
 // @react-native-picker/picker renders as a full inline spinning wheel on
 // iOS (no compact mode available there), which was too much screen space
 // for a field that's just one of several settings on a builder screen.
-export function Dropdown({ value, onChange, options }: DropdownProps) {
+export function Dropdown({ value, onChange, options, disabled }: DropdownProps) {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
     <>
-      <Pressable style={shared.input} onPress={() => setIsOpen(true)}>
+      <Pressable
+        style={[shared.input, disabled && styles.disabled]}
+        onPress={() => !disabled && setIsOpen(true)}
+      >
         <Text style={styles.value}>{value}</Text>
       </Pressable>
       <Modal visible={isOpen} transparent animationType="fade" onRequestClose={() => setIsOpen(false)}>
@@ -54,6 +58,9 @@ export function Dropdown({ value, onChange, options }: DropdownProps) {
 }
 
 const styles = StyleSheet.create({
+  disabled: {
+    opacity: 0.5,
+  },
   value: {
     fontSize: 16,
     fontWeight: "600",

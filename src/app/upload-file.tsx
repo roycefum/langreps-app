@@ -4,7 +4,6 @@ import { useState } from "react";
 import { Pressable, ScrollView, StyleSheet, Text } from "react-native";
 
 import { BackButton } from "@/components/back-button";
-import { ParsingWarning } from "@/components/parsing-warning";
 import { PairsReview } from "@/components/pairs-review";
 import { TranslateSkippedLines } from "@/components/translate-skipped-lines";
 import { shared } from "@/constants/styles";
@@ -70,8 +69,6 @@ export default function UploadFile() {
         A plain text or CSV file, one pair per line — a tab, &quot;-&gt;&quot;, &quot;:&quot;, or
         similar between each word and its translation.
       </Text>
-
-      <ParsingWarning />
 
       <Pressable
         style={[shared.secondaryButton, shared.fileActionButton]}

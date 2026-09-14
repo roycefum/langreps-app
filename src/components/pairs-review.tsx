@@ -11,13 +11,18 @@ import { usePairs } from "@/lib/pairs-context";
 import { displayListName } from "@/lib/text";
 import { LIST_TYPES } from "@/lib/types";
 
-function showListTypeExplanation() {
+function showListTypeExplanation(isLocked: boolean) {
   Alert.alert(
     "List Types",
     "Vocab — plain word pairs (nouns, adjectives, etc.), tested as-is.\n\n" +
       "Verb — infinitives get conjugated in context on Generate Quiz, so you're " +
       "tested on actual verb forms (e.g. \"habla\") instead of just recalling the " +
-      "infinitive (\"hablar\")."
+      "infinitive (\"hablar\")." +
+      (isLocked
+        ? "\n\nCan't be changed after a list is saved — quiz history is tied to how a " +
+          "word is tested, so switching types on an existing list would make its past " +
+          "results inconsistent. Save a new list instead if you need the other type."
+        : "")
   );
 }
 
@@ -25,9 +30,9 @@ type PairsReviewProps = {
   // Matches the Streamlit prototype's render_save_button(source, ...)
   // convention — records which builder screen produced this list.
   source: "manual" | "paste" | "file" | "photo";
-  // Rendered between Undo/Clear and the word list — lets a screen (e.g. Add
-  // Words' Source/Target inputs) put its own "add more" UI directly above
-  // the list it affects, instead of it being stuck up top, far from where
+  // Rendered directly above Undo/Clear and the word list — lets a screen
+  // (e.g. Add Words' Source/Target inputs) put its own "add more" UI
+  // directly above the list it affects, instead of it being stuck up top, far from where
   // added words actually show up.
   children?: ReactNode;
 };
@@ -188,9 +193,9 @@ export function PairsReview({ source, children }: PairsReviewProps) {
       {userId && (
         <View style={styles.typeRow}>
           <View style={styles.typeGroup}>
-            <Text style={styles.typeLabel}>List type</Text>
+            <Text style={styles.typeLabel}>List type{savedListId ? " (locked)" : ""}</Text>
             <Pressable
-              onPress={showListTypeExplanation}
+              onPress={() => showListTypeExplanation(!!savedListId)}
               hitSlop={{ top: 8, bottom: 8, left: 8, right: 2 }}
             >
               <Text style={styles.infoIcon}>ⓘ</Text>
@@ -199,6 +204,7 @@ export function PairsReview({ source, children }: PairsReviewProps) {
               value={listType}
               onChange={(value) => setListType(value as typeof listType)}
               options={LIST_TYPES}
+              disabled={!!savedListId}
             />
           </View>
           <Link
@@ -268,6 +274,10 @@ export function PairsReview({ source, children }: PairsReviewProps) {
         </Text>
       </Pressable>
 
+      <LanguagePicker />
+
+      {children}
+
       <View style={shared.row}>
         <Pressable style={[shared.secondaryButton, styles.rowButton]} onPress={undoLast}>
           <Text style={shared.secondaryButtonText}>Undo last</Text>
@@ -276,10 +286,6 @@ export function PairsReview({ source, children }: PairsReviewProps) {
           <Text style={shared.secondaryButtonText}>Clear list</Text>
         </Pressable>
       </View>
-
-      <LanguagePicker />
-
-      {children}
 
       {/* Deliberately last — with a long list, the actions above (Save,
           Generate Quiz) would otherwise sit below the whole word list,

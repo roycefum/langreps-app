@@ -2,7 +2,6 @@ import { useState } from "react";
 import { Pressable, ScrollView, StyleSheet, Text, TextInput } from "react-native";
 
 import { BackButton } from "@/components/back-button";
-import { ParsingWarning } from "@/components/parsing-warning";
 import { PairsReview } from "@/components/pairs-review";
 import { TranslateSkippedLines } from "@/components/translate-skipped-lines";
 import { colors, shared } from "@/constants/styles";
@@ -60,8 +59,6 @@ export default function PasteText() {
         and its translation. e.g.{"\n"}
         hello -&gt; hola
       </Text>
-
-      <ParsingWarning />
 
       <TextInput
         style={styles.textArea}

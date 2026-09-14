@@ -209,3 +209,5 @@ pairs-review.tsx,rename_save_button,Save,,,Inline rename confirm button
 pairs-review.tsx,rename_cancel_button,Cancel,,,Inline rename cancel button
 pairs-review.tsx,error_renaming,Something went wrong renaming.,,,
 pairs-review.tsx,save_changes_button,Save Changes,,,"Replaces ""Save List""+name field once a list is already saved — updates pairs by id, no name field"
+pairs-review.tsx,list_type_locked_label,List type (locked),,,Appended to the label once a list is saved — type can't change after first save
+pairs-review.tsx,list_type_locked_explanation,"Can't be changed after a list is saved — quiz history is tied to how a word is tested, so switching types on an existing list would make its past results inconsistent. Save a new list instead if you need the other type.",,,Appended to the existing List Types info alert once locked
