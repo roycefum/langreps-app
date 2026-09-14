@@ -169,3 +169,7 @@ my-quizzes.tsx,sort_by_last_updated,Last Updated,,,New sort option — mirrors M
 my-quizzes.tsx,last_updated_template,Last updated: {date},,,"Template — date formatting via toLocaleDateString(), varies by device locale"
 my-quizzes.tsx,quiz_type_badge_vocab,Vocab,,,"Small badge next to the quiz row title, shows the underlying list's list_type"
 my-quizzes.tsx,quiz_type_badge_verb,Verb,,,Small badge next to the quiz row title
+quiz-complete.tsx,canned_feedback_perfect,Perfect score! This list is looking solid.,,,"Shown when there's not yet enough history for an AI pattern insight"
+quiz-complete.tsx,canned_feedback_great,Great work — you know this list well.,,,80-99% correct
+quiz-complete.tsx,canned_feedback_keep_going,Keep at it — repetition is what makes this stick.,,,50-79% correct
+quiz-complete.tsx,canned_feedback_tough,This one's tough. A few more passes and it'll click.,,,Below 50% correct
