@@ -1,5 +1,5 @@
 import { Link, useRouter } from "expo-router";
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 
 import { Dropdown } from "@/components/dropdown";
@@ -13,12 +13,17 @@ type PairsReviewProps = {
   // Matches the Streamlit prototype's render_save_button(source, ...)
   // convention — records which builder screen produced this list.
   source: "manual" | "paste" | "file" | "photo";
+  // Rendered between Undo/Clear and the word list — lets a screen (e.g. Add
+  // Words' Source/Target inputs) put its own "add more" UI directly above
+  // the list it affects, instead of it being stuck up top, far from where
+  // added words actually show up.
+  children?: ReactNode;
 };
 
 // Shared "here's your list so far" UI used by every builder screen (manual,
 // paste, file, photo) — they all funnel into the same in-memory pairs list,
 // so they all end with the same review/edit/save/generate step.
-export function PairsReview({ source }: PairsReviewProps) {
+export function PairsReview({ source, children }: PairsReviewProps) {
   const router = useRouter();
   const {
     pairs,
@@ -65,15 +70,6 @@ export function PairsReview({ source }: PairsReviewProps) {
 
   return (
     <View style={styles.container}>
-      <View style={shared.row}>
-        <Pressable style={[shared.secondaryButton, styles.rowButton]} onPress={undoLast}>
-          <Text style={shared.secondaryButtonText}>Undo last</Text>
-        </Pressable>
-        <Pressable style={[shared.secondaryButton, styles.rowButton]} onPress={clearPairs}>
-          <Text style={shared.secondaryButtonText}>Clear list</Text>
-        </Pressable>
-      </View>
-
       {userId && (
         <View style={styles.typeRow}>
           <Text style={shared.hint}>List type</Text>
@@ -137,6 +133,17 @@ export function PairsReview({ source }: PairsReviewProps) {
           <Text style={[shared.secondaryButtonText, shared.accentButtonText]}>My Lists</Text>
         </Link>
       )}
+
+      <View style={shared.row}>
+        <Pressable style={[shared.secondaryButton, styles.rowButton]} onPress={undoLast}>
+          <Text style={shared.secondaryButtonText}>Undo last</Text>
+        </Pressable>
+        <Pressable style={[shared.secondaryButton, styles.rowButton]} onPress={clearPairs}>
+          <Text style={shared.secondaryButtonText}>Clear list</Text>
+        </Pressable>
+      </View>
+
+      {children}
 
       {/* Deliberately last — with a long list, the actions above (Save,
           Generate Quiz) would otherwise sit below the whole word list,

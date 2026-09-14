@@ -26,26 +26,26 @@ export default function AddWords() {
 
       <LanguagePicker />
 
-      <View style={shared.row}>
-        <TextInput
-          style={[shared.input, styles.rowInput]}
-          placeholder="Source word"
-          value={sourceWord}
-          onChangeText={setSourceWord}
-        />
-        <TextInput
-          style={[shared.input, styles.rowInput]}
-          placeholder="Target word"
-          value={targetWord}
-          onChangeText={setTargetWord}
-        />
-      </View>
+      <PairsReview source="manual">
+        <View style={shared.row}>
+          <TextInput
+            style={[shared.input, styles.rowInput]}
+            placeholder="Source word"
+            value={sourceWord}
+            onChangeText={setSourceWord}
+          />
+          <TextInput
+            style={[shared.input, styles.rowInput]}
+            placeholder="Target word"
+            value={targetWord}
+            onChangeText={setTargetWord}
+          />
+        </View>
 
-      <Pressable style={[shared.secondaryButton, shared.addActionButton]} onPress={handleAdd}>
-        <Text style={[shared.secondaryButtonText, shared.accentButtonText]}>Add to list</Text>
-      </Pressable>
-
-      <PairsReview source="manual" />
+        <Pressable style={[shared.secondaryButton, shared.addActionButton]} onPress={handleAdd}>
+          <Text style={[shared.secondaryButtonText, shared.accentButtonText]}>Add to list</Text>
+        </Pressable>
+      </PairsReview>
     </ScrollView>
   );
 }
