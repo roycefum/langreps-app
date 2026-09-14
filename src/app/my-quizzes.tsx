@@ -26,6 +26,14 @@ type QuizSessionRow = {
   verb_tense: string | null;
 };
 
+type CompletedSessionRow = {
+  session_id: string;
+  list_id: string;
+  completed_at: string;
+  correct: number;
+  total: number;
+};
+
 type SortBy = "name" | "date";
 
 export default function MyQuizzes() {
@@ -33,6 +41,7 @@ export default function MyQuizzes() {
   const { startQuiz } = useQuiz();
   const [lists, setLists] = useState<ListSummary[]>([]);
   const [sessions, setSessions] = useState<QuizSessionRow[]>([]);
+  const [completedSessions, setCompletedSessions] = useState<CompletedSessionRow[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectMode, setSelectMode] = useState(false);
@@ -60,12 +69,14 @@ export default function MyQuizzes() {
     setIsLoading(true);
     setError(null);
     try {
-      const [listsResult, sessionsResult] = await Promise.all([
+      const [listsResult, sessionsResult, completedResult] = await Promise.all([
         apiRequest<{ lists: ListSummary[] }>("/lists"),
         apiRequest<{ sessions: QuizSessionRow[] }>("/quiz-sessions"),
+        apiRequest<{ sessions: CompletedSessionRow[] }>("/quiz-sessions/completed"),
       ]);
       setLists(listsResult.lists);
       setSessions(sessionsResult.sessions);
+      setCompletedSessions(completedResult.sessions);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Something went wrong loading your quizzes.");
     } finally {
@@ -104,6 +115,35 @@ export default function MyQuizzes() {
             try {
               await apiRequest(`/quiz-sessions/${session.id}`, { method: "DELETE" });
               setSessions((prev) => prev.filter((s) => s.id !== session.id));
+            } catch (e) {
+              setError(e instanceof Error ? e.message : "Something went wrong deleting that quiz.");
+            }
+          },
+        },
+      ]
+    );
+  }
+
+  function viewResults(session: CompletedSessionRow) {
+    router.push({ pathname: "/quiz-results", params: { sessionId: session.session_id } });
+  }
+
+  function confirmDeleteCompleted(session: CompletedSessionRow) {
+    const list = lists.find((l) => l.id === session.list_id);
+    Alert.alert(
+      "Delete Quiz",
+      `Delete this quiz${list ? ` for "${displayListName(list.name)}"` : ""}? This can't be undone.`,
+      [
+        { text: "Cancel", style: "cancel" },
+        {
+          text: "Delete",
+          style: "destructive",
+          onPress: async () => {
+            try {
+              await apiRequest(`/quiz-sessions/${session.session_id}`, { method: "DELETE" });
+              setCompletedSessions((prev) =>
+                prev.filter((s) => s.session_id !== session.session_id)
+              );
             } catch (e) {
               setError(e instanceof Error ? e.message : "Something went wrong deleting that quiz.");
             }
@@ -283,6 +323,39 @@ export default function MyQuizzes() {
             })}
           </View>
         ))}
+
+      {!isLoading && (
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Past Quizzes</Text>
+          {completedSessions.length === 0 ? (
+            <Text style={shared.hint}>No completed quizzes yet.</Text>
+          ) : (
+            completedSessions.map((session) => {
+              const list = lists.find((l) => l.id === session.list_id);
+              const pct =
+                session.total > 0 ? Math.round((session.correct / session.total) * 100) : 0;
+              return (
+                <View key={session.session_id} style={styles.row}>
+                  <Pressable style={styles.rowMain} onPress={() => viewResults(session)}>
+                    <Text style={styles.rowTitle}>
+                      {list ? displayListName(list.name) : "Deleted list"}
+                    </Text>
+                    <Text style={shared.hint}>
+                      {session.correct}/{session.total} correct ({pct}%)
+                    </Text>
+                    <Text style={shared.hint}>
+                      {new Date(session.completed_at).toLocaleDateString()}
+                    </Text>
+                  </Pressable>
+                  <Pressable onPress={() => confirmDeleteCompleted(session)}>
+                    <Text style={styles.deleteText}>Delete</Text>
+                  </Pressable>
+                </View>
+              );
+            })
+          )}
+        </View>
+      )}
     </ScrollView>
   );
 }
@@ -294,6 +367,10 @@ const styles = StyleSheet.create({
   },
   section: {
     gap: 8,
+  },
+  sectionTitle: {
+    fontSize: 16,
+    fontWeight: "700",
   },
   sectionHeaderRow: {
     flexDirection: "row",
