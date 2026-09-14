@@ -38,6 +38,7 @@ export function PairsReview({ source, children }: PairsReviewProps) {
   const router = useRouter();
   const {
     pairs,
+    removePair,
     undoLast,
     clearPairs,
     sourceLanguage,
@@ -167,9 +168,14 @@ export function PairsReview({ source, children }: PairsReviewProps) {
       ) : (
         <View style={styles.list}>
           {pairs.map((pair, index) => (
-            <Text key={index} style={styles.listItem}>
-              {pair["source word"]} → {pair["target word"]}
-            </Text>
+            <View key={index} style={styles.listRow}>
+              <Text style={styles.listItem}>
+                {pair["source word"]} → {pair["target word"]}
+              </Text>
+              <Pressable onPress={() => removePair(index)} hitSlop={8}>
+                <Text style={styles.removeIcon}>✕</Text>
+              </Pressable>
+            </View>
           ))}
         </View>
       )}
@@ -187,9 +193,19 @@ const styles = StyleSheet.create({
   list: {
     gap: 2,
   },
+  listRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
   listItem: {
     fontSize: 16,
     paddingVertical: 6,
+  },
+  removeIcon: {
+    fontSize: 16,
+    color: colors.error,
+    paddingHorizontal: 8,
   },
   emptyText: {
     opacity: 0.5,

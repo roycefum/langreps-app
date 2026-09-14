@@ -196,3 +196,5 @@ pairs-review.tsx,list_type_info_verb,"Verb — infinitives get conjugated in con
 pairs-review.tsx,save_input_placeholder_new,Name this list,,,"Placeholder text — shortened from ""Name this list to save it"", didn't fit alongside the Save button"
 pairs-review.tsx,save_input_placeholder_update,List name (updates it),,,Placeholder shown once the list is already saved — shortened to fit
 constants/styles.ts,placeholder_color_note,,,,"Not a UI string — new colors.placeholder token (#8C7F63) applied via placeholderTextColor to every TextInput app-wide; RN's default placeholder gray had poor contrast on the parchment background and was nearly invisible"
+my-lists.tsx,edit_list_link,Edit,,,New row action — loads the list into Add Words for editing instead of only Generate Quiz
+pairs-review.tsx,remove_word_icon,✕,,,"New per-word remove button in the word list, was append/undo-last/clear-all only before"

@@ -149,6 +149,24 @@ export default function MyLists() {
     }
   }
 
+  async function editList(listId: string) {
+    if (isBusyRef.current) return;
+    isBusyRef.current = true;
+    try {
+      const list = await apiRequest<SavedList>(`/lists/${listId}`);
+      loadList(list);
+      // Add Words already supports updating an existing list in place
+      // (save_list treats a repeated name as "update this list") — this
+      // just needed a way to actually get there with the list preloaded,
+      // instead of only ever landing on Generate Quiz.
+      router.push("/add-words");
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Something went wrong loading that list.");
+    } finally {
+      isBusyRef.current = false;
+    }
+  }
+
   function confirmDelete(list: ListSummary) {
     Alert.alert("Delete List", `Delete "${displayListName(list.name)}"? This can't be undone.`, [
       { text: "Cancel", style: "cancel" },
@@ -343,6 +361,9 @@ export default function MyLists() {
                 >
                   <Text style={styles.historyText}>Progress</Text>
                 </Link>
+                <Pressable onPress={() => editList(list.id)}>
+                  <Text style={styles.editText}>Edit</Text>
+                </Pressable>
                 <Pressable onPress={() => confirmDelete(list)}>
                   <Text style={styles.deleteText}>Delete</Text>
                 </Pressable>
@@ -491,6 +512,10 @@ const styles = StyleSheet.create({
   },
   historyText: {
     color: colors.tertiary,
+    fontWeight: "600",
+  },
+  editText: {
+    color: colors.primary,
     fontWeight: "600",
   },
   deleteText: {
