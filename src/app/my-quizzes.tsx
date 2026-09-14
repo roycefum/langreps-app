@@ -6,7 +6,7 @@ import { BackButton } from "@/components/back-button";
 import { colors, shared } from "@/constants/styles";
 import { apiRequest } from "@/lib/api";
 import { useQuiz } from "@/lib/quiz-context";
-import type { Question } from "@/lib/types";
+import { TENSES_BY_LANGUAGE, type Question } from "@/lib/types";
 
 type ListSummary = {
   id: string;
@@ -22,6 +22,7 @@ type QuizSessionRow = {
   questions: Question[];
   current_index: number;
   last_active_at: string;
+  verb_tense: string | null;
 };
 
 type SortBy = "name" | "date";
@@ -234,6 +235,15 @@ export default function MyQuizzes() {
 
             {sortedSessions.map((session) => {
               const list = lists.find((l) => l.id === session.list_id);
+              const typeLine = !list
+                ? null
+                : list.list_type === "verb"
+                  ? `Verb — ${
+                      TENSES_BY_LANGUAGE[list.target_language]?.find(
+                        (t) => t.value === session.verb_tense
+                      )?.label ?? "Mixed"
+                    }`
+                  : "Vocab";
               return (
                 <View key={session.id} style={styles.row}>
                   <Pressable
@@ -242,14 +252,8 @@ export default function MyQuizzes() {
                       selectMode ? toggleSelected(session.id) : resumeSession(session)
                     }
                   >
-                    <View style={styles.titleRow}>
-                      <Text style={styles.rowTitle}>{list?.name ?? "Quiz in progress"}</Text>
-                      {list && (
-                        <Text style={styles.typeBadge}>
-                          {list.list_type === "verb" ? "Verb" : "Vocab"}
-                        </Text>
-                      )}
-                    </View>
+                    <Text style={styles.rowTitle}>{list?.name ?? "Quiz in progress"}</Text>
+                    {typeLine && <Text style={styles.typeLine}>{typeLine}</Text>}
                     <Text style={shared.hint}>
                       Question {session.current_index + 1} of {session.questions.length}
                     </Text>
@@ -348,20 +352,10 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "600",
   },
-  titleRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 6,
-  },
-  typeBadge: {
-    fontSize: 11,
-    fontWeight: "700",
+  typeLine: {
+    fontSize: 13,
+    fontWeight: "600",
     color: colors.tertiary,
-    backgroundColor: colors.background,
-    borderRadius: 6,
-    paddingHorizontal: 6,
-    paddingVertical: 2,
-    overflow: "hidden",
   },
   deleteText: {
     color: colors.error,

@@ -154,7 +154,11 @@ export default function GenerateQuiz() {
       if (userId && savedListId) {
         const session = await apiRequest<{ session_id: string }>("/quiz-sessions", {
           method: "POST",
-          body: { list_id: savedListId, questions: allQuestions },
+          body: {
+            list_id: savedListId,
+            questions: allQuestions,
+            verb_tense: listType === "Verb" ? verbTense : null,
+          },
         });
         sessionId = session.session_id;
       }
