@@ -43,7 +43,7 @@ export default function Home() {
     <View style={[shared.screenCentered, styles.container]}>
       <Text style={styles.title}>LangReps</Text>
       <Text style={styles.subtitle}>
-        Build a vocab list, then let AI generate an adaptive quiz for it.
+        Build a vocab list, then generate an adaptive quiz for it.
       </Text>
 
       {/* Device-local, not account-bound, so shown regardless of auth state. */}
@@ -65,9 +65,14 @@ export default function Home() {
               {deleteError && <Text style={shared.errorText}>{deleteError}</Text>}
             </>
           ) : (
-            <Link href="/login" style={[styles.authLink, shared.linkText]}>
-              Log In / Sign Up
-            </Link>
+            <>
+              <Link href="/login" style={[styles.authLink, shared.linkText]}>
+                Log In / Sign Up
+              </Link>
+              <Text style={[shared.hint, styles.centerText]}>
+                Sign up to save your lists and track your progress over time
+              </Text>
+            </>
           )}
         </View>
       )}
@@ -83,7 +88,7 @@ export default function Home() {
           <Text style={shared.primaryButtonText}>Upload a File</Text>
         </Link>
         <Link href="/upload-picture" style={shared.primaryButton}>
-          <Text style={shared.primaryButtonText}>Share a Picture</Text>
+          <Text style={shared.primaryButtonText}>Upload a Photo</Text>
         </Link>
         {userId && (
           <>
@@ -117,6 +122,9 @@ const styles = StyleSheet.create({
   authRow: {
     alignItems: "center",
     gap: 4,
+  },
+  centerText: {
+    textAlign: "center",
   },
   authLink: {
     color: colors.tertiary,

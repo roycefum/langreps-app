@@ -9,7 +9,7 @@ index.tsx,signed_in_as,Signed in as {email},,,Template — {email} not translate
 index.tsx,add_words_manually,Add Words Manually,,,
 index.tsx,paste_vocab_list,Paste Vocab List,,,
 index.tsx,upload_a_file,Upload a File,,,
-index.tsx,share_a_picture,Share a Picture,,,
+index.tsx,share_a_picture,Upload a Photo,,,
 index.tsx,my_lists,My Lists,,,
 index.tsx,my_quizzes,My Quizzes,,,
 index.tsx,delete_account_confirm,This permanently deletes your account and all your saved lists. This can't be undone.,,,Alert body
@@ -40,7 +40,7 @@ upload-file.tsx,upload_file_instructions,"A plain text or CSV file, one pair per
 upload-file.tsx,choose_file,Choose File,,,
 upload-file.tsx,last_file,Last file: {name},,,Template — filename not translated
 upload-file.tsx,error_parsing_file,Something went wrong parsing that file.,,,
-upload-picture.tsx,share_a_picture_title,Share a Picture,,,
+upload-picture.tsx,share_a_picture_title,Upload a Photo,,,
 upload-picture.tsx,share_picture_instructions,"A photo or screenshot of word pairs (e.g. ""house -> casa"") — AI will read the pairs out of it.",,,Contains a literal example
 upload-picture.tsx,take_photo,Take Photo,,,
 upload-picture.tsx,choose_from_library,Choose from Library,,,
@@ -147,3 +147,4 @@ my-lists.tsx,last_uploaded_template,Last uploaded: {date},,,"Template — date f
 my-lists.tsx,sample_list_name_template_v2,{target} Vocabulary (from {source}) / {target} Verbs (from {source}),,,Superseded template — replaces the old arrow-notation naming
 my-lists.tsx,sample_list_card_title,Vocab {count} / Verb {count},,,"Sample-list catalog card title, replaces the old full name display"
 my-lists.tsx,sample_list_card_flags,{flag} -> {flag},,,Flag emoji pair instead of spelled-out language names — sidesteps capitalization inconsistency entirely
+index.tsx,signup_incentive_hint,Sign up to save your lists and track your progress over time,,,

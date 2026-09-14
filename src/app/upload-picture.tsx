@@ -75,7 +75,7 @@ export default function UploadPicture() {
   return (
     <ScrollView style={shared.screen} contentContainerStyle={styles.content}>
       <BackButton href="/" />
-      <Text style={shared.title}>Share a Picture</Text>
+      <Text style={shared.title}>Upload a Photo</Text>
 
       <LanguagePicker />
 
