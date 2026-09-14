@@ -4,12 +4,25 @@ import { Alert, Pressable, StyleSheet, Text, View } from "react-native";
 
 import { colors, shared } from "@/constants/styles";
 import { useAuth } from "@/lib/auth-context";
+import { usePairs } from "@/lib/pairs-context";
 import { getHasSeenOnboarding } from "@/lib/settings-storage";
 
 export default function Home() {
   const router = useRouter();
   const { userId, email, isLoading, logout, deleteAccount } = useAuth();
+  const { clearPairs } = usePairs();
   const [deleteError, setDeleteError] = useState<string | null>(null);
+
+  // pairs-context is one shared "list currently being built," so it
+  // persists across navigation by design (that's what lets My Lists'
+  // "Edit" preload a list into Add Words). But entering a builder screen
+  // from Home should always start fresh — otherwise backing out of an
+  // Edit session and opening a different builder screen would silently
+  // keep showing the list you were editing.
+  function startFreshList(route: "/add-words" | "/paste-text" | "/upload-file") {
+    clearPairs();
+    router.push(route);
+  }
 
   useEffect(() => {
     getHasSeenOnboarding().then((seen) => {
@@ -78,15 +91,15 @@ export default function Home() {
       )}
 
       <View style={styles.buttonGroup}>
-        <Link href="/add-words" style={shared.primaryButton}>
+        <Pressable style={shared.primaryButton} onPress={() => startFreshList("/add-words")}>
           <Text style={shared.primaryButtonText}>Add Words Manually</Text>
-        </Link>
-        <Link href="/paste-text" style={shared.primaryButton}>
+        </Pressable>
+        <Pressable style={shared.primaryButton} onPress={() => startFreshList("/paste-text")}>
           <Text style={shared.primaryButtonText}>Paste Vocab List</Text>
-        </Link>
-        <Link href="/upload-file" style={shared.primaryButton}>
+        </Pressable>
+        <Pressable style={shared.primaryButton} onPress={() => startFreshList("/upload-file")}>
           <Text style={shared.primaryButtonText}>Upload a File</Text>
-        </Link>
+        </Pressable>
         {userId && (
           <>
             <Link href="/my-lists" style={[shared.primaryButton, shared.generateQuizButton]}>
