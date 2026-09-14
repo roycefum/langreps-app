@@ -11,14 +11,21 @@ import { useQuiz } from "@/lib/quiz-context";
 // Shown when there's not yet enough missed-word history for a real AI
 // pattern (see MIN_WRONG_ATTEMPTS_FOR_INSIGHT/MIN_DISTINCT_MISSED_WORDS_FOR_INSIGHT
 // in api/main.py) — a quiz should never end with no feedback at all, so
-// this fills in with a plain score-based message instead.
+// this fills in with a substantive score-based message instead of a bare
+// one-liner, including a concrete next-step suggestion.
 function cannedFeedback(correct: number, total: number): string {
   if (total === 0) return "";
   const pct = correct / total;
-  if (pct === 1) return "Perfect score! This list is looking solid.";
-  if (pct >= 0.8) return "Great work — you know this list well.";
-  if (pct >= 0.5) return "Keep at it — repetition is what makes this stick.";
-  return "This one's tough. A few more passes and it'll click.";
+  if (pct >= 0.9) {
+    return "You show mastery of the material and a good understanding of the concepts. You recall these words well and have successfully added them to your vocabulary. Keep up the good work — we suggest upping the CEFR level or training on a new list.";
+  }
+  if (pct >= 0.7) {
+    return "You have a solid grasp of this list — most of these words are sticking. A few are still slipping through, so one more pass at this level should lock them in before you move up or take on a new list.";
+  }
+  if (pct >= 0.4) {
+    return "You're recognizing some of these words, but a good chunk aren't sticking yet. That's normal at this stage — stick with this list at the same level for now rather than adding new words.";
+  }
+  return "This list is still tripping you up more than not — that's useful information, not a setback. Try lowering the CEFR level or running a shorter, more focused quiz on just this list before moving on.";
 }
 
 export default function QuizComplete() {
@@ -88,10 +95,9 @@ const styles = StyleSheet.create({
   },
   feedback: {
     fontSize: 15,
-    fontWeight: "600",
-    fontStyle: "italic",
+    lineHeight: 22,
     textAlign: "center",
-    paddingHorizontal: 16,
+    paddingHorizontal: 8,
     minHeight: 20,
   },
 });

@@ -169,7 +169,7 @@ my-quizzes.tsx,sort_by_last_updated,Last Updated,,,New sort option — mirrors M
 my-quizzes.tsx,last_updated_template,Last updated: {date},,,"Template — date formatting via toLocaleDateString(), varies by device locale"
 my-quizzes.tsx,quiz_type_badge_vocab,Vocab,,,"Small badge next to the quiz row title, shows the underlying list's list_type"
 my-quizzes.tsx,quiz_type_badge_verb,Verb,,,Small badge next to the quiz row title
-quiz-complete.tsx,canned_feedback_perfect,Perfect score! This list is looking solid.,,,"Shown when there's not yet enough history for an AI pattern insight"
-quiz-complete.tsx,canned_feedback_great,Great work — you know this list well.,,,80-99% correct
-quiz-complete.tsx,canned_feedback_keep_going,Keep at it — repetition is what makes this stick.,,,50-79% correct
-quiz-complete.tsx,canned_feedback_tough,This one's tough. A few more passes and it'll click.,,,Below 50% correct
+quiz-complete.tsx,canned_feedback_mastery,"You show mastery of the material and a good understanding of the concepts. You recall these words well and have successfully added them to your vocabulary. Keep up the good work — we suggest upping the CEFR level or training on a new list.",,,"Shown when there's not yet enough history for an AI pattern insight. 90%+ correct"
+quiz-complete.tsx,canned_feedback_solid,"You have a solid grasp of this list — most of these words are sticking. A few are still slipping through, so one more pass at this level should lock them in before you move up or take on a new list.",,,70-89% correct
+quiz-complete.tsx,canned_feedback_building,"You're recognizing some of these words, but a good chunk aren't sticking yet. That's normal at this stage — stick with this list at the same level for now rather than adding new words.",,,40-69% correct
+quiz-complete.tsx,canned_feedback_struggling,"This list is still tripping you up more than not — that's useful information, not a setback. Try lowering the CEFR level or running a shorter, more focused quiz on just this list before moving on.",,,Below 40% correct
