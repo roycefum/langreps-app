@@ -8,6 +8,7 @@ import { apiRequest } from "@/lib/api";
 import { usePairs, type SavedList, type VocabPair } from "@/lib/pairs-context";
 import { getStarterPairs } from "@/lib/starter-vocab";
 import { getStarterVerbPairs } from "@/lib/starter-verbs";
+import { displayListName } from "@/lib/text";
 
 type ListSummary = {
   id: string;
@@ -149,7 +150,7 @@ export default function MyLists() {
   }
 
   function confirmDelete(list: ListSummary) {
-    Alert.alert("Delete List", `Delete "${list.name}"? This can't be undone.`, [
+    Alert.alert("Delete List", `Delete "${displayListName(list.name)}"? This can't be undone.`, [
       { text: "Cancel", style: "cancel" },
       {
         text: "Delete",
@@ -326,7 +327,7 @@ export default function MyLists() {
                     selectMode ? toggleSelected(list.id) : openList(list.id)
                   }
                 >
-                  <Text style={styles.rowTitle}>{list.name}</Text>
+                  <Text style={styles.rowTitle}>{displayListName(list.name)}</Text>
                   <Text style={shared.hint}>
                     {list.source_language} → {list.target_language}
                   </Text>
@@ -337,7 +338,7 @@ export default function MyLists() {
                 <Link
                   href={{
                     pathname: "/list-history",
-                    params: { listId: list.id, listName: list.name },
+                    params: { listId: list.id, listName: displayListName(list.name) },
                   }}
                 >
                   <Text style={styles.historyText}>Progress</Text>

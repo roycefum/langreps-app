@@ -12,7 +12,7 @@ import { useAuth } from "@/lib/auth-context";
 import { usePairs, type VocabPair } from "@/lib/pairs-context";
 import { useQuiz } from "@/lib/quiz-context";
 import { getAdaptiveQuizzesEnabled, getDefaultCefrLevel } from "@/lib/settings-storage";
-import { chunk, dedupePairs, sample } from "@/lib/text";
+import { chunk, dedupePairs, displayListName, sample } from "@/lib/text";
 import { DEFAULT_CEFR_LEVEL, TENSES_BY_LANGUAGE, type CefrLevel, type Question } from "@/lib/types";
 
 const MIXED_TENSE_LABEL = "Mixed";
@@ -176,7 +176,9 @@ export default function GenerateQuiz() {
     <View style={[shared.screenCentered, styles.container]}>
       <BackButton href="/" />
       <Text style={[shared.title, styles.centerText]}>Generate Quiz</Text>
-      <Text style={[styles.centerText, styles.listNameHeading]}>{listName ?? "Unsaved list"}</Text>
+      <Text style={[styles.centerText, styles.listNameHeading]}>
+        {listName ? displayListName(listName) : "Unsaved list"}
+      </Text>
 
       {pairs.length < 3 ? (
         <Text style={[shared.hint, styles.centerText]}>

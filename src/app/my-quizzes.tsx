@@ -6,6 +6,7 @@ import { BackButton } from "@/components/back-button";
 import { colors, shared } from "@/constants/styles";
 import { apiRequest } from "@/lib/api";
 import { useQuiz } from "@/lib/quiz-context";
+import { displayListName } from "@/lib/text";
 import { TENSES_BY_LANGUAGE, type Question } from "@/lib/types";
 
 type ListSummary = {
@@ -93,7 +94,7 @@ export default function MyQuizzes() {
     const list = lists.find((l) => l.id === session.list_id);
     Alert.alert(
       "Delete Quiz",
-      `Delete this quiz${list ? ` for "${list.name}"` : ""}? This can't be undone.`,
+      `Delete this quiz${list ? ` for "${displayListName(list.name)}"` : ""}? This can't be undone.`,
       [
         { text: "Cancel", style: "cancel" },
         {
@@ -252,7 +253,9 @@ export default function MyQuizzes() {
                       selectMode ? toggleSelected(session.id) : resumeSession(session)
                     }
                   >
-                    <Text style={styles.rowTitle}>{list?.name ?? "Quiz in progress"}</Text>
+                    <Text style={styles.rowTitle}>
+                      {list ? displayListName(list.name) : "Quiz in progress"}
+                    </Text>
                     {typeLine && <Text style={styles.typeLine}>{typeLine}</Text>}
                     <Text style={shared.hint}>
                       Question {session.current_index + 1} of {session.questions.length}

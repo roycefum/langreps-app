@@ -6,6 +6,16 @@ export function removeAccents(text: string): string {
   return text.normalize("NFD").replace(COMBINING_DIACRITICS, "");
 }
 
+// Sample lists are saved with a "(from {source})" suffix baked into the
+// underlying name (see my-lists.tsx's SAMPLE_LISTS) so two entries with the
+// same target but different sources can't collide via save-list's
+// update-by-name semantics. That suffix is redundant anywhere the language
+// pair is already shown separately — strip it for display only; the raw
+// name (with suffix) is still what's sent to/from the API.
+export function displayListName(name: string): string {
+  return name.replace(/ \(from .+\)$/, "");
+}
+
 export function chunk<T>(items: T[], size: number): T[][] {
   const chunks: T[][] = [];
   for (let i = 0; i < items.length; i += size) {
