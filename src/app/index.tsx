@@ -87,9 +87,6 @@ export default function Home() {
         <Link href="/upload-file" style={shared.primaryButton}>
           <Text style={shared.primaryButtonText}>Upload a File</Text>
         </Link>
-        <Link href="/upload-picture" style={shared.primaryButton}>
-          <Text style={shared.primaryButtonText}>Upload a Photo</Text>
-        </Link>
         {userId && (
           <>
             <Link href="/my-lists" style={[shared.primaryButton, shared.generateQuizButton]}>

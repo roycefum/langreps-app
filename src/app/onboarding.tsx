@@ -64,7 +64,7 @@ const SLIDES: Slide[] = [
   {
     Illustration: BuildListIllustration,
     headline: "Build Your List",
-    body: "Type words, paste a list, upload a file, or snap a photo — AI reads it for you. Or jump right in with a few ready-made sample lists in My Lists.",
+    body: "Type words, paste a list, or upload a file — AI reads it for you. Or jump right in with a few ready-made sample lists in My Lists.",
   },
   {
     Illustration: QuizIllustration,
