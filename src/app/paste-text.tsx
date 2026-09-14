@@ -4,6 +4,7 @@ import { Pressable, ScrollView, StyleSheet, Text, TextInput } from "react-native
 import { BackButton } from "@/components/back-button";
 import { ParsingWarning } from "@/components/parsing-warning";
 import { PairsReview } from "@/components/pairs-review";
+import { TranslateSkippedLines } from "@/components/translate-skipped-lines";
 import { colors, shared } from "@/constants/styles";
 import { apiRequest } from "@/lib/api";
 import { detectLanguages } from "@/lib/language-detect";
@@ -80,6 +81,16 @@ export default function PasteText() {
           {skippedLines.join(" / ")}
         </Text>
       )}
+
+      <TranslateSkippedLines
+        lines={skippedLines}
+        onTranslated={(newPairs, detectedSource, chosenTarget) => {
+          addPairs(newPairs);
+          setSourceLanguage(detectedSource);
+          setTargetLanguage(chosenTarget);
+          setSkippedLines([]);
+        }}
+      />
 
       <Pressable
         style={[
