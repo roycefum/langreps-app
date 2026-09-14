@@ -68,7 +68,9 @@ export default function Home() {
         <View style={styles.authRow}>
           {userId ? (
             <>
-              <Text style={shared.hint}>Signed in as {email}</Text>
+              <Text style={shared.hint}>
+                Signed in as <Text style={styles.emailBold}>{email}</Text>
+              </Text>
               <Pressable onPress={logout}>
                 <Text style={styles.authLink}>Log Out</Text>
               </Pressable>
@@ -139,6 +141,10 @@ const styles = StyleSheet.create({
   authLink: {
     color: colors.tertiary,
     fontWeight: "600",
+  },
+  emailBold: {
+    fontWeight: "700",
+    color: colors.text,
   },
   deleteLink: {
     color: colors.error,
