@@ -2,7 +2,6 @@ import { useState } from "react";
 import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
 
 import { BackButton } from "@/components/back-button";
-import { LanguagePicker } from "@/components/language-picker";
 import { PairsReview } from "@/components/pairs-review";
 import { shared } from "@/constants/styles";
 import { usePairs } from "@/lib/pairs-context";
@@ -23,8 +22,6 @@ export default function AddWords() {
     <ScrollView style={shared.screen} contentContainerStyle={styles.content}>
       <BackButton href="/" />
       <Text style={shared.title}>Add Words</Text>
-
-      <LanguagePicker />
 
       <PairsReview source="manual">
         <View style={shared.row}>

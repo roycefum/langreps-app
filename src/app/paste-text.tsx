@@ -2,7 +2,6 @@ import { useState } from "react";
 import { Pressable, ScrollView, StyleSheet, Text, TextInput } from "react-native";
 
 import { BackButton } from "@/components/back-button";
-import { LanguagePicker } from "@/components/language-picker";
 import { ParsingWarning } from "@/components/parsing-warning";
 import { PairsReview } from "@/components/pairs-review";
 import { shared } from "@/constants/styles";
@@ -42,8 +41,6 @@ export default function PasteText() {
     <ScrollView style={shared.screen} contentContainerStyle={styles.content}>
       <BackButton href="/" />
       <Text style={shared.title}>Paste Vocab List</Text>
-
-      <LanguagePicker />
 
       <Text style={shared.hint}>
         One pair per line — a tab, &quot;-&gt;&quot;, &quot;:&quot;, or similar between each word

@@ -4,7 +4,6 @@ import { useState } from "react";
 import { Pressable, ScrollView, StyleSheet, Text } from "react-native";
 
 import { BackButton } from "@/components/back-button";
-import { LanguagePicker } from "@/components/language-picker";
 import { ParsingWarning } from "@/components/parsing-warning";
 import { PairsReview } from "@/components/pairs-review";
 import { shared } from "@/constants/styles";
@@ -53,8 +52,6 @@ export default function UploadFile() {
     <ScrollView style={shared.screen} contentContainerStyle={styles.content}>
       <BackButton href="/" />
       <Text style={shared.title}>Upload a File</Text>
-
-      <LanguagePicker />
 
       <Text style={shared.hint}>
         A plain text or CSV file, one pair per line — a tab, &quot;-&gt;&quot;, &quot;:&quot;, or

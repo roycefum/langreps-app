@@ -3,6 +3,7 @@ import { useState, type ReactNode } from "react";
 import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 
 import { Dropdown } from "@/components/dropdown";
+import { LanguagePicker } from "@/components/language-picker";
 import { shared } from "@/constants/styles";
 import { apiRequest } from "@/lib/api";
 import { useAuth } from "@/lib/auth-context";
@@ -142,6 +143,8 @@ export function PairsReview({ source, children }: PairsReviewProps) {
           <Text style={shared.secondaryButtonText}>Clear list</Text>
         </Pressable>
       </View>
+
+      <LanguagePicker />
 
       {children}
 

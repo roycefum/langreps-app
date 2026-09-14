@@ -4,7 +4,6 @@ import { useState } from "react";
 import { Pressable, ScrollView, StyleSheet, Text } from "react-native";
 
 import { BackButton } from "@/components/back-button";
-import { LanguagePicker } from "@/components/language-picker";
 import { PairsReview } from "@/components/pairs-review";
 import { shared } from "@/constants/styles";
 import { apiRequest } from "@/lib/api";
@@ -76,8 +75,6 @@ export default function UploadPicture() {
     <ScrollView style={shared.screen} contentContainerStyle={styles.content}>
       <BackButton href="/" />
       <Text style={shared.title}>Upload a Photo</Text>
-
-      <LanguagePicker />
 
       <Text style={shared.hint}>
         A photo or screenshot of word pairs (e.g. &quot;house -&gt; casa&quot;) — AI will read the
