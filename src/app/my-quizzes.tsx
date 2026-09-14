@@ -13,6 +13,7 @@ type ListSummary = {
   name: string;
   source_language: string;
   target_language: string;
+  list_type: "vocab" | "verb";
 };
 
 type QuizSessionRow = {
@@ -241,7 +242,14 @@ export default function MyQuizzes() {
                       selectMode ? toggleSelected(session.id) : resumeSession(session)
                     }
                   >
-                    <Text style={styles.rowTitle}>{list?.name ?? "Quiz in progress"}</Text>
+                    <View style={styles.titleRow}>
+                      <Text style={styles.rowTitle}>{list?.name ?? "Quiz in progress"}</Text>
+                      {list && (
+                        <Text style={styles.typeBadge}>
+                          {list.list_type === "verb" ? "Verb" : "Vocab"}
+                        </Text>
+                      )}
+                    </View>
                     <Text style={shared.hint}>
                       Question {session.current_index + 1} of {session.questions.length}
                     </Text>
@@ -339,6 +347,21 @@ const styles = StyleSheet.create({
   rowTitle: {
     fontSize: 16,
     fontWeight: "600",
+  },
+  titleRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+  },
+  typeBadge: {
+    fontSize: 11,
+    fontWeight: "700",
+    color: colors.tertiary,
+    backgroundColor: colors.background,
+    borderRadius: 6,
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    overflow: "hidden",
   },
   deleteText: {
     color: colors.error,

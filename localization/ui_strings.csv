@@ -167,3 +167,5 @@ my-quizzes.tsx,bulk_delete_quizzes_alert_title,Delete Quizzes,,,
 my-quizzes.tsx,bulk_delete_quizzes_alert_message_template,"Delete {count} quiz(zes)? This can't be undone.",,,
 my-quizzes.tsx,sort_by_last_updated,Last Updated,,,New sort option — mirrors My Lists' "Last Uploaded" pattern
 my-quizzes.tsx,last_updated_template,Last updated: {date},,,"Template — date formatting via toLocaleDateString(), varies by device locale"
+my-quizzes.tsx,quiz_type_badge_vocab,Vocab,,,"Small badge next to the quiz row title, shows the underlying list's list_type"
+my-quizzes.tsx,quiz_type_badge_verb,Verb,,,Small badge next to the quiz row title
