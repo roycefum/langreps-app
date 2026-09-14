@@ -48,6 +48,12 @@ export default function MyQuizzes() {
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [isBulkDeleting, setIsBulkDeleting] = useState(false);
   const [sortBy, setSortBy] = useState<SortBy>("date");
+  // Separate select-mode state for Past Quizzes — a different section with
+  // its own row ids, kept independent so selecting in one section doesn't
+  // affect the other.
+  const [completedSelectMode, setCompletedSelectMode] = useState(false);
+  const [completedSelectedIds, setCompletedSelectedIds] = useState<Set<string>>(new Set());
+  const [isBulkDeletingCompleted, setIsBulkDeletingCompleted] = useState(false);
 
   const sortedSessions = useMemo(() => {
     const copy = [...sessions];
@@ -213,6 +219,68 @@ export default function MyQuizzes() {
     );
   }
 
+  function toggleCompletedSelectMode() {
+    setCompletedSelectMode((v) => !v);
+    setCompletedSelectedIds(new Set());
+  }
+
+  function toggleCompletedSelected(id: string) {
+    setCompletedSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) {
+        next.delete(id);
+      } else {
+        next.add(id);
+      }
+      return next;
+    });
+  }
+
+  function toggleCompletedSelectAll() {
+    setCompletedSelectedIds((prev) =>
+      prev.size === completedSessions.length
+        ? new Set()
+        : new Set(completedSessions.map((s) => s.session_id))
+    );
+  }
+
+  function confirmBulkDeleteCompleted() {
+    const count = completedSelectedIds.size;
+    if (count === 0) return;
+    Alert.alert(
+      "Delete Quizzes",
+      `Delete ${count} quiz${count === 1 ? "" : "zes"}? This can't be undone.`,
+      [
+        { text: "Cancel", style: "cancel" },
+        {
+          text: "Delete",
+          style: "destructive",
+          onPress: async () => {
+            setIsBulkDeletingCompleted(true);
+            setError(null);
+            try {
+              await Promise.all(
+                Array.from(completedSelectedIds).map((id) =>
+                  apiRequest(`/quiz-sessions/${id}`, { method: "DELETE" })
+                )
+              );
+              setCompletedSelectMode(false);
+              setCompletedSelectedIds(new Set());
+              await load();
+            } catch (e) {
+              setError(
+                e instanceof Error ? e.message : "Something went wrong deleting those quizzes."
+              );
+              await load();
+            } finally {
+              setIsBulkDeletingCompleted(false);
+            }
+          },
+        },
+      ]
+    );
+  }
+
   return (
     <ScrollView style={shared.screen} contentContainerStyle={styles.content}>
       <BackButton href="/" />
@@ -326,7 +394,45 @@ export default function MyQuizzes() {
 
       {!isLoading && (
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Past Quizzes</Text>
+          <View style={styles.sectionHeaderRow}>
+            <Text style={styles.sectionTitle}>Past Quizzes</Text>
+            {completedSessions.length > 0 &&
+              (completedSelectMode ? (
+                <View style={styles.headerActions}>
+                  <Pressable onPress={toggleCompletedSelectAll}>
+                    <Text style={styles.headerActionText}>
+                      {completedSelectedIds.size === completedSessions.length
+                        ? "Deselect All"
+                        : "Select All"}
+                    </Text>
+                  </Pressable>
+                  <Pressable
+                    disabled={completedSelectedIds.size === 0 || isBulkDeletingCompleted}
+                    onPress={confirmBulkDeleteCompleted}
+                  >
+                    <Text
+                      style={[
+                        styles.headerActionText,
+                        styles.headerDeleteText,
+                        completedSelectedIds.size === 0 && styles.disabled,
+                      ]}
+                    >
+                      {isBulkDeletingCompleted
+                        ? "Deleting…"
+                        : `Delete (${completedSelectedIds.size})`}
+                    </Text>
+                  </Pressable>
+                  <Pressable onPress={toggleCompletedSelectMode}>
+                    <Text style={styles.headerActionText}>Done</Text>
+                  </Pressable>
+                </View>
+              ) : (
+                <Pressable onPress={toggleCompletedSelectMode}>
+                  <Text style={shared.linkText}>Select</Text>
+                </Pressable>
+              ))}
+          </View>
+
           {completedSessions.length === 0 ? (
             <Text style={shared.hint}>No completed quizzes yet.</Text>
           ) : (
@@ -336,7 +442,14 @@ export default function MyQuizzes() {
                 session.total > 0 ? Math.round((session.correct / session.total) * 100) : 0;
               return (
                 <View key={session.session_id} style={styles.row}>
-                  <Pressable style={styles.rowMain} onPress={() => viewResults(session)}>
+                  <Pressable
+                    style={styles.rowMain}
+                    onPress={() =>
+                      completedSelectMode
+                        ? toggleCompletedSelected(session.session_id)
+                        : viewResults(session)
+                    }
+                  >
                     <Text style={styles.rowTitle}>
                       {list ? displayListName(list.name) : "Deleted list"}
                     </Text>
@@ -350,6 +463,17 @@ export default function MyQuizzes() {
                   <Pressable onPress={() => confirmDeleteCompleted(session)}>
                     <Text style={styles.deleteText}>Delete</Text>
                   </Pressable>
+                  {completedSelectMode && (
+                    <Pressable
+                      style={styles.checkbox}
+                      onPress={() => toggleCompletedSelected(session.session_id)}
+                      hitSlop={8}
+                    >
+                      <Text style={styles.checkboxMark}>
+                        {completedSelectedIds.has(session.session_id) ? "☑" : "☐"}
+                      </Text>
+                    </Pressable>
+                  )}
                 </View>
               );
             })
