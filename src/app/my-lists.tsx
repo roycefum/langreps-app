@@ -320,17 +320,6 @@ export default function MyLists() {
           ) : (
             sortedLists.map((list) => (
               <View key={list.id} style={styles.row}>
-                {selectMode && (
-                  <Pressable
-                    style={styles.checkbox}
-                    onPress={() => toggleSelected(list.id)}
-                    hitSlop={8}
-                  >
-                    <Text style={styles.checkboxMark}>
-                      {selectedIds.has(list.id) ? "☑" : "☐"}
-                    </Text>
-                  </Pressable>
-                )}
                 <Pressable
                   style={styles.rowMain}
                   onPress={() =>
@@ -356,6 +345,17 @@ export default function MyLists() {
                 <Pressable onPress={() => confirmDelete(list)}>
                   <Text style={styles.deleteText}>Delete</Text>
                 </Pressable>
+                {selectMode && (
+                  <Pressable
+                    style={styles.checkbox}
+                    onPress={() => toggleSelected(list.id)}
+                    hitSlop={8}
+                  >
+                    <Text style={styles.checkboxMark}>
+                      {selectedIds.has(list.id) ? "☑" : "☐"}
+                    </Text>
+                  </Pressable>
+                )}
               </View>
             ))
           )}
@@ -456,10 +456,10 @@ const styles = StyleSheet.create({
     opacity: 0.4,
   },
   checkbox: {
-    paddingRight: 4,
+    paddingLeft: 6,
   },
   checkboxMark: {
-    fontSize: 20,
+    fontSize: 30,
   },
   sortOption: {
     fontSize: 13,

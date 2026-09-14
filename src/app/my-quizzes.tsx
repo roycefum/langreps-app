@@ -201,17 +201,6 @@ export default function MyQuizzes() {
               const list = lists.find((l) => l.id === session.list_id);
               return (
                 <View key={session.id} style={styles.row}>
-                  {selectMode && (
-                    <Pressable
-                      style={styles.checkbox}
-                      onPress={() => toggleSelected(session.id)}
-                      hitSlop={8}
-                    >
-                      <Text style={styles.checkboxMark}>
-                        {selectedIds.has(session.id) ? "☑" : "☐"}
-                      </Text>
-                    </Pressable>
-                  )}
                   <Pressable
                     style={styles.rowMain}
                     onPress={() =>
@@ -226,6 +215,17 @@ export default function MyQuizzes() {
                   <Pressable onPress={() => confirmDelete(session)}>
                     <Text style={styles.deleteText}>Delete</Text>
                   </Pressable>
+                  {selectMode && (
+                    <Pressable
+                      style={styles.checkbox}
+                      onPress={() => toggleSelected(session.id)}
+                      hitSlop={8}
+                    >
+                      <Text style={styles.checkboxMark}>
+                        {selectedIds.has(session.id) ? "☑" : "☐"}
+                      </Text>
+                    </Pressable>
+                  )}
                 </View>
               );
             })}
@@ -265,10 +265,10 @@ const styles = StyleSheet.create({
     opacity: 0.4,
   },
   checkbox: {
-    paddingRight: 4,
+    paddingLeft: 6,
   },
   checkboxMark: {
-    fontSize: 20,
+    fontSize: 30,
   },
   row: {
     flexDirection: "row",
