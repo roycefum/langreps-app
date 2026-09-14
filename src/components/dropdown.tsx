@@ -19,7 +19,7 @@ export function Dropdown({ value, onChange, options }: DropdownProps) {
   return (
     <>
       <Pressable style={shared.input} onPress={() => setIsOpen(true)}>
-        <Text>{value}</Text>
+        <Text style={styles.value}>{value}</Text>
       </Pressable>
       <Modal visible={isOpen} transparent animationType="fade" onRequestClose={() => setIsOpen(false)}>
         <Pressable style={styles.backdrop} onPress={() => setIsOpen(false)}>
@@ -54,6 +54,11 @@ export function Dropdown({ value, onChange, options }: DropdownProps) {
 }
 
 const styles = StyleSheet.create({
+  value: {
+    fontSize: 16,
+    fontWeight: "600",
+    color: colors.text,
+  },
   backdrop: {
     flex: 1,
     backgroundColor: "rgba(0,0,0,0.4)",

@@ -1,14 +1,24 @@
 import { Link, useRouter } from "expo-router";
 import { useState, type ReactNode } from "react";
-import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
+import { Alert, Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 
 import { Dropdown } from "@/components/dropdown";
 import { LanguagePicker } from "@/components/language-picker";
-import { shared } from "@/constants/styles";
+import { colors, shared } from "@/constants/styles";
 import { apiRequest } from "@/lib/api";
 import { useAuth } from "@/lib/auth-context";
 import { usePairs } from "@/lib/pairs-context";
 import { LIST_TYPES } from "@/lib/types";
+
+function showListTypeExplanation() {
+  Alert.alert(
+    "List Types",
+    "Vocab — plain word pairs (nouns, adjectives, etc.), tested as-is.\n\n" +
+      "Verb — infinitives get conjugated in context on Generate Quiz, so you're " +
+      "tested on actual verb forms (e.g. \"habla\") instead of just recalling the " +
+      "infinitive (\"hablar\")."
+  );
+}
 
 type PairsReviewProps = {
   // Matches the Streamlit prototype's render_save_button(source, ...)
@@ -74,7 +84,10 @@ export function PairsReview({ source, children }: PairsReviewProps) {
       {userId && (
         <View style={styles.typeRow}>
           <View style={styles.typeGroup}>
-            <Text style={shared.hint}>List type</Text>
+            <Text style={styles.typeLabel}>List type</Text>
+            <Pressable onPress={showListTypeExplanation} hitSlop={8}>
+              <Text style={styles.infoIcon}>ⓘ</Text>
+            </Pressable>
             <Dropdown
               value={listType}
               onChange={(value) => setListType(value as typeof listType)}
@@ -197,6 +210,17 @@ const styles = StyleSheet.create({
   typeGroup: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 8,
+    gap: 6,
+  },
+  typeLabel: {
+    fontSize: 15,
+    fontWeight: "600",
+    color: colors.text,
+  },
+  infoIcon: {
+    fontSize: 15,
+    color: colors.tertiary,
+    fontWeight: "700",
+    marginRight: 2,
   },
 });
