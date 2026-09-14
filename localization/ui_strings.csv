@@ -165,3 +165,5 @@ my-lists.tsx,bulk_delete_lists_alert_message_template,"Delete {count} list(s)? T
 my-quizzes.tsx,quizzes_in_progress_count_template,{count} in progress,,,
 my-quizzes.tsx,bulk_delete_quizzes_alert_title,Delete Quizzes,,,
 my-quizzes.tsx,bulk_delete_quizzes_alert_message_template,"Delete {count} quiz(zes)? This can't be undone.",,,
+my-quizzes.tsx,sort_by_last_updated,Last Updated,,,New sort option — mirrors My Lists' "Last Uploaded" pattern
+my-quizzes.tsx,last_updated_template,Last updated: {date},,,"Template — date formatting via toLocaleDateString(), varies by device locale"

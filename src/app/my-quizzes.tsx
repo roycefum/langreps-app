@@ -1,5 +1,5 @@
 import { useFocusEffect, useRouter } from "expo-router";
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 import { Alert, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 
 import { BackButton } from "@/components/back-button";
@@ -20,7 +20,10 @@ type QuizSessionRow = {
   list_id: string;
   questions: Question[];
   current_index: number;
+  last_active_at: string;
 };
+
+type SortBy = "name" | "date";
 
 export default function MyQuizzes() {
   const router = useRouter();
@@ -32,6 +35,23 @@ export default function MyQuizzes() {
   const [selectMode, setSelectMode] = useState(false);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [isBulkDeleting, setIsBulkDeleting] = useState(false);
+  const [sortBy, setSortBy] = useState<SortBy>("date");
+
+  const sortedSessions = useMemo(() => {
+    const copy = [...sessions];
+    if (sortBy === "name") {
+      copy.sort((a, b) => {
+        const nameA = lists.find((l) => l.id === a.list_id)?.name ?? "";
+        const nameB = lists.find((l) => l.id === b.list_id)?.name ?? "";
+        return nameA.localeCompare(nameB);
+      });
+    } else {
+      copy.sort(
+        (a, b) => new Date(b.last_active_at).getTime() - new Date(a.last_active_at).getTime()
+      );
+    }
+    return copy;
+  }, [sessions, lists, sortBy]);
 
   const load = useCallback(async () => {
     setIsLoading(true);
@@ -197,7 +217,21 @@ export default function MyQuizzes() {
               )}
             </View>
 
-            {sessions.map((session) => {
+            <View style={styles.sortRow}>
+              <Text style={shared.hint}>Sort by</Text>
+              <Pressable onPress={() => setSortBy("date")}>
+                <Text style={[styles.sortOption, sortBy === "date" && styles.sortOptionActive]}>
+                  Last Updated
+                </Text>
+              </Pressable>
+              <Pressable onPress={() => setSortBy("name")}>
+                <Text style={[styles.sortOption, sortBy === "name" && styles.sortOptionActive]}>
+                  Name
+                </Text>
+              </Pressable>
+            </View>
+
+            {sortedSessions.map((session) => {
               const list = lists.find((l) => l.id === session.list_id);
               return (
                 <View key={session.id} style={styles.row}>
@@ -210,6 +244,9 @@ export default function MyQuizzes() {
                     <Text style={styles.rowTitle}>{list?.name ?? "Quiz in progress"}</Text>
                     <Text style={shared.hint}>
                       Question {session.current_index + 1} of {session.questions.length}
+                    </Text>
+                    <Text style={shared.hint}>
+                      Last updated: {new Date(session.last_active_at).toLocaleDateString()}
                     </Text>
                   </Pressable>
                   <Pressable onPress={() => confirmDelete(session)}>
@@ -263,6 +300,21 @@ const styles = StyleSheet.create({
   },
   disabled: {
     opacity: 0.4,
+  },
+  sortRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 12,
+    marginBottom: 4,
+  },
+  sortOption: {
+    fontSize: 13,
+    opacity: 0.5,
+    fontWeight: "600",
+  },
+  sortOptionActive: {
+    opacity: 1,
+    color: colors.primary,
   },
   checkbox: {
     paddingLeft: 6,
