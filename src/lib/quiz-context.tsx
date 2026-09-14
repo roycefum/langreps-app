@@ -140,6 +140,9 @@ export function QuizProvider({ children }: { children: ReactNode }) {
   }, [questions, currentIndex, recordAttempt, persistProgress]);
 
   const nextQuestion = useCallback(async () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {
+      // No-op on platforms/devices without haptic support (e.g. web).
+    });
     setCurrentIndex((prev) => prev + 1);
     setPhase("question");
   }, []);
