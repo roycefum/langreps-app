@@ -1,6 +1,16 @@
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
-import { ActivityIndicator, Pressable, StyleSheet, Switch, Text, TextInput, View } from "react-native";
+import {
+  ActivityIndicator,
+  Keyboard,
+  Pressable,
+  StyleSheet,
+  Switch,
+  Text,
+  TextInput,
+  TouchableWithoutFeedback,
+  View,
+} from "react-native";
 
 import { BackButton } from "@/components/back-button";
 import { CefrLevelPicker } from "@/components/cefr-level-picker";
@@ -173,6 +183,7 @@ export default function GenerateQuiz() {
   }
 
   return (
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
     <View style={[shared.screenCentered, styles.container]}>
       <BackButton href="/" />
       <Text style={[shared.title, styles.centerText]}>Generate Quiz</Text>
@@ -277,6 +288,7 @@ export default function GenerateQuiz() {
         </Pressable>
       )}
     </View>
+    </TouchableWithoutFeedback>
   );
 }
 
