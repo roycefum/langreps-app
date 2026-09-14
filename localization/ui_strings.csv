@@ -148,3 +148,20 @@ my-lists.tsx,sample_list_name_template_v2,{target} Vocabulary (from {source}) / 
 my-lists.tsx,sample_list_card_title,Vocab {count} / Verb {count},,,"Sample-list catalog card title, replaces the old full name display"
 my-lists.tsx,sample_list_card_flags,{flag} -> {flag},,,Flag emoji pair instead of spelled-out language names — sidesteps capitalization inconsistency entirely
 index.tsx,signup_incentive_hint,Sign up to save your lists and track your progress over time,,,
+settings.tsx,default_level_title,Default Level,,,New section title for Settings redesign (bold title + description layout)
+settings.tsx,auto_delete_title,Auto-Delete Old Quizzes,,,New section title
+settings.tsx,auto_delete_desc,Completed quizzes are removed after 30 days,,,Description moved under the bold title
+settings.tsx,adaptive_quizzes_title,Adaptive Quizzes,,,New section title
+settings.tsx,adaptive_quizzes_desc,"Get feedback on patterns you struggle with, and an option to target them",,,Description moved under the bold title
+settings.tsx,require_accents_title,Require Accents,,,New toggle
+settings.tsx,require_accents_desc,"Off accepts ""cafe"" for ""café""",,,"Off by default — grading strips accents; app is a reinforcement tool, not a strict teaching tool"
+my-lists.tsx,your_lists_section_title,Your Lists,,,New section title alongside bulk-select controls
+my-lists.tsx,bulk_select_toggle,Select / Cancel,,,"Toggles bulk-select mode (shared pattern, My Lists and My Quizzes)"
+my-lists.tsx,bulk_select_all,Select All / Deselect All,,,Shared pattern, My Lists and My Quizzes
+my-lists.tsx,bulk_delete_selected_template,Delete Selected ({count}),,,Shared pattern, My Lists and My Quizzes
+my-lists.tsx,bulk_deleting,Deleting…,,,Shared pattern, My Lists and My Quizzes
+my-lists.tsx,bulk_delete_lists_alert_title,Delete Lists,,,
+my-lists.tsx,bulk_delete_lists_alert_message_template,"Delete {count} list(s)? This can't be undone.",,,
+my-quizzes.tsx,quizzes_in_progress_count_template,{count} in progress,,,
+my-quizzes.tsx,bulk_delete_quizzes_alert_title,Delete Quizzes,,,
+my-quizzes.tsx,bulk_delete_quizzes_alert_message_template,"Delete {count} quiz(zes)? This can't be undone.",,,

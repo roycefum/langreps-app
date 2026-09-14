@@ -7,6 +7,7 @@ const DEFAULT_CEFR_LEVEL_KEY = "langreps_default_cefr_level";
 const AUTO_DELETE_OLD_QUIZZES_KEY = "langreps_auto_delete_old_quizzes";
 const ADAPTIVE_QUIZZES_ENABLED_KEY = "langreps_adaptive_quizzes_enabled";
 const HAS_SEEN_ONBOARDING_KEY = "langreps_has_seen_onboarding";
+const REQUIRE_ACCENTS_KEY = "langreps_require_accents";
 
 // Same web guard as auth-storage.ts — expo-secure-store throws (not
 // no-ops) on web, and this is a device-local setting anyway (explicitly
@@ -65,4 +66,19 @@ export async function getHasSeenOnboarding(): Promise<boolean> {
 export async function setHasSeenOnboarding(seen: boolean): Promise<void> {
   if (isWeb) return;
   await SecureStore.setItemAsync(HAS_SEEN_ONBOARDING_KEY, String(seen));
+}
+
+// Off by default — grading strips accents (café/cafe both count as
+// correct), which is friendlier for new learners who haven't learned to
+// type accented characters yet. Turning this on makes grading exact,
+// for users who want to be held to correct accents.
+export async function getRequireAccents(): Promise<boolean> {
+  if (isWeb) return false;
+  const stored = await SecureStore.getItemAsync(REQUIRE_ACCENTS_KEY);
+  return stored === "true";
+}
+
+export async function setRequireAccents(enabled: boolean): Promise<void> {
+  if (isWeb) return;
+  await SecureStore.setItemAsync(REQUIRE_ACCENTS_KEY, String(enabled));
 }

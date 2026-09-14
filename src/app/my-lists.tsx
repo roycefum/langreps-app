@@ -94,6 +94,9 @@ export default function MyLists() {
   const [addingKey, setAddingKey] = useState<string | null>(null);
   const [showSampleLists, setShowSampleLists] = useState(false);
   const [sortBy, setSortBy] = useState<SortBy>("date");
+  const [selectMode, setSelectMode] = useState(false);
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [isBulkDeleting, setIsBulkDeleting] = useState(false);
 
   const sortedLists = useMemo(() => {
     const copy = [...lists];
@@ -167,6 +170,66 @@ export default function MyLists() {
     ]);
   }
 
+  function toggleSelectMode() {
+    setSelectMode((v) => !v);
+    setSelectedIds(new Set());
+  }
+
+  function toggleSelected(id: string) {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) {
+        next.delete(id);
+      } else {
+        next.add(id);
+      }
+      return next;
+    });
+  }
+
+  function toggleSelectAll() {
+    setSelectedIds((prev) =>
+      prev.size === lists.length ? new Set() : new Set(lists.map((l) => l.id))
+    );
+  }
+
+  function confirmBulkDelete() {
+    const count = selectedIds.size;
+    if (count === 0) return;
+    Alert.alert(
+      "Delete Lists",
+      `Delete ${count} list${count === 1 ? "" : "s"}? This can't be undone.`,
+      [
+        { text: "Cancel", style: "cancel" },
+        {
+          text: "Delete",
+          style: "destructive",
+          onPress: async () => {
+            setIsBulkDeleting(true);
+            setError(null);
+            try {
+              await Promise.all(
+                Array.from(selectedIds).map((id) =>
+                  apiRequest(`/lists/${id}`, { method: "DELETE" })
+                )
+              );
+              setSelectMode(false);
+              setSelectedIds(new Set());
+              await load();
+            } catch (e) {
+              setError(
+                e instanceof Error ? e.message : "Something went wrong deleting those lists."
+              );
+              await load();
+            } finally {
+              setIsBulkDeleting(false);
+            }
+          },
+        },
+      ]
+    );
+  }
+
   async function handleAddSample(entry: SampleListEntry) {
     if (addingKey) return;
     setAddingKey(entry.key);
@@ -201,7 +264,16 @@ export default function MyLists() {
 
       {!isLoading && (
         <View style={styles.section}>
-          {lists.length > 0 && (
+          <View style={styles.sectionHeaderRow}>
+            <Text style={styles.sectionTitle}>Your Lists</Text>
+            {lists.length > 0 && (
+              <Pressable onPress={toggleSelectMode}>
+                <Text style={shared.linkText}>{selectMode ? "Cancel" : "Select"}</Text>
+              </Pressable>
+            )}
+          </View>
+
+          {lists.length > 0 && !selectMode && (
             <View style={styles.sortRow}>
               <Text style={shared.hint}>Sort by</Text>
               <Pressable onPress={() => setSortBy("date")}>
@@ -216,12 +288,48 @@ export default function MyLists() {
               </Pressable>
             </View>
           )}
+
+          {selectMode && lists.length > 0 && (
+            <View style={styles.bulkBar}>
+              <Pressable onPress={toggleSelectAll}>
+                <Text style={shared.linkText}>
+                  {selectedIds.size === lists.length ? "Deselect All" : "Select All"}
+                </Text>
+              </Pressable>
+              <Pressable
+                style={[styles.bulkDeleteButton, selectedIds.size === 0 && styles.disabled]}
+                disabled={selectedIds.size === 0 || isBulkDeleting}
+                onPress={confirmBulkDelete}
+              >
+                <Text style={styles.bulkDeleteText}>
+                  {isBulkDeleting ? "Deleting…" : `Delete Selected (${selectedIds.size})`}
+                </Text>
+              </Pressable>
+            </View>
+          )}
+
           {lists.length === 0 ? (
             <Text style={shared.hint}>No saved lists yet.</Text>
           ) : (
             sortedLists.map((list) => (
               <View key={list.id} style={styles.row}>
-                <Pressable style={styles.rowMain} onPress={() => openList(list.id)}>
+                {selectMode && (
+                  <Pressable
+                    style={styles.checkbox}
+                    onPress={() => toggleSelected(list.id)}
+                    hitSlop={8}
+                  >
+                    <Text style={styles.checkboxMark}>
+                      {selectedIds.has(list.id) ? "☑" : "☐"}
+                    </Text>
+                  </Pressable>
+                )}
+                <Pressable
+                  style={styles.rowMain}
+                  onPress={() =>
+                    selectMode ? toggleSelected(list.id) : openList(list.id)
+                  }
+                >
                   <Text style={styles.rowTitle}>{list.name}</Text>
                   <Text style={shared.hint}>
                     {list.source_language} → {list.target_language}
@@ -230,17 +338,21 @@ export default function MyLists() {
                     Last uploaded: {new Date(list.last_modified).toLocaleDateString()}
                   </Text>
                 </Pressable>
-                <Link
-                  href={{
-                    pathname: "/list-history",
-                    params: { listId: list.id, listName: list.name },
-                  }}
-                >
-                  <Text style={styles.historyText}>Progress</Text>
-                </Link>
-                <Pressable onPress={() => confirmDelete(list)}>
-                  <Text style={styles.deleteText}>Delete</Text>
-                </Pressable>
+                {!selectMode && (
+                  <>
+                    <Link
+                      href={{
+                        pathname: "/list-history",
+                        params: { listId: list.id, listName: list.name },
+                      }}
+                    >
+                      <Text style={styles.historyText}>Progress</Text>
+                    </Link>
+                    <Pressable onPress={() => confirmDelete(list)}>
+                      <Text style={styles.deleteText}>Delete</Text>
+                    </Pressable>
+                  </>
+                )}
               </View>
             ))
           )}
@@ -307,6 +419,11 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "700",
   },
+  sectionHeaderRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
   sectionToggle: {
     paddingVertical: 4,
   },
@@ -318,6 +435,32 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: 12,
     marginBottom: 4,
+  },
+  bulkBar: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginBottom: 4,
+  },
+  bulkDeleteButton: {
+    backgroundColor: colors.error,
+    borderRadius: 8,
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+  },
+  bulkDeleteText: {
+    color: "white",
+    fontWeight: "600",
+    fontSize: 13,
+  },
+  disabled: {
+    opacity: 0.4,
+  },
+  checkbox: {
+    paddingRight: 4,
+  },
+  checkboxMark: {
+    fontSize: 20,
   },
   sortOption: {
     fontSize: 13,

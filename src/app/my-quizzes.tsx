@@ -29,6 +29,9 @@ export default function MyQuizzes() {
   const [sessions, setSessions] = useState<QuizSessionRow[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [selectMode, setSelectMode] = useState(false);
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [isBulkDeleting, setIsBulkDeleting] = useState(false);
 
   const load = useCallback(async () => {
     setIsLoading(true);
@@ -87,6 +90,66 @@ export default function MyQuizzes() {
     );
   }
 
+  function toggleSelectMode() {
+    setSelectMode((v) => !v);
+    setSelectedIds(new Set());
+  }
+
+  function toggleSelected(id: string) {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) {
+        next.delete(id);
+      } else {
+        next.add(id);
+      }
+      return next;
+    });
+  }
+
+  function toggleSelectAll() {
+    setSelectedIds((prev) =>
+      prev.size === sessions.length ? new Set() : new Set(sessions.map((s) => s.id))
+    );
+  }
+
+  function confirmBulkDelete() {
+    const count = selectedIds.size;
+    if (count === 0) return;
+    Alert.alert(
+      "Delete Quizzes",
+      `Delete ${count} quiz${count === 1 ? "" : "zes"}? This can't be undone.`,
+      [
+        { text: "Cancel", style: "cancel" },
+        {
+          text: "Delete",
+          style: "destructive",
+          onPress: async () => {
+            setIsBulkDeleting(true);
+            setError(null);
+            try {
+              await Promise.all(
+                Array.from(selectedIds).map((id) =>
+                  apiRequest(`/quiz-sessions/${id}`, { method: "DELETE" })
+                )
+              );
+              setSelectMode(false);
+              setSelectedIds(new Set());
+              await load();
+            } catch (e) {
+              setError(
+                e instanceof Error ? e.message : "Something went wrong deleting those quizzes."
+              );
+              await load();
+            } finally {
+              setIsBulkDeleting(false);
+            }
+          },
+        },
+      ]
+    );
+  }
+
   return (
     <ScrollView style={shared.screen} contentContainerStyle={styles.content}>
       <BackButton href="/" />
@@ -100,19 +163,63 @@ export default function MyQuizzes() {
           <Text style={shared.hint}>No quizzes in progress.</Text>
         ) : (
           <View style={styles.section}>
+            <View style={styles.sectionHeaderRow}>
+              <Text style={shared.hint}>{sessions.length} in progress</Text>
+              <Pressable onPress={toggleSelectMode}>
+                <Text style={shared.linkText}>{selectMode ? "Cancel" : "Select"}</Text>
+              </Pressable>
+            </View>
+
+            {selectMode && (
+              <View style={styles.bulkBar}>
+                <Pressable onPress={toggleSelectAll}>
+                  <Text style={shared.linkText}>
+                    {selectedIds.size === sessions.length ? "Deselect All" : "Select All"}
+                  </Text>
+                </Pressable>
+                <Pressable
+                  style={[styles.bulkDeleteButton, selectedIds.size === 0 && styles.disabled]}
+                  disabled={selectedIds.size === 0 || isBulkDeleting}
+                  onPress={confirmBulkDelete}
+                >
+                  <Text style={styles.bulkDeleteText}>
+                    {isBulkDeleting ? "Deleting…" : `Delete Selected (${selectedIds.size})`}
+                  </Text>
+                </Pressable>
+              </View>
+            )}
+
             {sessions.map((session) => {
               const list = lists.find((l) => l.id === session.list_id);
               return (
                 <View key={session.id} style={styles.row}>
-                  <Pressable style={styles.rowMain} onPress={() => resumeSession(session)}>
+                  {selectMode && (
+                    <Pressable
+                      style={styles.checkbox}
+                      onPress={() => toggleSelected(session.id)}
+                      hitSlop={8}
+                    >
+                      <Text style={styles.checkboxMark}>
+                        {selectedIds.has(session.id) ? "☑" : "☐"}
+                      </Text>
+                    </Pressable>
+                  )}
+                  <Pressable
+                    style={styles.rowMain}
+                    onPress={() =>
+                      selectMode ? toggleSelected(session.id) : resumeSession(session)
+                    }
+                  >
                     <Text style={styles.rowTitle}>{list?.name ?? "Quiz in progress"}</Text>
                     <Text style={shared.hint}>
                       Question {session.current_index + 1} of {session.questions.length}
                     </Text>
                   </Pressable>
-                  <Pressable onPress={() => confirmDelete(session)}>
-                    <Text style={styles.deleteText}>Delete</Text>
-                  </Pressable>
+                  {!selectMode && (
+                    <Pressable onPress={() => confirmDelete(session)}>
+                      <Text style={styles.deleteText}>Delete</Text>
+                    </Pressable>
+                  )}
                 </View>
               );
             })}
@@ -129,6 +236,37 @@ const styles = StyleSheet.create({
   },
   section: {
     gap: 8,
+  },
+  sectionHeaderRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  bulkBar: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginBottom: 4,
+  },
+  bulkDeleteButton: {
+    backgroundColor: colors.error,
+    borderRadius: 8,
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+  },
+  bulkDeleteText: {
+    color: "white",
+    fontWeight: "600",
+    fontSize: 13,
+  },
+  disabled: {
+    opacity: 0.4,
+  },
+  checkbox: {
+    paddingRight: 4,
+  },
+  checkboxMark: {
+    fontSize: 20,
   },
   row: {
     flexDirection: "row",

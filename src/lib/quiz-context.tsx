@@ -1,6 +1,7 @@
 import { createContext, useCallback, useContext, useMemo, useState, type ReactNode } from "react";
 
 import { apiRequest } from "./api";
+import { getRequireAccents } from "./settings-storage";
 import { removeAccents } from "./text";
 import type { Question } from "./types";
 
@@ -35,6 +36,7 @@ export function QuizProvider({ children }: { children: ReactNode }) {
   const [wasCorrect, setWasCorrect] = useState(false);
   const [correctCount, setCorrectCount] = useState(0);
   const [sessionId, setSessionId] = useState<string | null>(null);
+  const [requireAccents, setRequireAccentsState] = useState(false);
 
   const isComplete = questions.length > 0 && currentIndex >= questions.length;
 
@@ -45,6 +47,9 @@ export function QuizProvider({ children }: { children: ReactNode }) {
       setPhase("question");
       setCorrectCount(0);
       setSessionId(newSessionId);
+      // Re-read fresh so a change made in Settings takes effect on the
+      // next quiz, without needing to restart the app.
+      getRequireAccents().then(setRequireAccentsState);
     },
     []
   );
@@ -102,9 +107,11 @@ export function QuizProvider({ children }: { children: ReactNode }) {
   const submitAnswer = useCallback(
     (answer: string) => {
       const current = questions[currentIndex];
-      const correct =
-        removeAccents(answer.trim().toLowerCase()) ===
-        removeAccents(current.correct_answer.trim().toLowerCase());
+      const normalize = (s: string) => {
+        const lowered = s.trim().toLowerCase();
+        return requireAccents ? lowered : removeAccents(lowered);
+      };
+      const correct = normalize(answer) === normalize(current.correct_answer);
       setLastAnswer(answer);
       setWasCorrect(correct);
       if (correct) setCorrectCount((prev) => prev + 1);
@@ -112,7 +119,7 @@ export function QuizProvider({ children }: { children: ReactNode }) {
       recordAttempt(current, correct);
       persistProgress(currentIndex + 1);
     },
-    [questions, currentIndex, recordAttempt, persistProgress]
+    [questions, currentIndex, recordAttempt, persistProgress, requireAccents]
   );
 
   const skipQuestion = useCallback(() => {
