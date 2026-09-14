@@ -103,27 +103,32 @@ export function PairsReview({ source, children }: PairsReviewProps) {
         </View>
       )}
       {userId && (
-        <View style={shared.row}>
-          <TextInput
-            style={[shared.input, styles.rowButton]}
-            placeholder={savedListId ? "List name (saving updates it)" : "List name"}
-            value={name}
-            onChangeText={setName}
-          />
-          <Pressable
-            style={[
-              shared.secondaryButton,
-              shared.saveActionButton,
-              styles.rowButton,
-              (!name.trim() || isSaving || pairs.length === 0) && shared.primaryButtonDisabled,
-            ]}
-            disabled={!name.trim() || isSaving || pairs.length === 0}
-            onPress={handleSave}
-          >
-            <Text style={[shared.secondaryButtonText, shared.accentButtonText]}>
-              {isSaving ? "Saving…" : "Save List"}
-            </Text>
-          </Pressable>
+        <View style={styles.saveBlock}>
+          <Text style={styles.saveLabel}>
+            {savedListId ? "List name (saving updates it)" : "Name this list to save it"}
+          </Text>
+          <View style={shared.row}>
+            <TextInput
+              style={[shared.input, styles.rowButton]}
+              placeholder="e.g. Spanish Verbs"
+              value={name}
+              onChangeText={setName}
+            />
+            <Pressable
+              style={[
+                shared.secondaryButton,
+                shared.saveActionButton,
+                styles.rowButton,
+                (!name.trim() || isSaving || pairs.length === 0) && shared.primaryButtonDisabled,
+              ]}
+              disabled={!name.trim() || isSaving || pairs.length === 0}
+              onPress={handleSave}
+            >
+              <Text style={[shared.secondaryButtonText, shared.accentButtonText]}>
+                {isSaving ? "Saving…" : "Save List"}
+              </Text>
+            </Pressable>
+          </View>
         </View>
       )}
       {saveMessage && <Text style={shared.hint}>{saveMessage}</Text>}
@@ -182,6 +187,15 @@ const styles = StyleSheet.create({
   },
   rowButton: {
     flex: 1,
+  },
+  saveBlock: {
+    gap: 4,
+  },
+  saveLabel: {
+    fontSize: 13,
+    fontWeight: "600",
+    color: colors.text,
+    opacity: 0.7,
   },
   list: {
     gap: 2,
