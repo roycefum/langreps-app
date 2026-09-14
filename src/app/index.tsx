@@ -13,7 +13,7 @@ export default function Home() {
 
   useEffect(() => {
     getHasSeenOnboarding().then((seen) => {
-      if (!seen) router.replace("/onboarding");
+      if (!seen) router.replace("/welcome");
     });
   }, [router]);
 

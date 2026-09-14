@@ -180,3 +180,7 @@ cefr-level-picker.tsx,cefr_b1_explanation,"Threshold — comfortable with everyd
 cefr-level-picker.tsx,cefr_b2_explanation,Vantage — can discuss general and some abstract topics with varied vocabulary.,,,
 cefr-level-picker.tsx,cefr_c1_explanation,"Advanced — fluent, spontaneous use for social, academic, or work purposes.",,,
 cefr-level-picker.tsx,cefr_c2_explanation,"Mastery — near-native fluency with precise, nuanced expression.",,,
+welcome.tsx,welcome_title,LangReps,,,New branded first screen shown before onboarding slides — proper name, may stay untranslated
+welcome.tsx,welcome_tagline,Language reps that stick.,,,
+welcome.tsx,get_started,Get Started,,,
+welcome.tsx,copyright,© 2026 MarApps Development,,,Pinned bottom-right corner
