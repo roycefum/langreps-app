@@ -193,6 +193,5 @@ quiz-results.tsx,error_loading_results,Something went wrong loading results.,,,
 pairs-review.tsx,list_type_info_alert_title,List Types,,,New info icon next to the List type label
 pairs-review.tsx,list_type_info_vocab,"Vocab — plain word pairs (nouns, adjectives, etc.), tested as-is.",,,
 pairs-review.tsx,list_type_info_verb,"Verb — infinitives get conjugated in context on Generate Quiz, so you're tested on actual verb forms (e.g. ""habla"") instead of just recalling the infinitive (""hablar"").",,,
-pairs-review.tsx,save_label_new,Name this list to save it,,,"New persistent label above the name field, was placeholder-only before"
-pairs-review.tsx,save_label_update,List name (saving updates it),,,Moved from placeholder to a persistent label above the field
-pairs-review.tsx,save_input_placeholder,e.g. Spanish Verbs,,,New example placeholder, replaces the old "List name" placeholder now that a persistent label exists
+pairs-review.tsx,save_input_placeholder_new,Name this list to save it,,,"Placeholder text (reverted from a separate label above the field — felt too busy)"
+pairs-review.tsx,save_input_placeholder_update,List name (saving updates it),,,Placeholder shown once the list is already saved
