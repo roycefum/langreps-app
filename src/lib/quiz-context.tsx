@@ -1,3 +1,4 @@
+import * as Haptics from "expo-haptics";
 import { createContext, useCallback, useContext, useMemo, useState, type ReactNode } from "react";
 
 import { apiRequest } from "./api";
@@ -118,6 +119,13 @@ export function QuizProvider({ children }: { children: ReactNode }) {
       setPhase("feedback");
       recordAttempt(current, correct);
       persistProgress(currentIndex + 1);
+      Haptics.notificationAsync(
+        correct
+          ? Haptics.NotificationFeedbackType.Success
+          : Haptics.NotificationFeedbackType.Error
+      ).catch(() => {
+        // No-op on platforms/devices without haptic support (e.g. web).
+      });
     },
     [questions, currentIndex, recordAttempt, persistProgress, requireAccents]
   );
