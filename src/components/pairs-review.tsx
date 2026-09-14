@@ -73,12 +73,20 @@ export function PairsReview({ source, children }: PairsReviewProps) {
     <View style={styles.container}>
       {userId && (
         <View style={styles.typeRow}>
-          <Text style={shared.hint}>List type</Text>
-          <Dropdown
-            value={listType}
-            onChange={(value) => setListType(value as typeof listType)}
-            options={LIST_TYPES}
-          />
+          <View style={styles.typeGroup}>
+            <Text style={shared.hint}>List type</Text>
+            <Dropdown
+              value={listType}
+              onChange={(value) => setListType(value as typeof listType)}
+              options={LIST_TYPES}
+            />
+          </View>
+          <Link
+            href="/my-lists"
+            style={[shared.secondaryButton, shared.myListsButton, styles.myListsInline]}
+          >
+            <Text style={[shared.secondaryButtonText, shared.accentButtonText]}>My Lists</Text>
+          </Link>
         </View>
       )}
       {userId && (
@@ -123,17 +131,6 @@ export function PairsReview({ source, children }: PairsReviewProps) {
             : "Generate Quiz"}
         </Text>
       </Pressable>
-
-      {/* Saves a trip back to Home for the common case of jumping straight
-          to a previously saved list from any builder screen. */}
-      {userId && (
-        <Link
-          href="/my-lists"
-          style={[shared.secondaryButton, shared.myListsButton, styles.myListsButton]}
-        >
-          <Text style={[shared.secondaryButtonText, shared.accentButtonText]}>My Lists</Text>
-        </Link>
-      )}
 
       <View style={shared.row}>
         <Pressable style={[shared.secondaryButton, styles.rowButton]} onPress={undoLast}>
@@ -188,10 +185,18 @@ const styles = StyleSheet.create({
     alignSelf: "center",
     paddingHorizontal: 24,
   },
+  myListsInline: {
+    alignSelf: "auto",
+    paddingHorizontal: 16,
+  },
   typeRow: {
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "center",
+    justifyContent: "space-between",
+  },
+  typeGroup: {
+    flexDirection: "row",
+    alignItems: "center",
     gap: 8,
   },
 });
