@@ -1,5 +1,5 @@
 import { Link, useFocusEffect, useRouter } from "expo-router";
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 import { Alert, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 
 import { BackButton } from "@/components/back-button";
@@ -14,7 +14,11 @@ type ListSummary = {
   name: string;
   source_language: string;
   target_language: string;
+  created_at: string;
+  last_modified: string;
 };
+
+type SortBy = "name" | "date";
 
 // Every direction between the app's supported languages — the underlying
 // data (starter-vocab.ts / starter-verbs.ts) has all three languages for
@@ -43,11 +47,16 @@ type SampleListEntry = {
 // of the app assuming up front which one language pair they're studying.
 const SAMPLE_LISTS: SampleListEntry[] = LANGUAGE_PAIRS.flatMap(([source, target]) => {
   const entries: SampleListEntry[] = [];
+  // Includes the source language in the name (not just "Spanish
+  // Vocabulary") so two entries with the same target but different
+  // sources (e.g. English->Spanish and French->Spanish) can't collide —
+  // save-list treats a repeated name as "update this list in place",
+  // which would silently overwrite one with the other otherwise.
   const vocabPairs = getStarterPairs(source, target);
   if (vocabPairs) {
     entries.push({
       key: `${source}-${target}-vocab`,
-      name: `${source} → ${target} Vocab`,
+      name: `${target} Vocabulary (from ${source})`,
       sourceLanguage: source,
       targetLanguage: target,
       listType: "vocab",
@@ -58,7 +67,7 @@ const SAMPLE_LISTS: SampleListEntry[] = LANGUAGE_PAIRS.flatMap(([source, target]
   if (verbPairs) {
     entries.push({
       key: `${source}-${target}-verb`,
-      name: `${source} → ${target} Verbs`,
+      name: `${target} Verbs (from ${source})`,
       sourceLanguage: source,
       targetLanguage: target,
       listType: "verb",
@@ -76,6 +85,20 @@ export default function MyLists() {
   const [error, setError] = useState<string | null>(null);
   const [addingKey, setAddingKey] = useState<string | null>(null);
   const [showSampleLists, setShowSampleLists] = useState(false);
+  const [sortBy, setSortBy] = useState<SortBy>("date");
+
+  const sortedLists = useMemo(() => {
+    const copy = [...lists];
+    if (sortBy === "name") {
+      copy.sort((a, b) => a.name.localeCompare(b.name));
+    } else {
+      // Most recently uploaded/updated first.
+      copy.sort(
+        (a, b) => new Date(b.last_modified).getTime() - new Date(a.last_modified).getTime()
+      );
+    }
+    return copy;
+  }, [lists, sortBy]);
 
   const load = useCallback(async () => {
     setIsLoading(true);
@@ -170,15 +193,33 @@ export default function MyLists() {
 
       {!isLoading && (
         <View style={styles.section}>
+          {lists.length > 0 && (
+            <View style={styles.sortRow}>
+              <Text style={shared.hint}>Sort by</Text>
+              <Pressable onPress={() => setSortBy("date")}>
+                <Text style={[styles.sortOption, sortBy === "date" && styles.sortOptionActive]}>
+                  Date
+                </Text>
+              </Pressable>
+              <Pressable onPress={() => setSortBy("name")}>
+                <Text style={[styles.sortOption, sortBy === "name" && styles.sortOptionActive]}>
+                  Name
+                </Text>
+              </Pressable>
+            </View>
+          )}
           {lists.length === 0 ? (
             <Text style={shared.hint}>No saved lists yet.</Text>
           ) : (
-            lists.map((list) => (
+            sortedLists.map((list) => (
               <View key={list.id} style={styles.row}>
                 <Pressable style={styles.rowMain} onPress={() => openList(list.id)}>
                   <Text style={styles.rowTitle}>{list.name}</Text>
                   <Text style={shared.hint}>
                     {list.source_language} → {list.target_language}
+                  </Text>
+                  <Text style={shared.hint}>
+                    Last uploaded: {new Date(list.last_modified).toLocaleDateString()}
                   </Text>
                 </Pressable>
                 <Link
@@ -220,9 +261,6 @@ export default function MyLists() {
                   <View key={entry.key} style={styles.row}>
                     <View style={styles.rowMain}>
                       <Text style={styles.rowTitle}>{entry.name}</Text>
-                      <Text style={shared.hint}>
-                        {entry.listType === "vocab" ? "Vocab" : "Verbs"}
-                      </Text>
                     </View>
                     <Pressable
                       style={[shared.secondaryButton, shared.saveActionButton, styles.addButton]}
@@ -261,6 +299,21 @@ const styles = StyleSheet.create({
   },
   addButton: {
     paddingHorizontal: 20,
+  },
+  sortRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 12,
+    marginBottom: 4,
+  },
+  sortOption: {
+    fontSize: 13,
+    opacity: 0.5,
+    fontWeight: "600",
+  },
+  sortOptionActive: {
+    opacity: 1,
+    color: colors.primary,
   },
   row: {
     flexDirection: "row",

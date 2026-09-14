@@ -140,3 +140,8 @@ onboarding.tsx,slide2_body,"AI generates real sentences to test you — and the 
 onboarding.tsx,slide3_headline,Watch Your Progress,,,
 onboarding.tsx,slide3_body,"See your scores improve over time, list by list.",,,
 settings.tsx,about_langreps_link,About LangReps,,,Links to /onboarding to replay it manually
+my-lists.tsx,sort_by_label,Sort by,,,
+my-lists.tsx,sort_by_date,Date,,,
+my-lists.tsx,sort_by_name,Name,,,
+my-lists.tsx,last_uploaded_template,Last uploaded: {date},,,"Template — date formatting via toLocaleDateString(), varies by device locale"
+my-lists.tsx,sample_list_name_template_v2,{target} Vocabulary (from {source}) / {target} Verbs (from {source}),,,Superseded template — replaces the old arrow-notation naming
