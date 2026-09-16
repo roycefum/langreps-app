@@ -27,14 +27,14 @@ export default function AddWords() {
         <View style={shared.row}>
           <TextInput
             style={[shared.input, styles.rowInput]}
-            placeholder={`Word in ${sourceLanguage} (known)`}
+            placeholder={`Word in ${sourceLanguage}`}
             placeholderTextColor={colors.placeholder}
             value={sourceWord}
             onChangeText={setSourceWord}
           />
           <TextInput
             style={[shared.input, styles.rowInput]}
-            placeholder={`Word in ${targetLanguage} (learning)`}
+            placeholder={`Word in ${targetLanguage}`}
             placeholderTextColor={colors.placeholder}
             value={targetWord}
             onChangeText={setTargetWord}

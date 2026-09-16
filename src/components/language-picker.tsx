@@ -13,11 +13,11 @@ export function LanguagePicker() {
   return (
     <View style={styles.container}>
       <View style={styles.field}>
-        <Text style={shared.hint}>I already know</Text>
+        <Text style={shared.hint}>From</Text>
         <Dropdown value={sourceLanguage} onChange={setSourceLanguage} options={LANGUAGES} />
       </View>
       <View style={styles.field}>
-        <Text style={shared.hint}>I'm learning</Text>
+        <Text style={shared.hint}>To</Text>
         <Dropdown value={targetLanguage} onChange={setTargetLanguage} options={LANGUAGES} />
       </View>
     </View>
