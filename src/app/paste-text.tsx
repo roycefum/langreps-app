@@ -7,6 +7,7 @@ import { PairsReview } from "@/components/pairs-review";
 import { TranslateSkippedLines } from "@/components/translate-skipped-lines";
 import { colors, shared } from "@/constants/styles";
 import { apiRequest } from "@/lib/api";
+import { useI18n } from "@/lib/i18n";
 import { detectLanguages } from "@/lib/language-detect";
 import { usePairs } from "@/lib/pairs-context";
 import type { VocabPair } from "@/lib/pairs-context";
@@ -15,6 +16,7 @@ import { swapPairLanguages } from "@/lib/text";
 type PendingOrder = { firstLanguage: string; secondLanguage: string };
 
 export default function PasteText() {
+  const { t } = useI18n();
   const { pairs, addPairs, setPairs, setSourceLanguage, setTargetLanguage } = usePairs();
   const [rawText, setRawText] = useState("");
   const [isParsing, setIsParsing] = useState(false);
@@ -67,7 +69,7 @@ export default function PasteText() {
         }
       }
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Something went wrong parsing that text.");
+      setError(e instanceof Error ? e.message : t("error_parsing_text"));
     } finally {
       setIsParsing(false);
     }
@@ -76,17 +78,13 @@ export default function PasteText() {
   return (
     <ScrollView style={shared.screen} contentContainerStyle={styles.content}>
       <BackButton href="/" />
-      <Text style={shared.title}>Paste Vocab List</Text>
+      <Text style={shared.title}>{t("paste_vocab_list_title")}</Text>
 
-      <Text style={shared.hint}>
-        One pair per line — a tab, &quot;-&gt;&quot;, &quot;:&quot;, or similar between each word
-        and its translation. e.g.{"\n"}
-        hello -&gt; hola
-      </Text>
+      <Text style={shared.hint}>{t("paste_instructions")}</Text>
 
       <TextInput
         style={styles.textArea}
-        placeholder="Paste your vocab list here"
+        placeholder={t("paste_placeholder")}
         placeholderTextColor={colors.placeholder}
         value={rawText}
         onChangeText={setRawText}
@@ -98,8 +96,7 @@ export default function PasteText() {
 
       {skippedLines.length > 0 && (
         <Text style={shared.errorText}>
-          Couldn&apos;t parse {skippedLines.length} line{skippedLines.length === 1 ? "" : "s"}:{" "}
-          {skippedLines.join(" / ")}
+          {t("couldnt_parse_lines", { n: skippedLines.length, list: skippedLines.join(" / ") })}
         </Text>
       )}
 
@@ -136,7 +133,7 @@ export default function PasteText() {
         onPress={handleParse}
       >
         <Text style={[shared.secondaryButtonText, shared.accentButtonText]}>
-          {isParsing ? "Parsing…" : "Add to list"}
+          {isParsing ? t("parsing_ellipsis") : t("add_to_list")}
         </Text>
       </Pressable>
 

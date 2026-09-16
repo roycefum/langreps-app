@@ -1,222 +1,261 @@
 #,File / Component,Key,English (source),Spanish,French,Notes
-2,index.tsx,app_name,LangReps,,,Proper name — may stay untranslated
-3,index.tsx,home_subtitle,"Build a vocab list, then let AI generate an adaptive quiz for it.",Crea una lista de vocabulario y deja que la IA genere un cuestionario adaptativo para ti.,"Crée une liste de vocabulaire, puis laisse l'IA générer un quiz adaptatif pour toi.",
-4,index.tsx,settings_link,Settings,Configuración,Paramètres,
-5,index.tsx,log_out,Log Out,Cerrar sesión,Se déconnecter,
-6,index.tsx,delete_account,Delete Account,Eliminar cuenta,Supprimer le compte,Also used as alert title
-7,index.tsx,log_in_sign_up,Log In / Sign Up,Iniciar sesión / Registrarse,Se connecter / S'inscrire,
-8,index.tsx,signed_in_as,Signed in as {email},Sesión iniciada como {email},Connecté en tant que {email},Template — {email} not translated
-9,index.tsx,add_words_manually,Add Words Manually,Añadir palabras manualmente,Ajouter des mots manuellement,
-10,index.tsx,paste_vocab_list,Paste Vocab List,Pegar lista de vocabulario,Coller une liste de vocabulaire,
-11,index.tsx,upload_a_file,Upload a File,Subir un archivo,Importer un fichier,
-12,index.tsx,share_a_picture,Upload a Photo,Subir una foto,Importer une photo,
-13,index.tsx,my_lists,My Lists,Mis listas,Mes listes,
-14,index.tsx,my_quizzes,My Quizzes,Mis cuestionarios,Mes quiz,
-15,index.tsx,delete_account_confirm,This permanently deletes your account and all your saved lists. This can't be undone.,Esto elimina permanentemente tu cuenta y todas tus listas guardadas. Esta acción no se puede deshacer.,Cela supprime définitivement ton compte et toutes tes listes enregistrées. Cette action est irréversible.,Alert body
-16,index.tsx,cancel,Cancel,Cancelar,Annuler,Alert button — reused across screens
-17,index.tsx,delete,Delete,Eliminar,Supprimer,Alert button — reused across screens
-18,index.tsx,error_generic,Something went wrong.,Algo salió mal.,Une erreur s'est produite.,Fallback error — reused across screens
-19,login.tsx,log_in,Log In,Iniciar sesión,Se connecter,Screen title + button + toggle target
-20,login.tsx,sign_up,Sign Up,Registrarse,S'inscrire,Screen title + button + toggle target
-21,login.tsx,email_placeholder,Email,Correo electrónico,E-mail,
-22,login.tsx,password_placeholder,Password,Contraseña,Mot de passe,
-23,login.tsx,please_wait,Please wait…,"Espera, por favor…",Veuillez patienter…,
-24,login.tsx,switch_to_signup,Don't have an account? Sign up,¿No tienes una cuenta? Regístrate,Pas de compte ? Inscris-toi,
-25,login.tsx,switch_to_login,Already have an account? Log in,¿Ya tienes una cuenta? Inicia sesión,Tu as déjà un compte ? Connecte-toi,
-26,login.tsx,confirm_email_message,"Check your email to confirm, then log in below.",Revisa tu correo para confirmar y luego inicia sesión abajo.,"Vérifie tes e-mails pour confirmer, puis connecte-toi ci-dessous.",
-27,login.tsx,account_created_message,Account created — log in below.,Cuenta creada — inicia sesión abajo.,Compte créé — connecte-toi ci-dessous.,
-28,add-words.tsx,add_words_title,Add Words,Añadir palabras,Ajouter des mots,
-29,add-words.tsx,add_to_list,Add to list,Añadir a la lista,Ajouter à la liste,Reused on paste-text.tsx
-30,paste-text.tsx,paste_vocab_list_title,Paste Vocab List,Pegar lista de vocabulario,Coller une liste de vocabulaire,
-31,paste-text.tsx,paste_instructions,"One pair per line — a tab, ""->"", "":"", or similar between each word and its translation. e.g. hello -> hola","Un par por línea — un tabulador, ""->"", "":"", o algo similar entre cada palabra y su traducción. p. ej. hello -> hola","Une paire par ligne — une tabulation, ""->"", "":"", ou un symbole similaire entre chaque mot et sa traduction. ex. hello -> hola",Contains a literal example — keep example untranslated or localize it
-32,paste-text.tsx,paste_placeholder,Paste your vocab list here,Pega aquí tu lista de vocabulario,Colle ici ta liste de vocabulaire,
-33,paste-text.tsx,parsing_ellipsis,Parsing…,Analizando…,Analyse en cours…,Reused on upload-file.tsx
-34,paste-text.tsx,couldnt_parse_lines,Couldn't parse {n} line(s): {list},No se pudieron leer {n} línea(s): {list},Impossible d'analyser {n} ligne(s) : {list},Template with pluralization (1 line vs N lines)
-35,paste-text.tsx,error_parsing_text,Something went wrong parsing that text.,Algo salió mal al analizar ese texto.,Une erreur s'est produite lors de l'analyse de ce texte.,
-36,upload-file.tsx,upload_a_file_title,Upload a File,Subir un archivo,Importer un fichier,
-37,upload-file.tsx,upload_file_instructions,"A plain text or CSV file, one pair per line — a tab, ""->"", "":"", or similar between each word and its translation.","Un archivo de texto plano o CSV, un par por línea — un tabulador, ""->"", "":"", o algo similar entre cada palabra y su traducción.","Un fichier texte brut ou CSV, une paire par ligne — une tabulation, ""->"", "":"", ou un symbole similaire entre chaque mot et sa traduction.",
-38,upload-file.tsx,choose_file,Choose File,Elegir archivo,Choisir un fichier,
-39,upload-file.tsx,last_file,Last file: {name},Último archivo: {name},Dernier fichier : {name},Template — filename not translated
-40,upload-file.tsx,error_parsing_file,Something went wrong parsing that file.,Algo salió mal al analizar ese archivo.,Une erreur s'est produite lors de l'analyse de ce fichier.,
-41,upload-picture.tsx,share_a_picture_title,Upload a Photo,Subir una foto,Importer une photo,
-42,upload-picture.tsx,share_picture_instructions,"A photo or screenshot of word pairs (e.g. ""house -> casa"") — AI will read the pairs out of it.","Una foto o captura de pantalla de pares de palabras (p. ej. ""house -> casa"") — la IA leerá los pares.","Une photo ou capture d'écran de paires de mots (ex. ""house -> casa"") — l'IA en extraira les paires.",Contains a literal example
-43,upload-picture.tsx,take_photo,Take Photo,Tomar foto,Prendre une photo,
-44,upload-picture.tsx,choose_from_library,Choose from Library,Elegir de la galería,Choisir depuis la galerie,
-45,upload-picture.tsx,reading_ellipsis,Reading…,Leyendo…,Lecture en cours…,
-46,upload-picture.tsx,error_camera_permission,Camera access is needed to take a photo.,Se necesita acceso a la cámara para tomar una foto.,L'accès à l'appareil photo est nécessaire pour prendre une photo.,
-47,upload-picture.tsx,error_library_permission,Photo library access is needed to choose an image.,Se necesita acceso a la galería de fotos para elegir una imagen.,L'accès à la photothèque est nécessaire pour choisir une image.,
-48,upload-picture.tsx,error_reading_image,Something went wrong reading that image.,Algo salió mal al leer esa imagen.,Une erreur s'est produite lors de la lecture de cette image.,
-49,generate-quiz.tsx,generate_quiz_title,Generate Quiz,Generar cuestionario,Générer un quiz,Also reused as button label
-50,generate-quiz.tsx,unsaved_list,Unsaved list,Lista sin guardar,Liste non enregistrée,Fallback when no list name
-51,generate-quiz.tsx,min_words_warning,You need at least 3 words to generate a quiz.,Necesitas al menos 3 palabras para generar un cuestionario.,Il te faut au moins 3 mots pour générer un quiz.,
-52,generate-quiz.tsx,words_in_list,{n} words in this list.,{n} palabras en esta lista.,{n} mots dans cette liste.,Template with pluralization
-53,generate-quiz.tsx,how_many_questions,How many questions?,¿Cuántas preguntas?,Combien de questions ?,
-54,generate-quiz.tsx,tense_label,Tense,Tiempo verbal,Temps,
-55,generate-quiz.tsx,mixed_tense,Mixed,Mixto,Mixte,Dropdown option meaning vary tense freely
-56,generate-quiz.tsx,flip_toggle_label,Flip: translate {target} → {source},Invertir: traducir de {target} a {source},Inverser : traduire de {target} vers {source},Template — language names not translated here
-57,generate-quiz.tsx,generating_quiz,Generating your quiz…,Generando tu cuestionario…,Génération de ton quiz…,
-58,generate-quiz.tsx,target_my_mistakes,Target My Mistakes,Enfocarme en mis errores,Cibler mes erreurs,
-59,generate-quiz.tsx,generate_similar_quiz,Generate Similar Quiz,Generar cuestionario similar,Générer un quiz similaire,
-60,generate-quiz.tsx,error_generating_quiz,Something went wrong generating your quiz.,Algo salió mal al generar tu cuestionario.,Une erreur s'est produite lors de la génération de ton quiz.,
-61,my-lists.tsx,my_lists_title,My Lists,Mis listas,Mes listes,
-62,my-lists.tsx,no_saved_lists,No saved lists yet.,Aún no tienes listas guardadas.,Aucune liste enregistrée pour l'instant.,
-63,my-lists.tsx,progress_link,Progress,Progreso,Progrès,Row action label
-64,my-lists.tsx,delete_list_alert_title,Delete List,Eliminar lista,Supprimer la liste,
-65,my-lists.tsx,delete_list_confirm,"Delete ""{name}""? This can't be undone.","¿Eliminar ""{name}""? Esta acción no se puede deshacer.",Supprimer « {name} » ? Cette action est irréversible.,Template
-66,my-lists.tsx,error_loading_lists,Something went wrong loading your lists.,Algo salió mal al cargar tus listas.,Une erreur s'est produite lors du chargement de tes listes.,
-67,my-lists.tsx,error_loading_list,Something went wrong loading that list.,Algo salió mal al cargar esa lista.,Une erreur s'est produite lors du chargement de cette liste.,
-68,my-lists.tsx,error_deleting_list,Something went wrong deleting that list.,Algo salió mal al eliminar esa lista.,Une erreur s'est produite lors de la suppression de cette liste.,
-69,my-quizzes.tsx,my_quizzes_title,My Quizzes,Mis cuestionarios,Mes quiz,
-70,my-quizzes.tsx,no_quizzes_in_progress,No quizzes in progress.,No hay cuestionarios en curso.,Aucun quiz en cours.,
-71,my-quizzes.tsx,quiz_in_progress_fallback,Quiz in progress,Cuestionario en curso,Quiz en cours,
-72,my-quizzes.tsx,question_n_of_total,Question {n} of {total},Pregunta {n} de {total},Question {n} sur {total},Template — also used in quiz.tsx
-73,my-quizzes.tsx,delete_quiz_alert_title,Delete Quiz,Eliminar cuestionario,Supprimer le quiz,
-74,my-quizzes.tsx,delete_quiz_confirm,"Delete this quiz for ""{name}""? This can't be undone.","¿Eliminar este cuestionario de ""{name}""? Esta acción no se puede deshacer.",Supprimer ce quiz pour « {name} » ? Cette action est irréversible.,Template
-75,my-quizzes.tsx,error_loading_quizzes,Something went wrong loading your quizzes.,Algo salió mal al cargar tus cuestionarios.,Une erreur s'est produite lors du chargement de tes quiz.,
-76,my-quizzes.tsx,error_deleting_quiz,Something went wrong deleting that quiz.,Algo salió mal al eliminar ese cuestionario.,Une erreur s'est produite lors de la suppression de ce quiz.,
-77,list-history.tsx,progress_title,Progress,Progreso,Progrès,Title fallback + subtitle label
-78,list-history.tsx,no_completed_quizzes,No completed quizzes for this list yet.,Aún no hay cuestionarios completados.,Aucun quiz terminé pour l'instant.,
-79,list-history.tsx,score_fraction_pct,{correct}/{total} ({pct}%),{correct}/{total} ({pct}%),{correct}/{total} ({pct} %),Number formatting conventions vary by locale
-80,list-history.tsx,error_loading_history,Something went wrong loading quiz history.,Algo salió mal al cargar el historial del cuestionario.,Une erreur s'est produite lors du chargement de l'historique du quiz.,
-81,settings.tsx,settings_title,Settings,Configuración,Paramètres,
-82,settings.tsx,default_level_hint,Default level for new quizzes — you can still change it for any single quiz when generating it.,Nivel predeterminado para nuevos cuestionarios — puedes cambiarlo para cualquier cuestionario individual al generarlo.,Niveau par défaut pour les nouveaux quiz — tu peux toujours le modifier pour un quiz donné au moment de le générer.,
-83,settings.tsx,auto_delete_toggle,Auto-delete completed quizzes after 30 days,Eliminar automáticamente los cuestionarios completados después de 30 días,Supprimer automatiquement les quiz terminés après 30 jours,
-84,settings.tsx,adaptive_quizzes_toggle,"Adaptive quizzes — feedback on patterns you struggle with, and an option to target them","Cuestionarios adaptativos — comentarios sobre los patrones con los que tienes dificultades, y la opción de enfocarte en ellos","Quiz adaptatifs — retour sur les schémas qui te posent des difficultés, avec la possibilité de les cibler",
-85,quiz.tsx,your_answer_placeholder,Your answer,Tu respuesta,Ta réponse,
-86,quiz.tsx,submit,Submit,Enviar,Valider,
-87,quiz.tsx,skip_question,Skip this question,Saltar esta pregunta,Passer cette question,
-88,quiz.tsx,hide_word_list,Hide word list,Ocultar lista de palabras,Masquer la liste de mots,
-89,quiz.tsx,stuck_see_word_list,Stuck? See the word list,¿Atascado? Consulta la lista de palabras,Bloqué ? Consulte la liste de mots,
-90,quiz.tsx,your_answer_was,Your answer: {answer},Tu respuesta: {answer},Ta réponse : {answer},Template
-91,quiz.tsx,correct_feedback,That's correct!,¡Correcto!,C'est correct !,
-92,quiz.tsx,incorrect_feedback,"Sorry, that's incorrect. The answer was: {answer}","Lo siento, es incorrecto. La respuesta era: {answer}","Désolé, c'est incorrect. La réponse était : {answer}",Template
-93,quiz.tsx,finish_quiz,Finish Quiz,Finalizar cuestionario,Terminer le quiz,
-94,quiz.tsx,next_question,Next Question,Siguiente pregunta,Question suivante,
-95,quiz-complete.tsx,quiz_complete_title,Quiz Complete!,¡Cuestionario completado!,Quiz terminé !,
-96,quiz-complete.tsx,score_correct,{n} / {total} correct,{n} / {total} correctas,{n} / {total} correctes,Template
-97,quiz-complete.tsx,back_to_home,Back to Home,Volver al inicio,Retour à l'accueil,
-98,pairs-review.tsx,undo_last,Undo last,Deshacer última,Annuler le dernier,
-99,pairs-review.tsx,clear_list,Clear list,Vaciar lista,Vider la liste,
-100,pairs-review.tsx,no_words_added,No words added yet.,Aún no has añadido palabras.,Aucun mot ajouté pour l'instant.,
-101,pairs-review.tsx,list_name_update_placeholder,List name (saving updates it),Nombre de la lista (al guardar se actualiza),Nom de la liste (l'enregistrement la met à jour),
-102,pairs-review.tsx,list_name_placeholder,List name,Nombre de la lista,Nom de la liste,
-103,pairs-review.tsx,saving_ellipsis,Saving…,Guardando…,Enregistrement…,
-104,pairs-review.tsx,save_list,Save List,Guardar lista,Enregistrer la liste,
-105,pairs-review.tsx,saved_message,Saved!,¡Guardado!,Enregistré !,
-106,pairs-review.tsx,error_saving,Something went wrong saving.,Algo salió mal al guardar.,Une erreur s'est produite lors de l'enregistrement.,
-107,pairs-review.tsx,add_more_words_to_quiz,Add {n} more word(s) to generate a quiz,Añade {n} palabra(s) más para generar un cuestionario,Ajoute {n} mot(s) de plus pour générer un quiz,Template with pluralization
-108,pairs-review.tsx,generate_quiz_button,Generate Quiz,Generar cuestionario,Générer un quiz,Reused label
-109,pairs-review.tsx,my_lists_link,My Lists,Mis listas,Mes listes,Reused label
-110,cefr-level-picker.tsx,level_label,Level,Nivel,Niveau,"CEFR codes (A1, B2, etc.) are standard notation, not translated"
-111,language-picker.tsx,from_label,From,Desde,Depuis,"Replaces ""I already know"" — short label translates cleanly, standard in translation-app pickers (Google Translate, Duolingo-style)"
-112,language-picker.tsx,to_label,To,Hacia,Vers,"Replaces ""I'm learning"" — same reasoning"
-113,language-picker.tsx,language_names,English / Spanish / French,,,"Design decision: show in UI language or always native form (Español, Français)?"
-114,parsing-warning.tsx,parsing_warning_text,"Parsing can make mistakes with unusual formatting. For best results, try Share a Picture instead.","El análisis puede cometer errores con formatos inusuales. Para mejores resultados, prueba subir una foto en su lugar.","L'analyse peut faire des erreurs avec une mise en forme inhabituelle. Pour de meilleurs résultats, essaie plutôt d'importer une photo.",Contains an inline link to Share a Picture
-115,quiz-feedback.ts,trend_improving_a_lot,5 message variants — 'Great progress! Your scores are climbing fast...' etc.,,,"See file directly, too long to list individually"
-116,quiz-feedback.ts,trend_improving,5 message variants — 'You're improving steadily on this list.' etc.,,,See file directly
-117,quiz-feedback.ts,trend_steady,5 message variants — 'Your scores are holding steady...' etc.,,,See file directly
-118,quiz-feedback.ts,trend_declining,5 message variants — 'Your scores dipped a bit recently...' etc.,,,See file directly
-119,quiz-feedback.ts,trend_declining_a_lot,5 message variants — 'Your scores dropped noticeably...' etc.,,,See file directly
-120,backend (api errors),backend_error_text,Various FastAPI HTTPException / Pydantic validation messages surfaced via e.message,,,Needs its own translation strategy — see Notes tab
-121,my-lists.tsx,sample_lists_title,Sample Lists,Listas de ejemplo,Listes types,
-122,my-lists.tsx,sample_lists_hint,"Add a ready-made 50-word list for any language pair — add as many as you want, whenever you want.","Añade una lista de 50 palabras ya preparada para cualquier par de idiomas — añade tantas como quieras, cuando quieras.","Ajoute une liste de 50 mots prête à l'emploi pour n'importe quelle paire de langues — ajoutes-en autant que tu veux, quand tu veux.",
-123,my-lists.tsx,sample_list_name_template,{source} → {target} Vocab / {source} → {target} Verbs,{source} → {target} Vocabulario / {source} → {target} Verbos,{source} → {target} Vocabulaire / {source} → {target} Verbes,Template — used as both display label and saved list name
-124,my-lists.tsx,sample_list_type_vocab,Vocab,Vocabulario,Vocabulaire,Reused label under each sample list row
-125,my-lists.tsx,sample_list_type_verbs,Verbs,Verbos,Verbes,Reused label under each sample list row
-126,my-lists.tsx,sample_list_add,Add,Añadir,Ajouter,
-127,my-lists.tsx,sample_list_adding,Adding…,Añadiendo…,Ajout en cours…,
-128,my-lists.tsx,sample_list_added,Added,Añadido,Ajouté,Shown once a list with the same name already exists; still tappable to re-sync
-129,my-lists.tsx,error_adding_sample,Something went wrong adding that sample list.,Algo salió mal al añadir esa lista de ejemplo.,Une erreur s'est produite lors de l'ajout de cette liste type.,
-130,onboarding.tsx,skip,Skip,Omitir,Passer,
-131,onboarding.tsx,back,Back,Atrás,Retour,
-132,onboarding.tsx,next,Next,Siguiente,Suivant,
-133,onboarding.tsx,get_started,Get Started,Empezar,Commencer,
-134,onboarding.tsx,slide1_headline,Build Your List,Crea tu lista,Crée ta liste,
-135,onboarding.tsx,slide1_body,"Type words, paste a list, upload a file, or snap a photo — AI reads it for you. Or jump right in with a few ready-made sample lists in My Lists.","Escribe palabras, pega una lista, sube un archivo o toma una foto — la IA la lee por ti. O empieza directamente con algunas listas de ejemplo ya preparadas en Mis listas.","Tape des mots, colle une liste, importe un fichier ou prends une photo — l'IA la lit pour toi. Ou commence directement avec quelques listes types déjà prêtes dans Mes listes.",
-136,onboarding.tsx,slide2_headline,Practice With Adaptive Quizzes,Practica con cuestionarios adaptativos,Entraîne-toi avec des quiz adaptatifs,
-137,onboarding.tsx,slide2_body,"AI generates real sentences to test you — and the more you practice, the more it targets what you're actually struggling with.","La IA genera frases reales para ponerte a prueba — y cuanto más practiques, más se enfocará en lo que realmente te cuesta.","L'IA génère de vraies phrases pour te tester — et plus tu t'entraînes, plus elle cible ce qui te pose vraiment des difficultés.",
-138,onboarding.tsx,slide3_headline,Watch Your Progress,Observa tu progreso,Suis ta progression,
-139,onboarding.tsx,slide3_body,"See your scores improve over time, list by list.","Observa cómo mejoran tus resultados con el tiempo, lista por lista.","Regarde tes scores s'améliorer au fil du temps, liste par liste.",
-140,settings.tsx,about_langreps_link,About LangReps,Acerca de LangReps,À propos de LangReps,Links to /onboarding to replay it manually
-141,my-lists.tsx,sort_by_label,Sort by,Ordenar por,Trier par,
-142,my-lists.tsx,sort_by_date,Last Uploaded,Última subida,Dernier import,
-143,my-lists.tsx,sort_by_name,Name,Nombre,Nom,
-144,my-lists.tsx,last_uploaded_template,Last uploaded: {date},Última subida: {date},Dernier import : {date},"Template — date formatting via toLocaleDateString(), varies by device locale"
-145,my-lists.tsx,sample_list_name_template_v2,{target} Vocabulary (from {source}) / {target} Verbs (from {source}),Vocabulario de {target} (desde {source}) / Verbos de {target} (desde {source}),Vocabulaire {target} (depuis {source}) / Verbes {target} (depuis {source}),Superseded template — replaces the old arrow-notation naming
-146,my-lists.tsx,sample_list_card_title,Vocab {count} / Verb {count},Vocabulario {count} / Verbo {count},Vocabulaire {count} / Verbe {count},"Sample-list catalog card title, replaces the old full name display"
-147,my-lists.tsx,sample_list_card_flags,{flag} -> {flag},{flag} -> {flag},{flag} -> {flag},Flag emoji pair instead of spelled-out language names — sidesteps capitalization inconsistency entirely
-148,index.tsx,signup_incentive_hint,Sign up to save your lists and track your progress over time,Regístrate para guardar tus listas y seguir tu progreso a lo largo del tiempo,Inscris-toi pour enregistrer tes listes et suivre ta progression au fil du temps,
-149,settings.tsx,default_level_title,Default Level,Nivel predeterminado,Niveau par défaut,New section title for Settings redesign (bold title + description layout)
-150,settings.tsx,auto_delete_title,Auto-Delete Old Quizzes,Eliminar automáticamente cuestionarios antiguos,Suppression automatique des anciens quiz,New section title
-151,settings.tsx,auto_delete_desc,Completed quizzes are removed after 30 days,Los cuestionarios completados se eliminan después de 30 días,Les quiz terminés sont supprimés après 30 jours,Description moved under the bold title
-152,settings.tsx,adaptive_quizzes_title,Adaptive Quizzes,Cuestionarios adaptativos,Quiz adaptatifs,New section title
-153,settings.tsx,adaptive_quizzes_desc,"Get feedback on patterns you struggle with, and an option to target them","Recibe comentarios sobre los patrones con los que tienes dificultades, y la opción de enfocarte en ellos","Reçois un retour sur les schémas qui te posent des difficultés, avec la possibilité de les cibler",Description moved under the bold title
-154,settings.tsx,require_accents_title,Require Diacritics,Exigir diacríticos,Exiger les diacritiques,"New toggle — renamed from ""Require Accents"""
-155,settings.tsx,require_accents_desc,"Off accepts ""cafe"" for ""café""","Desactivado acepta ""cafe"" en lugar de ""café""","Désactivé accepte ""cafe"" pour ""café""","Off by default — grading strips accents; app is a reinforcement tool, not a strict teaching tool"
-156,my-lists.tsx,your_lists_section_title,Your Lists,Tus listas,Tes listes,New section title alongside bulk-select controls
-157,my-lists.tsx,bulk_select_toggle,Select / Done,Seleccionar / Listo,Sélectionner / Terminé,"Toggles bulk-select mode in the header row — rows keep their normal content, just gain a checkbox (shared pattern, My Lists and My Quizzes)"
-158,my-lists.tsx,bulk_select_all,Select All / Deselect All,Seleccionar todo / Deseleccionar todo,Tout sélectionner / Tout désélectionner,Shared pattern, My Lists and My Quizzes
-159,my-lists.tsx,bulk_delete_selected_template,Delete ({count}),Eliminar ({count}),Supprimer ({count}),Shared pattern, My Lists and My Quizzes
-160,my-lists.tsx,bulk_deleting,Deleting…,Eliminando…,Suppression…,Shared pattern, My Lists and My Quizzes
-161,my-lists.tsx,bulk_delete_lists_alert_title,Delete Lists,Eliminar listas,Supprimer les listes,
-162,my-lists.tsx,bulk_delete_lists_alert_message_template,Delete {count} list(s)? This can't be undone.,¿Eliminar {count} lista(s)? Esta acción no se puede deshacer.,Supprimer {count} liste(s) ? Cette action est irréversible.,
-163,my-quizzes.tsx,quizzes_in_progress_count_template,{count} in progress,{count} en curso,{count} en cours,
-164,my-quizzes.tsx,bulk_delete_quizzes_alert_title,Delete Quizzes,Eliminar cuestionarios,Supprimer les quiz,
-165,my-quizzes.tsx,bulk_delete_quizzes_alert_message_template,Delete {count} quiz(zes)? This can't be undone.,¿Eliminar {count} cuestionario(s)? Esta acción no se puede deshacer.,Supprimer {count} quiz ? Cette action est irréversible.,
-166,my-quizzes.tsx,sort_by_last_updated,Last Updated,Última actualización,Dernière mise à jour,"New sort option — mirrors My Lists' ""Last Uploaded"" pattern"
-167,my-quizzes.tsx,last_updated_template,Last updated: {date},Última actualización: {date},Dernière mise à jour : {date},"Template — date formatting via toLocaleDateString(), varies by device locale"
-168,my-quizzes.tsx,quiz_type_badge_vocab,Vocab,Vocabulario,Vocabulaire,"Small badge next to the quiz row title, shows the underlying list's list_type"
-169,my-quizzes.tsx,quiz_type_badge_verb,Verb,Verbo,Verbe,Small badge next to the quiz row title
-170,quiz-complete.tsx,canned_feedback_mastery,You show mastery of the material and a good understanding of the concepts. You recall these words well and have successfully added them to your vocabulary. Keep up the good work — we suggest upping the CEFR level or training on a new list.,Demuestras dominio del material y una buena comprensión de los conceptos. Recuerdas bien estas palabras y las has incorporado con éxito a tu vocabulario. Sigue así — te sugerimos subir el nivel CEFR o practicar con una lista nueva.,Tu montres une bonne maîtrise du contenu et une bonne compréhension des concepts. Tu te souviens bien de ces mots et les as intégrés avec succès à ton vocabulaire. Continue comme ça — nous te suggérons d'augmenter le niveau CECR ou de t'entraîner sur une nouvelle liste.,Shown when there's not yet enough history for an AI pattern insight. 90%+ correct
-171,quiz-complete.tsx,canned_feedback_solid,"You have a solid grasp of this list — most of these words are sticking. A few are still slipping through, so one more pass at this level should lock them in before you move up or take on a new list.","Tienes un buen dominio de esta lista — la mayoría de estas palabras se te quedan. Algunas todavía se te escapan, así que una repetición más en este nivel debería fijarlas antes de subir de nivel o empezar una lista nueva.","Tu maîtrises bien cette liste — la plupart de ces mots restent en mémoire. Quelques-uns t'échappent encore, donc un tour supplémentaire à ce niveau devrait les ancrer avant de monter de niveau ou de passer à une nouvelle liste.",70-89% correct
-172,quiz-complete.tsx,canned_feedback_building,"You're recognizing some of these words, but a good chunk aren't sticking yet. That's normal at this stage — stick with this list at the same level for now rather than adding new words.","Reconoces algunas de estas palabras, pero una buena parte todavía no se te queda. Eso es normal en esta etapa — sigue con esta lista en el mismo nivel por ahora en lugar de añadir palabras nuevas.","Tu reconnais certains de ces mots, mais une bonne partie ne reste pas encore en mémoire. C'est normal à ce stade — continue avec cette liste au même niveau pour l'instant plutôt que d'ajouter de nouveaux mots.",40-69% correct
-173,quiz-complete.tsx,canned_feedback_struggling,"This list is still tripping you up more than not — that's useful information, not a setback. Try lowering the CEFR level or running a shorter, more focused quiz on just this list before moving on.","Esta lista todavía te resulta difícil más veces que no — eso es información útil, no un retroceso. Intenta bajar el nivel CEFR o hacer un cuestionario más corto y enfocado solo en esta lista antes de continuar.","Cette liste te met encore en difficulté plus souvent qu'autrement — c'est une information utile, pas un échec. Essaie de baisser le niveau CECR ou de faire un quiz plus court et plus ciblé sur cette liste avant de continuer.",Below 40% correct
-174,cefr-level-picker.tsx,cefr_info_alert_title,CEFR Levels,Niveles del MCER,Niveaux du CECR,Alert title triggered by new info icon next to the Level label
-175,cefr-level-picker.tsx,cefr_a1_explanation,Breakthrough — basic words and phrases for everyday needs.,Nivel de acceso — palabras y frases básicas para necesidades cotidianas.,Introductif — mots et phrases de base pour les besoins quotidiens.,
-176,cefr-level-picker.tsx,cefr_a2_explanation,Waystage — simple sentences about familiar topics like family and shopping.,Nivel intermedio inicial — frases sencillas sobre temas familiares como la familia y las compras.,Intermédiaire élémentaire — phrases simples sur des sujets familiers comme la famille et les courses.,
-177,cefr-level-picker.tsx,cefr_b1_explanation,"Threshold — comfortable with everyday situations, travel, and routine topics.","Nivel umbral — cómodo en situaciones cotidianas, viajes y temas habituales.","Niveau seuil — à l'aise dans les situations quotidiennes, les voyages et les sujets courants.",
-178,cefr-level-picker.tsx,cefr_b2_explanation,Vantage — can discuss general and some abstract topics with varied vocabulary.,Nivel avanzado — puede hablar de temas generales y algo abstractos con vocabulario variado.,Avancé — capable de discuter de sujets généraux et parfois abstraits avec un vocabulaire varié.,
-179,cefr-level-picker.tsx,cefr_c1_explanation,"Advanced — fluent, spontaneous use for social, academic, or work purposes.","Nivel autónomo — uso fluido y espontáneo para fines sociales, académicos o laborales.","Autonome — usage fluide et spontané à des fins sociales, académiques ou professionnelles.",
-180,cefr-level-picker.tsx,cefr_c2_explanation,"Mastery — near-native fluency with precise, nuanced expression.",Nivel de dominio — fluidez casi nativa con una expresión precisa y matizada.,Maîtrise — fluidité quasi native avec une expression précise et nuancée.,
-181,app-splash.tsx,splash_title,LangReps,,,"Animated splash shown on every app launch (not a navigable screen) — proper name, may stay untranslated"
-182,app-splash.tsx,splash_tagline,Language reps that stick.,Repeticiones de idiomas que se quedan.,Des répétitions de langue qui restent.,
-183,app-splash.tsx,splash_copyright,© 2026 MarApps Development,,,Pinned bottom-right corner
-184,quiz-complete.tsx,see_full_results,See Full Results,Ver resultados completos,Voir les résultats complets,"Link to the new quiz-results.tsx screen, only shown for saved-list quizzes (a session exists)"
-185,quiz-results.tsx,full_results_title,Full Results,Resultados completos,Résultats complets,
-186,quiz-results.tsx,no_recorded_answers,No recorded answers for this quiz.,No hay respuestas registradas para este cuestionario.,Aucune réponse enregistrée pour ce quiz.,
-187,quiz-results.tsx,your_answer_label,Your answer:,Tu respuesta:,Ta réponse :,
-188,quiz-results.tsx,correct_answer_label,Correct answer:,Respuesta correcta:,Bonne réponse :,Shown only for incorrect rows
-189,quiz-results.tsx,blank_answer_fallback,(blank),(en blanco),(vide),Shown when a skipped/empty answer was recorded
-190,quiz-results.tsx,error_loading_results,Something went wrong loading results.,Algo salió mal al cargar los resultados.,Une erreur s'est produite lors du chargement des résultats.,
-191,pairs-review.tsx,list_type_info_alert_title,List Types,Tipos de lista,Types de liste,New info icon next to the List type label
-192,pairs-review.tsx,list_type_info_vocab,"Vocab — plain word pairs (nouns, adjectives, etc.), tested as-is.","Vocabulario — pares de palabras simples (sustantivos, adjetivos, etc.), evaluados tal cual.","Vocabulaire — paires de mots simples (noms, adjectifs, etc.), testées telles quelles.",
-193,pairs-review.tsx,list_type_info_verb,"Verb — infinitives get conjugated in context on Generate Quiz, so you're tested on actual verb forms (e.g. ""habla"") instead of just recalling the infinitive (""hablar"").","Verbo — los infinitivos se conjugan en contexto al generar el cuestionario, así que se te evalúa con formas verbales reales (p. ej. ""habla"") en lugar de solo recordar el infinitivo (""hablar"").","Verbe — les infinitifs sont conjugués en contexte lors de la génération du quiz, donc tu es testé sur de vraies formes verbales (ex. « habla ») plutôt que de simplement retenir l'infinitif (« hablar »).",
-194,pairs-review.tsx,save_input_placeholder_new,Name this list,Nombra esta lista,Nomme cette liste,"Placeholder text — shortened from ""Name this list to save it"", didn't fit alongside the Save button"
-195,pairs-review.tsx,save_input_placeholder_update,List name (updates it),Nombre de la lista (la actualiza),Nom de la liste (la met à jour),Placeholder shown once the list is already saved — shortened to fit
-196,constants/styles.ts,placeholder_color_note,,,,Not a UI string — new colors.placeholder token (#8C7F63) applied via placeholderTextColor to every TextInput app-wide; RN's default placeholder gray had poor contrast on the parchment background and was nearly invisible
-197,my-lists.tsx,edit_list_link,Edit,Editar,Modifier,New row action — loads the list into Add Words for editing instead of only Generate Quiz
-198,pairs-review.tsx,remove_word_icon,✕,✕,✕,"New per-word remove button in the word list, was append/undo-last/clear-all only before — icon glyph, same in every language"
-199,translate-skipped-lines.tsx,translate_prompt_template,{n} line(s) looked like single word(s),"{n} línea(s) parecían palabras sueltas, no pares — traducir a:","{n} ligne(s) semblaient être des mots isolés, pas des paires — traduire vers :",,"New — shown under a parse's ""couldn't parse N lines"" message on Upload File and Paste"
-200,translate-skipped-lines.tsx,translate_button,Translate,Traducir,Traduire,
-201,translate-skipped-lines.tsx,translating_ellipsis,Translating…,Traduciendo…,Traduction en cours…,
-202,translate-skipped-lines.tsx,error_translating,Something went wrong translating those words.,Algo salió mal al traducir esas palabras.,Une erreur s'est produite lors de la traduction de ces mots.,
-203,onboarding.tsx,slide1_body_updated,"Type words, paste a list, or upload a file — AI reads it for you. Or jump right in with a few ready-made sample lists in My Lists.","Escribe palabras, pega una lista o sube un archivo — la IA la lee por ti. O empieza directamente con algunas listas de ejemplo ya preparadas en Mis listas.","Tape des mots, colle une liste ou importe un fichier — l'IA la lit pour toi. Ou commence directement avec quelques listes types déjà prêtes dans Mes listes.","Updated — removed ""or snap a photo"" since Upload Photo was tabled"
-204,pairs-review.tsx,saved_list_heading,,,,"Not new text — shows the list's own saved name prominently at the top of PairsReview once saved (Edit flow especially), styled like Generate Quiz's list-name heading"
-205,pairs-review.tsx,rename_link,Rename,Cambiar nombre,Renommer,New — separates renaming an already-saved list from saving its pairs
-206,pairs-review.tsx,rename_save_button,Save,Guardar,Enregistrer,Inline rename confirm button
-207,pairs-review.tsx,rename_cancel_button,Cancel,Cancelar,Annuler,Inline rename cancel button
-208,pairs-review.tsx,error_renaming,Something went wrong renaming.,Algo salió mal al cambiar el nombre.,Une erreur s'est produite lors du renommage.,
-209,pairs-review.tsx,save_changes_button,Save Changes,Guardar cambios,Enregistrer les modifications,"Replaces ""Save List""+name field once a list is already saved — updates pairs by id, no name field"
-210,pairs-review.tsx,list_type_locked_label,List type (locked),Tipo de lista (bloqueado),Type de liste (verrouillé),Appended to the label once a list is saved — type can't change after first save
-211,pairs-review.tsx,list_type_locked_explanation,"Can't be changed after a list is saved — quiz history is tied to how a word is tested, so switching types on an existing list would make its past results inconsistent. Save a new list instead if you need the other type.","No se puede cambiar después de guardar una lista — el historial del cuestionario está vinculado a cómo se evalúa una palabra, así que cambiar el tipo en una lista existente haría que sus resultados anteriores fueran incoherentes. Guarda una lista nueva si necesitas el otro tipo.","Ne peut pas être modifié après l'enregistrement d'une liste — l'historique des quiz est lié à la façon dont un mot est testé, donc changer le type d'une liste existante rendrait ses résultats passés incohérents. Enregistre une nouvelle liste si tu as besoin de l'autre type.",Appended to the existing List Types info alert once locked
-212,my-quizzes.tsx,past_quizzes_section_title,Past Quizzes,Cuestionarios anteriores,Quiz précédents,New section showing completed quiz history, fetched from GET /quiz-sessions/completed
-213,my-quizzes.tsx,no_completed_quizzes,No completed quizzes yet.,Aún no hay cuestionarios completados.,Aucun quiz terminé pour l'instant.,
-214,my-quizzes.tsx,past_quiz_score_template,{correct}/{total} correct ({pct}%),{correct}/{total} correctas ({pct}%),{correct}/{total} correctes ({pct} %),Template
-215,my-quizzes.tsx,deleted_list_fallback,Deleted list,Lista eliminada,Liste supprimée,Shown when a past quiz's list no longer exists
-216,back-button.tsx,discard_unsaved_alert_title,Discard unsaved words?,¿Descartar palabras sin guardar?,Abandonner les mots non enregistrés ?,New — shown when backing out of Add Words with 3+ unsaved words
-217,back-button.tsx,discard_unsaved_alert_message,You've added words that haven't been saved yet. Leaving now will lose them.,"Has añadido palabras que aún no se han guardado. Si sales ahora, se perderán.","Tu as ajouté des mots qui n'ont pas encore été enregistrés. Si tu quittes maintenant, tu les perdras.",
-218,back-button.tsx,leave_without_saving,Leave Without Saving,Salir sin guardar,Quitter sans enregistrer,Destructive confirm action
-219,language-order-confirm.tsx,order_confirm_prompt_template,Detected {first} and {second}. Which one do you already know?,Detectamos {first} y {second}. ¿Cuál de los dos ya conoces?,Nous avons détecté {first} et {second}. Lequel connais-tu déjà ?,"New — shown once after a fresh parse/translation detects two languages, replaces blindly assuming column order = known-then-learning"
-220,language-order-confirm.tsx,order_confirm_option_template,I know {language},Ya sé {language},Je connais déjà {language},Two buttons, one per detected language
-221,add-words.tsx,source_word_placeholder_dynamic,Word in {language},Palabra en {language},Mot en {language},"Simplified — dropped ""(known)"" qualifier, the From/To picker above already establishes direction"
-222,add-words.tsx,target_word_placeholder_dynamic,Word in {language},Palabra en {language},Mot en {language},"Simplified — dropped ""(learning)"" qualifier, same reasoning"
+1,index.tsx,app_name,LangReps,,,Proper name — may stay untranslated
+2,index.tsx,home_subtitle,"Build a vocab list, then let AI generate an adaptive quiz for it.",Crea una lista de vocabulario y deja que la IA genere un cuestionario adaptativo para ti.,"Crée une liste de vocabulaire, puis laisse l'IA générer un quiz adaptatif pour toi.",
+3,index.tsx,settings_link,Settings,Configuración,Paramètres,
+4,index.tsx,log_out,Log Out,Cerrar sesión,Se déconnecter,
+5,index.tsx,delete_account,Delete Account,Eliminar cuenta,Supprimer le compte,Also used as alert title
+6,index.tsx,log_in_sign_up,Log In / Sign Up,Iniciar sesión / Registrarse,Se connecter / S'inscrire,
+7,index.tsx,signed_in_as,Signed in as {email},Sesión iniciada como {email},Connecté en tant que {email},Template — {email} not translated
+8,index.tsx,add_words_manually,Add Words Manually,Añadir palabras manualmente,Ajouter des mots manuellement,
+9,index.tsx,paste_vocab_list,Paste Vocab List,Pegar lista de vocabulario,Coller une liste de vocabulaire,
+10,index.tsx,upload_a_file,Upload a File,Subir un archivo,Importer un fichier,
+11,index.tsx,share_a_picture,Upload a Photo,Subir una foto,Importer une photo,
+12,index.tsx,my_lists,My Lists,Mis listas,Mes listes,
+13,index.tsx,my_quizzes,My Quizzes,Mis cuestionarios,Mes quiz,
+14,index.tsx,delete_account_confirm,This permanently deletes your account and all your saved lists. This can't be undone.,Esto elimina permanentemente tu cuenta y todas tus listas guardadas. Esta acción no se puede deshacer.,Cela supprime définitivement ton compte et toutes tes listes enregistrées. Cette action est irréversible.,Alert body
+15,index.tsx,cancel,Cancel,Cancelar,Annuler,Alert button — reused across screens
+16,index.tsx,delete,Delete,Eliminar,Supprimer,Alert button — reused across screens
+17,index.tsx,error_generic,Something went wrong.,Algo salió mal.,Une erreur s'est produite.,Fallback error — reused across screens
+18,login.tsx,log_in,Log In,Iniciar sesión,Se connecter,Screen title + button + toggle target
+19,login.tsx,sign_up,Sign Up,Registrarse,S'inscrire,Screen title + button + toggle target
+20,login.tsx,email_placeholder,Email,Correo electrónico,E-mail,
+21,login.tsx,password_placeholder,Password,Contraseña,Mot de passe,
+22,login.tsx,please_wait,Please wait…,"Espera, por favor…",Veuillez patienter…,
+23,login.tsx,switch_to_signup,Don't have an account? Sign up,¿No tienes una cuenta? Regístrate,Pas de compte ? Inscris-toi,
+24,login.tsx,switch_to_login,Already have an account? Log in,¿Ya tienes una cuenta? Inicia sesión,Tu as déjà un compte ? Connecte-toi,
+25,login.tsx,confirm_email_message,"Check your email to confirm, then log in below.",Revisa tu correo para confirmar y luego inicia sesión abajo.,"Vérifie tes e-mails pour confirmer, puis connecte-toi ci-dessous.",
+26,login.tsx,account_created_message,Account created — log in below.,Cuenta creada — inicia sesión abajo.,Compte créé — connecte-toi ci-dessous.,
+27,add-words.tsx,add_words_title,Add Words,Añadir palabras,Ajouter des mots,
+28,add-words.tsx,add_to_list,Add to list,Añadir a la lista,Ajouter à la liste,Reused on paste-text.tsx
+29,paste-text.tsx,paste_vocab_list_title,Paste Vocab List,Pegar lista de vocabulario,Coller une liste de vocabulaire,
+30,paste-text.tsx,paste_instructions,"One pair per line — a tab, ""->"", "":"", or similar between each word and its translation. e.g. hello -> hola","Un par por línea — un tabulador, ""->"", "":"", o algo similar entre cada palabra y su traducción. p. ej. hello -> hola","Une paire par ligne — une tabulation, ""->"", "":"", ou un symbole similaire entre chaque mot et sa traduction. ex. hello -> hola",Contains a literal example — keep example untranslated or localize it
+31,paste-text.tsx,paste_placeholder,Paste your vocab list here,Pega aquí tu lista de vocabulario,Colle ici ta liste de vocabulaire,
+32,paste-text.tsx,parsing_ellipsis,Parsing…,Analizando…,Analyse en cours…,Reused on upload-file.tsx
+33,paste-text.tsx,couldnt_parse_lines,Couldn't parse {n} line(s): {list},No se pudieron leer {n} línea(s): {list},Impossible d'analyser {n} ligne(s) : {list},Template with pluralization (1 line vs N lines)
+34,paste-text.tsx,error_parsing_text,Something went wrong parsing that text.,Algo salió mal al analizar ese texto.,Une erreur s'est produite lors de l'analyse de ce texte.,
+35,upload-file.tsx,upload_a_file_title,Upload a File,Subir un archivo,Importer un fichier,
+36,upload-file.tsx,upload_file_instructions,"A plain text or CSV file, one pair per line — a tab, ""->"", "":"", or similar between each word and its translation.","Un archivo de texto plano o CSV, un par por línea — un tabulador, ""->"", "":"", o algo similar entre cada palabra y su traducción.","Un fichier texte brut ou CSV, une paire par ligne — une tabulation, ""->"", "":"", ou un symbole similaire entre chaque mot et sa traduction.",
+37,upload-file.tsx,choose_file,Choose File,Elegir archivo,Choisir un fichier,
+38,upload-file.tsx,last_file,Last file: {name},Último archivo: {name},Dernier fichier : {name},Template — filename not translated
+39,upload-file.tsx,error_parsing_file,Something went wrong parsing that file.,Algo salió mal al analizar ese archivo.,Une erreur s'est produite lors de l'analyse de ce fichier.,
+40,upload-picture.tsx,share_a_picture_title,Upload a Photo,Subir una foto,Importer une photo,
+41,upload-picture.tsx,share_picture_instructions,"A photo or screenshot of word pairs (e.g. ""house -> casa"") — AI will read the pairs out of it.","Una foto o captura de pantalla de pares de palabras (p. ej. ""house -> casa"") — la IA leerá los pares.","Une photo ou capture d'écran de paires de mots (ex. ""house -> casa"") — l'IA en extraira les paires.",Contains a literal example
+42,upload-picture.tsx,take_photo,Take Photo,Tomar foto,Prendre une photo,
+43,upload-picture.tsx,choose_from_library,Choose from Library,Elegir de la galería,Choisir depuis la galerie,
+44,upload-picture.tsx,reading_ellipsis,Reading…,Leyendo…,Lecture en cours…,
+45,upload-picture.tsx,error_camera_permission,Camera access is needed to take a photo.,Se necesita acceso a la cámara para tomar una foto.,L'accès à l'appareil photo est nécessaire pour prendre une photo.,
+46,upload-picture.tsx,error_library_permission,Photo library access is needed to choose an image.,Se necesita acceso a la galería de fotos para elegir una imagen.,L'accès à la photothèque est nécessaire pour choisir une image.,
+47,upload-picture.tsx,error_reading_image,Something went wrong reading that image.,Algo salió mal al leer esa imagen.,Une erreur s'est produite lors de la lecture de cette image.,
+48,generate-quiz.tsx,generate_quiz_title,Generate Quiz,Generar cuestionario,Générer un quiz,Also reused as button label
+49,generate-quiz.tsx,unsaved_list,Unsaved list,Lista sin guardar,Liste non enregistrée,Fallback when no list name
+50,generate-quiz.tsx,min_words_warning,You need at least 3 words to generate a quiz.,Necesitas al menos 3 palabras para generar un cuestionario.,Il te faut au moins 3 mots pour générer un quiz.,
+51,generate-quiz.tsx,words_in_list,{n} words in this list.,{n} palabras en esta lista.,{n} mots dans cette liste.,Template with pluralization
+52,generate-quiz.tsx,how_many_questions,How many questions?,¿Cuántas preguntas?,Combien de questions ?,
+53,generate-quiz.tsx,tense_label,Tense,Tiempo verbal,Temps,
+54,generate-quiz.tsx,mixed_tense,Mixed,Mixto,Mixte,Dropdown option meaning vary tense freely
+55,generate-quiz.tsx,flip_toggle_label,Flip: translate {target} → {source},Invertir: traducir de {target} a {source},Inverser : traduire de {target} vers {source},Template — language names not translated here
+56,generate-quiz.tsx,generating_quiz,Generating your quiz…,Generando tu cuestionario…,Génération de ton quiz…,
+57,generate-quiz.tsx,target_my_mistakes,Target My Mistakes,Enfocarme en mis errores,Cibler mes erreurs,
+58,generate-quiz.tsx,generate_similar_quiz,Generate Similar Quiz,Generar cuestionario similar,Générer un quiz similaire,
+59,generate-quiz.tsx,error_generating_quiz,Something went wrong generating your quiz.,Algo salió mal al generar tu cuestionario.,Une erreur s'est produite lors de la génération de ton quiz.,
+60,my-lists.tsx,my_lists_title,My Lists,Mis listas,Mes listes,
+61,my-lists.tsx,no_saved_lists,No saved lists yet.,Aún no tienes listas guardadas.,Aucune liste enregistrée pour l'instant.,
+62,my-lists.tsx,progress_link,Progress,Progreso,Progrès,Row action label
+63,my-lists.tsx,delete_list_alert_title,Delete List,Eliminar lista,Supprimer la liste,
+64,my-lists.tsx,delete_list_confirm,"Delete ""{name}""? This can't be undone.","¿Eliminar ""{name}""? Esta acción no se puede deshacer.",Supprimer « {name} » ? Cette action est irréversible.,Template
+65,my-lists.tsx,error_loading_lists,Something went wrong loading your lists.,Algo salió mal al cargar tus listas.,Une erreur s'est produite lors du chargement de tes listes.,
+66,my-lists.tsx,error_loading_list,Something went wrong loading that list.,Algo salió mal al cargar esa lista.,Une erreur s'est produite lors du chargement de cette liste.,
+67,my-lists.tsx,error_deleting_list,Something went wrong deleting that list.,Algo salió mal al eliminar esa lista.,Une erreur s'est produite lors de la suppression de cette liste.,
+68,my-quizzes.tsx,my_quizzes_title,My Quizzes,Mis cuestionarios,Mes quiz,
+69,my-quizzes.tsx,no_quizzes_in_progress,No quizzes in progress.,No hay cuestionarios en curso.,Aucun quiz en cours.,
+70,my-quizzes.tsx,quiz_in_progress_fallback,Quiz in progress,Cuestionario en curso,Quiz en cours,
+71,my-quizzes.tsx,question_n_of_total,Question {n} of {total},Pregunta {n} de {total},Question {n} sur {total},Template — also used in quiz.tsx
+72,my-quizzes.tsx,delete_quiz_alert_title,Delete Quiz,Eliminar cuestionario,Supprimer le quiz,
+73,my-quizzes.tsx,delete_quiz_confirm,"Delete this quiz for ""{name}""? This can't be undone.","¿Eliminar este cuestionario de ""{name}""? Esta acción no se puede deshacer.",Supprimer ce quiz pour « {name} » ? Cette action est irréversible.,Template
+74,my-quizzes.tsx,error_loading_quizzes,Something went wrong loading your quizzes.,Algo salió mal al cargar tus cuestionarios.,Une erreur s'est produite lors du chargement de tes quiz.,
+75,my-quizzes.tsx,error_deleting_quiz,Something went wrong deleting that quiz.,Algo salió mal al eliminar ese cuestionario.,Une erreur s'est produite lors de la suppression de ce quiz.,
+76,list-history.tsx,progress_title,Progress,Progreso,Progrès,Title fallback + subtitle label
+77,list-history.tsx,no_completed_quizzes,No completed quizzes for this list yet.,Aún no hay cuestionarios completados.,Aucun quiz terminé pour l'instant.,
+78,list-history.tsx,score_fraction_pct,{correct}/{total} ({pct}%),{correct}/{total} ({pct}%),{correct}/{total} ({pct} %),Number formatting conventions vary by locale
+79,list-history.tsx,error_loading_history,Something went wrong loading quiz history.,Algo salió mal al cargar el historial del cuestionario.,Une erreur s'est produite lors du chargement de l'historique du quiz.,
+80,settings.tsx,settings_title,Settings,Configuración,Paramètres,
+81,settings.tsx,default_level_hint,Used for new quizzes — you can still change it for any single quiz when generating it.,Se usa para nuevos cuestionarios — puedes cambiarlo para cualquier cuestionario individual al generarlo.,Utilisé pour les nouveaux quiz — tu peux toujours le modifier pour un quiz donné au moment de le générer.,Wording synced to match current app text exactly
+82,settings.tsx,auto_delete_toggle,Auto-delete completed quizzes after 30 days,Eliminar automáticamente los cuestionarios completados después de 30 días,Supprimer automatiquement les quiz terminés après 30 jours,
+83,settings.tsx,adaptive_quizzes_toggle,"Adaptive quizzes — feedback on patterns you struggle with, and an option to target them","Cuestionarios adaptativos — comentarios sobre los patrones con los que tienes dificultades, y la opción de enfocarte en ellos","Quiz adaptatifs — retour sur les schémas qui te posent des difficultés, avec la possibilité de les cibler",
+84,quiz.tsx,your_answer_placeholder,Your answer,Tu respuesta,Ta réponse,
+85,quiz.tsx,submit,Submit,Enviar,Valider,
+86,quiz.tsx,skip_question,Skip this question,Saltar esta pregunta,Passer cette question,
+87,quiz.tsx,hide_word_list,Hide word list,Ocultar lista de palabras,Masquer la liste de mots,
+88,quiz.tsx,stuck_see_word_list,Stuck? See the word list,¿Atascado? Consulta la lista de palabras,Bloqué ? Consulte la liste de mots,
+89,quiz.tsx,your_answer_was,Your answer: {answer},Tu respuesta: {answer},Ta réponse : {answer},Template
+90,quiz.tsx,correct_feedback,That's correct!,¡Correcto!,C'est correct !,
+91,quiz.tsx,incorrect_feedback,"Sorry, that's incorrect. The answer was: {answer}","Lo siento, es incorrecto. La respuesta era: {answer}","Désolé, c'est incorrect. La réponse était : {answer}",Template
+92,quiz.tsx,finish_quiz,Finish Quiz,Finalizar cuestionario,Terminer le quiz,
+93,quiz.tsx,next_question,Next Question,Siguiente pregunta,Question suivante,
+94,quiz-complete.tsx,quiz_complete_title,Quiz Complete!,¡Cuestionario completado!,Quiz terminé !,
+95,quiz-complete.tsx,score_correct,{n} / {total} correct,{n} / {total} correctas,{n} / {total} correctes,Template
+96,quiz-complete.tsx,back_to_home,Back to Home,Volver al inicio,Retour à l'accueil,
+97,pairs-review.tsx,undo_last,Undo last,Deshacer última,Annuler le dernier,
+98,pairs-review.tsx,clear_list,Clear list,Vaciar lista,Vider la liste,
+99,pairs-review.tsx,no_words_added,No words added yet.,Aún no has añadido palabras.,Aucun mot ajouté pour l'instant.,
+100,pairs-review.tsx,list_name_update_placeholder,List name (saving updates it),Nombre de la lista (al guardar se actualiza),Nom de la liste (l'enregistrement la met à jour),
+101,pairs-review.tsx,list_name_placeholder,List name,Nombre de la lista,Nom de la liste,
+102,pairs-review.tsx,saving_ellipsis,Saving…,Guardando…,Enregistrement…,
+103,pairs-review.tsx,save_list,Save List,Guardar lista,Enregistrer la liste,
+104,pairs-review.tsx,saved_message,Saved!,¡Guardado!,Enregistré !,
+105,pairs-review.tsx,error_saving,Something went wrong saving.,Algo salió mal al guardar.,Une erreur s'est produite lors de l'enregistrement.,
+106,pairs-review.tsx,add_more_words_to_quiz,Add {n} more word(s) to generate a quiz,Añade {n} palabra(s) más para generar un cuestionario,Ajoute {n} mot(s) de plus pour générer un quiz,Template with pluralization
+107,pairs-review.tsx,generate_quiz_button,Generate Quiz,Generar cuestionario,Générer un quiz,Reused label
+108,pairs-review.tsx,my_lists_link,My Lists,Mis listas,Mes listes,Reused label
+109,cefr-level-picker.tsx,level_label,Level,Nivel,Niveau,"CEFR codes (A1, B2, etc.) are standard notation, not translated"
+110,language-picker.tsx,from_label,From,Desde,Depuis,"Replaces ""I already know"" — short label translates cleanly, standard in translation-app pickers (Google Translate, Duolingo-style)"
+111,language-picker.tsx,to_label,To,Hacia,Vers,"Replaces ""I'm learning"" — same reasoning"
+112,language-picker.tsx,language_names,English / Español / Français,English / Español / Français,English / Español / Français,"Decided: always shown in each language's own native form, regardless of current UI language (matches iOS Settings/Duolingo convention) — not translated per UI language, so all three columns are identical on purpose"
+113,parsing-warning.tsx,parsing_warning_text,"Parsing can make mistakes with unusual formatting. For best results, try Share a Picture instead.","El análisis puede cometer errores con formatos inusuales. Para mejores resultados, prueba subir una foto en su lugar.","L'analyse peut faire des erreurs avec une mise en forme inhabituelle. Pour de meilleurs résultats, essaie plutôt d'importer une photo.",Contains an inline link to Share a Picture
+114,quiz-feedback.ts,trend_improving_a_lot_1,Great progress! Your scores are climbing fast — keep it up.,¡Gran progreso! Tus puntuaciones están subiendo rápido — sigue así.,Beaux progrès ! Tes scores grimpent rapidement — continue comme ça.,"5 message variants, picked at random each screen load"
+115,quiz-feedback.ts,trend_improving_a_lot_2,You're on a roll — your recent scores are way up from where you started.,Estás en racha — tus puntuaciones recientes están muy por encima de donde empezaste.,Tu es en pleine lancée — tes scores récents sont bien au-dessus de ton point de départ.,
+116,quiz-feedback.ts,trend_improving_a_lot_3,"Big jump in your scores lately. Whatever you're doing, keep doing it.",Gran salto en tus puntuaciones últimamente. Sigue haciendo lo que estás haciendo.,"Gros bond dans tes scores dernièrement. Continue comme ça, quoi que tu fasses.",
+117,quiz-feedback.ts,trend_improving_a_lot_4,Your accuracy has shot up recently — this list is really clicking.,Tu precisión ha subido mucho últimamente — esta lista te está funcionando de verdad.,Ta précision a beaucoup augmenté récemment — cette liste porte vraiment ses fruits.,
+118,quiz-feedback.ts,trend_improving_a_lot_5,Strong improvement here — you've clearly been putting in the reps.,Gran mejora aquí — claramente has estado practicando bastante.,Belle amélioration ici — on voit que tu t'es beaucoup entraîné.,
+119,quiz-feedback.ts,trend_improving_1,You're improving steadily on this list.,Estás mejorando de forma constante en esta lista.,Tu progresses régulièrement sur cette liste.,"5 message variants, picked at random each screen load"
+120,quiz-feedback.ts,trend_improving_2,Nice — your scores are trending upward little by little.,Bien — tus puntuaciones van subiendo poco a poco.,Bien joué — tes scores augmentent petit à petit.,
+121,quiz-feedback.ts,trend_improving_3,Steady gains here. Keep at it and it'll keep paying off.,Avances constantes aquí. Sigue así y seguirá dando resultado.,Des progrès constants ici. Continue et ça continuera à payer.,
+122,quiz-feedback.ts,trend_improving_4,You're getting a bit better each time you quiz this list.,Vas mejorando un poco cada vez que haces el cuestionario de esta lista.,Tu t'améliores un peu à chaque fois que tu fais le quiz sur cette liste.,
+123,quiz-feedback.ts,trend_improving_5,Solid upward trend — the practice is paying off.,Tendencia claramente positiva — la práctica está dando resultado.,Tendance clairement à la hausse — l'entraînement porte ses fruits.,
+124,quiz-feedback.ts,trend_steady_1,Your scores are holding steady. Try focusing on the words you keep missing.,Tus puntuaciones se mantienen estables. Intenta enfocarte en las palabras que sigues fallando.,Tes scores restent stables. Essaie de te concentrer sur les mots que tu rates encore.,"5 message variants, picked at random each screen load"
+125,quiz-feedback.ts,trend_steady_2,You're consistent on this list — a few more reps on the tricky words could push you higher.,Eres constante en esta lista — unas repeticiones más en las palabras difíciles podrían subirte el nivel.,Tu es régulier sur cette liste — quelques répétitions de plus sur les mots difficiles pourraient te faire progresser.,
+126,quiz-feedback.ts,trend_steady_3,Not much movement lately. Worth a look at which specific words trip you up.,No ha habido mucho cambio últimamente. Vale la pena ver qué palabras concretas te cuestan.,Pas beaucoup de changement dernièrement. Ça vaut le coup de voir quels mots précis te posent problème.,
+127,quiz-feedback.ts,trend_steady_4,Holding steady for now — try mixing in the word list reveal less to really test recall.,Se mantiene estable por ahora — intenta usar menos la lista de palabras visible para poner a prueba tu memoria de verdad.,Ça reste stable pour l'instant — essaie de moins t'appuyer sur la liste de mots visible pour vraiment tester ta mémoire.,
+128,quiz-feedback.ts,trend_steady_5,Your scores are level. A quick review of your weaker words might get things moving again.,Tus puntuaciones están estables. Un repaso rápido de tus palabras más débiles podría hacer que avances de nuevo.,Tes scores sont stables. Une petite révision de tes mots les plus faibles pourrait relancer ta progression.,
+129,quiz-feedback.ts,trend_declining_1,Your scores dipped a bit recently — might be worth a quick refresher.,Tus puntuaciones han bajado un poco últimamente — podría valer la pena un repaso rápido.,Tes scores ont légèrement baissé récemment — un petit rappel pourrait être utile.,"5 message variants, picked at random each screen load"
+130,quiz-feedback.ts,trend_declining_2,"A small dip lately. Nothing major, just revisit this list when you get a chance.","Una pequeña bajada últimamente. Nada grave, solo repasa esta lista cuando puedas.","Une petite baisse dernièrement. Rien de grave, revois juste cette liste quand tu as l'occasion.",
+131,quiz-feedback.ts,trend_declining_3,Scores have slipped slightly — could be worth slowing down on your next attempt.,Las puntuaciones han bajado un poco — podría valer la pena ir más despacio en tu próximo intento.,Les scores ont légèrement chuté — ça pourrait valoir le coup de ralentir lors de ta prochaine tentative.,
+132,quiz-feedback.ts,trend_declining_4,A bit of a dip recently. Happens — a short review session should help.,Una pequeña bajada recientemente. Pasa a veces — una sesión corta de repaso debería ayudar.,Une petite baisse récemment. Ça arrive — une courte session de révision devrait aider.,
+133,quiz-feedback.ts,trend_declining_5,Your recent scores are a little lower than before — maybe a refresher is due.,Tus puntuaciones recientes son un poco más bajas que antes — quizás toca un repaso.,Tes scores récents sont un peu plus bas qu'avant — un petit rappel serait peut-être utile.,
+134,quiz-feedback.ts,trend_declining_a_lot_1,Your scores dropped noticeably. Consider going back through this list before your next quiz.,Tus puntuaciones han bajado notablemente. Considera repasar esta lista antes de tu próximo cuestionario.,Tes scores ont nettement baissé. Pense à revoir cette liste avant ton prochain quiz.,"5 message variants, picked at random each screen load"
+135,quiz-feedback.ts,trend_declining_a_lot_2,A bigger drop than usual — this list might need a real refresher before your next attempt.,Una bajada mayor de lo habitual — esta lista podría necesitar un repaso serio antes de tu próximo intento.,Une baisse plus importante que d'habitude — cette liste aurait peut-être besoin d'une vraie révision avant ta prochaine tentative.,
+136,quiz-feedback.ts,trend_declining_a_lot_3,Scores have fallen off quite a bit. Worth reviewing the list from scratch.,Las puntuaciones han bajado bastante. Vale la pena repasar la lista desde cero.,Les scores ont pas mal chuté. Ça vaut le coup de revoir la liste depuis le début.,
+137,quiz-feedback.ts,trend_declining_a_lot_4,That's a steep dip — might help to slow down and review before quizzing again.,Es una caída pronunciada — podría ayudar ir más despacio y repasar antes de volver a hacer el cuestionario.,C'est une chute assez marquée — ralentir et réviser avant de refaire le quiz pourrait aider.,
+138,quiz-feedback.ts,trend_declining_a_lot_5,"A significant drop here. Don't worry, just revisit the list before jumping back in.","Una bajada importante aquí. No te preocupes, solo repasa la lista antes de volver a intentarlo.","Une baisse importante ici. Pas de souci, revois juste la liste avant de t'y remettre.",
+139,backend (api errors),backend_error_text,Various FastAPI HTTPException / Pydantic validation messages surfaced via e.message,,,"Decided: stays English-only — these are dev-facing/edge-case errors (malformed requests, validation failures), not normal user-facing copy"
+140,my-lists.tsx,sample_lists_title,Sample Lists,Listas de ejemplo,Listes types,
+141,my-lists.tsx,sample_lists_hint,"Add a ready-made 50-word list for any language pair — add as many as you want, whenever you want.","Añade una lista de 50 palabras ya preparada para cualquier par de idiomas — añade tantas como quieras, cuando quieras.","Ajoute une liste de 50 mots prête à l'emploi pour n'importe quelle paire de langues — ajoutes-en autant que tu veux, quand tu veux.",
+142,my-lists.tsx,sample_list_name_template,{source} → {target} Vocab / {source} → {target} Verbs,{source} → {target} Vocabulario / {source} → {target} Verbos,{source} → {target} Vocabulaire / {source} → {target} Verbes,Template — used as both display label and saved list name
+143,my-lists.tsx,sample_list_type_vocab,Vocab,Vocabulario,Vocabulaire,Reused label under each sample list row
+144,my-lists.tsx,sample_list_type_verbs,Verbs,Verbos,Verbes,Reused label under each sample list row
+145,my-lists.tsx,sample_list_add,Add,Añadir,Ajouter,
+146,my-lists.tsx,sample_list_adding,Adding…,Añadiendo…,Ajout en cours…,
+147,my-lists.tsx,sample_list_added,Added,Añadido,Ajouté,Shown once a list with the same name already exists; still tappable to re-sync
+148,my-lists.tsx,error_adding_sample,Something went wrong adding that sample list.,Algo salió mal al añadir esa lista de ejemplo.,Une erreur s'est produite lors de l'ajout de cette liste type.,
+149,onboarding.tsx,skip,Skip,Omitir,Passer,
+150,onboarding.tsx,back,Back,Atrás,Retour,
+151,onboarding.tsx,next,Next,Siguiente,Suivant,
+152,onboarding.tsx,get_started,Get Started,Empezar,Commencer,
+153,onboarding.tsx,slide1_headline,Build Your List,Crea tu lista,Crée ta liste,
+154,onboarding.tsx,slide1_body,"Type words, paste a list, upload a file, or snap a photo — AI reads it for you. Or jump right in with a few ready-made sample lists in My Lists.","Escribe palabras, pega una lista, sube un archivo o toma una foto — la IA la lee por ti. O empieza directamente con algunas listas de ejemplo ya preparadas en Mis listas.","Tape des mots, colle une liste, importe un fichier ou prends une photo — l'IA la lit pour toi. Ou commence directement avec quelques listes types déjà prêtes dans Mes listes.",
+155,onboarding.tsx,slide2_headline,Practice With Adaptive Quizzes,Practica con cuestionarios adaptativos,Entraîne-toi avec des quiz adaptatifs,
+156,onboarding.tsx,slide2_body,"AI generates real sentences to test you — and the more you practice, the more it targets what you're actually struggling with.","La IA genera frases reales para ponerte a prueba — y cuanto más practiques, más se enfocará en lo que realmente te cuesta.","L'IA génère de vraies phrases pour te tester — et plus tu t'entraînes, plus elle cible ce qui te pose vraiment des difficultés.",
+157,onboarding.tsx,slide3_headline,Watch Your Progress,Observa tu progreso,Suis ta progression,
+158,onboarding.tsx,slide3_body,"See your scores improve over time, list by list.","Observa cómo mejoran tus resultados con el tiempo, lista por lista.","Regarde tes scores s'améliorer au fil du temps, liste par liste.",
+159,settings.tsx,about_langreps_link,About LangReps,Acerca de LangReps,À propos de LangReps,Links to /onboarding to replay it manually
+160,my-lists.tsx,sort_by_label,Sort by,Ordenar por,Trier par,
+161,my-lists.tsx,sort_by_date,Last Uploaded,Última subida,Dernier import,
+162,my-lists.tsx,sort_by_name,Name,Nombre,Nom,
+163,my-lists.tsx,last_uploaded_template,Last uploaded: {date},Última subida: {date},Dernier import : {date},"Template — date formatting via toLocaleDateString(), varies by device locale"
+164,my-lists.tsx,sample_list_name_template_v2,{target} Vocabulary (from {source}) / {target} Verbs (from {source}),Vocabulario de {target} (desde {source}) / Verbos de {target} (desde {source}),Vocabulaire {target} (depuis {source}) / Verbes {target} (depuis {source}),Superseded template — replaces the old arrow-notation naming
+165,my-lists.tsx,sample_list_card_title,Vocab {count} / Verb {count},Vocabulario {count} / Verbo {count},Vocabulaire {count} / Verbe {count},"Sample-list catalog card title, replaces the old full name display"
+166,my-lists.tsx,sample_list_card_flags,{flag} -> {flag},{flag} -> {flag},{flag} -> {flag},Flag emoji pair instead of spelled-out language names — sidesteps capitalization inconsistency entirely
+167,index.tsx,signup_incentive_hint,Sign up to save your lists and track your progress over time,Regístrate para guardar tus listas y seguir tu progreso a lo largo del tiempo,Inscris-toi pour enregistrer tes listes et suivre ta progression au fil du temps,
+168,settings.tsx,default_level_title,Default Level,Nivel predeterminado,Niveau par défaut,New section title for Settings redesign (bold title + description layout)
+169,settings.tsx,auto_delete_title,Auto-Delete Old Quizzes,Eliminar automáticamente cuestionarios antiguos,Suppression automatique des anciens quiz,New section title
+170,settings.tsx,auto_delete_desc,Completed quizzes are removed after 30 days,Los cuestionarios completados se eliminan después de 30 días,Les quiz terminés sont supprimés après 30 jours,Description moved under the bold title
+171,settings.tsx,adaptive_quizzes_title,Adaptive Quizzes,Cuestionarios adaptativos,Quiz adaptatifs,New section title
+172,settings.tsx,adaptive_quizzes_desc,"Get feedback on patterns you struggle with, and an option to target them","Recibe comentarios sobre los patrones con los que tienes dificultades, y la opción de enfocarte en ellos","Reçois un retour sur les schémas qui te posent des difficultés, avec la possibilité de les cibler",Description moved under the bold title
+173,settings.tsx,require_accents_title,Require Diacritics,Exigir diacríticos,Exiger les diacritiques,"New toggle — renamed from ""Require Accents"""
+174,settings.tsx,require_accents_desc,"Off accepts ""cafe"" for ""café""","Desactivado acepta ""cafe"" en lugar de ""café""","Désactivé accepte ""cafe"" pour ""café""","Off by default — grading strips accents; app is a reinforcement tool, not a strict teaching tool"
+175,my-lists.tsx,your_lists_section_title,Your Lists,Tus listas,Tes listes,New section title alongside bulk-select controls
+176,my-lists.tsx,bulk_select_toggle,Select / Done,Seleccionar / Listo,Sélectionner / Terminé,"Toggles bulk-select mode in the header row — rows keep their normal content, just gain a checkbox (shared pattern, My Lists and My Quizzes)"
+177,my-lists.tsx,bulk_select_all,Select All / Deselect All,Seleccionar todo / Deseleccionar todo,Tout sélectionner / Tout désélectionner,"Shared pattern, My Lists and My Quizzes"
+178,my-lists.tsx,bulk_delete_selected_template,Delete ({count}),Eliminar ({count}),Supprimer ({count}),"Shared pattern, My Lists and My Quizzes"
+179,my-lists.tsx,bulk_deleting,Deleting…,Eliminando…,Suppression…,"Shared pattern, My Lists and My Quizzes"
+180,my-lists.tsx,bulk_delete_lists_alert_title,Delete Lists,Eliminar listas,Supprimer les listes,
+181,my-lists.tsx,bulk_delete_lists_alert_message_template,Delete {count} list(s)? This can't be undone.,¿Eliminar {count} lista(s)? Esta acción no se puede deshacer.,Supprimer {count} liste(s) ? Cette action est irréversible.,
+182,my-quizzes.tsx,quizzes_in_progress_count_template,{count} in progress,{count} en curso,{count} en cours,
+183,my-quizzes.tsx,bulk_delete_quizzes_alert_title,Delete Quizzes,Eliminar cuestionarios,Supprimer les quiz,
+184,my-quizzes.tsx,bulk_delete_quizzes_alert_message_template,Delete {count} quiz(zes)? This can't be undone.,¿Eliminar {count} cuestionario(s)? Esta acción no se puede deshacer.,Supprimer {count} quiz ? Cette action est irréversible.,
+185,my-quizzes.tsx,sort_by_last_updated,Last Updated,Última actualización,Dernière mise à jour,"New sort option — mirrors My Lists' ""Last Uploaded"" pattern"
+186,my-quizzes.tsx,last_updated_template,Last updated: {date},Última actualización: {date},Dernière mise à jour : {date},"Template — date formatting via toLocaleDateString(), varies by device locale"
+187,my-quizzes.tsx,quiz_type_badge_vocab,Vocab,Vocabulario,Vocabulaire,"Small badge next to the quiz row title, shows the underlying list's list_type"
+188,my-quizzes.tsx,quiz_type_badge_verb,Verb,Verbo,Verbe,Small badge next to the quiz row title
+189,quiz-complete.tsx,canned_feedback_mastery,You show mastery of the material and a good understanding of the concepts. You recall these words well and have successfully added them to your vocabulary. Keep up the good work — we suggest upping the CEFR level or training on a new list.,Demuestras dominio del material y una buena comprensión de los conceptos. Recuerdas bien estas palabras y las has incorporado con éxito a tu vocabulario. Sigue así — te sugerimos subir el nivel CEFR o practicar con una lista nueva.,Tu montres une bonne maîtrise du contenu et une bonne compréhension des concepts. Tu te souviens bien de ces mots et les as intégrés avec succès à ton vocabulaire. Continue comme ça — nous te suggérons d'augmenter le niveau CECR ou de t'entraîner sur une nouvelle liste.,Shown when there's not yet enough history for an AI pattern insight. 90%+ correct
+190,quiz-complete.tsx,canned_feedback_solid,"You have a solid grasp of this list — most of these words are sticking. A few are still slipping through, so one more pass at this level should lock them in before you move up or take on a new list.","Tienes un buen dominio de esta lista — la mayoría de estas palabras se te quedan. Algunas todavía se te escapan, así que una repetición más en este nivel debería fijarlas antes de subir de nivel o empezar una lista nueva.","Tu maîtrises bien cette liste — la plupart de ces mots restent en mémoire. Quelques-uns t'échappent encore, donc un tour supplémentaire à ce niveau devrait les ancrer avant de monter de niveau ou de passer à une nouvelle liste.",70-89% correct
+191,quiz-complete.tsx,canned_feedback_building,"You're recognizing some of these words, but a good chunk aren't sticking yet. That's normal at this stage — stick with this list at the same level for now rather than adding new words.","Reconoces algunas de estas palabras, pero una buena parte todavía no se te queda. Eso es normal en esta etapa — sigue con esta lista en el mismo nivel por ahora en lugar de añadir palabras nuevas.","Tu reconnais certains de ces mots, mais une bonne partie ne reste pas encore en mémoire. C'est normal à ce stade — continue avec cette liste au même niveau pour l'instant plutôt que d'ajouter de nouveaux mots.",40-69% correct
+192,quiz-complete.tsx,canned_feedback_struggling,"This list is still tripping you up more than not — that's useful information, not a setback. Try lowering the CEFR level or running a shorter, more focused quiz on just this list before moving on.","Esta lista todavía te resulta difícil más veces que no — eso es información útil, no un retroceso. Intenta bajar el nivel CEFR o hacer un cuestionario más corto y enfocado solo en esta lista antes de continuar.","Cette liste te met encore en difficulté plus souvent qu'autrement — c'est une information utile, pas un échec. Essaie de baisser le niveau CECR ou de faire un quiz plus court et plus ciblé sur cette liste avant de continuer.",Below 40% correct
+193,cefr-level-picker.tsx,cefr_info_alert_title,CEFR Levels,Niveles del MCER,Niveaux du CECR,Alert title triggered by new info icon next to the Level label
+194,cefr-level-picker.tsx,cefr_a1_explanation,Breakthrough — basic words and phrases for everyday needs.,Nivel de acceso — palabras y frases básicas para necesidades cotidianas.,Introductif — mots et phrases de base pour les besoins quotidiens.,
+195,cefr-level-picker.tsx,cefr_a2_explanation,Waystage — simple sentences about familiar topics like family and shopping.,Nivel intermedio inicial — frases sencillas sobre temas familiares como la familia y las compras.,Intermédiaire élémentaire — phrases simples sur des sujets familiers comme la famille et les courses.,
+196,cefr-level-picker.tsx,cefr_b1_explanation,"Threshold — comfortable with everyday situations, travel, and routine topics.","Nivel umbral — cómodo en situaciones cotidianas, viajes y temas habituales.","Niveau seuil — à l'aise dans les situations quotidiennes, les voyages et les sujets courants.",
+197,cefr-level-picker.tsx,cefr_b2_explanation,Vantage — can discuss general and some abstract topics with varied vocabulary.,Nivel avanzado — puede hablar de temas generales y algo abstractos con vocabulario variado.,Avancé — capable de discuter de sujets généraux et parfois abstraits avec un vocabulaire varié.,
+198,cefr-level-picker.tsx,cefr_c1_explanation,"Advanced — fluent, spontaneous use for social, academic, or work purposes.","Nivel autónomo — uso fluido y espontáneo para fines sociales, académicos o laborales.","Autonome — usage fluide et spontané à des fins sociales, académiques ou professionnelles.",
+199,cefr-level-picker.tsx,cefr_c2_explanation,"Mastery — near-native fluency with precise, nuanced expression.",Nivel de dominio — fluidez casi nativa con una expresión precisa y matizada.,Maîtrise — fluidité quasi native avec une expression précise et nuancée.,
+200,app-splash.tsx,splash_title,LangReps,,,"Animated splash shown on every app launch (not a navigable screen) — proper name, may stay untranslated"
+201,app-splash.tsx,splash_tagline,Flex your language muscles.,Dale músculo a tus idiomas.,Muscle tes langues.,"Replaces ""Language reps that stick."" ES/FR use the same fitness idiom naturally — ""dar músculo a""/""muscler"" both mean ""to strengthen/build up"" and are used metaphorically for skills (French ""musclez votre anglais"" is an established phrase), not just literal muscle"
+202,app-splash.tsx,splash_copyright,© 2026 MarApps Development,,,Pinned bottom-right corner
+203,quiz-complete.tsx,see_full_results,See Full Results,Ver resultados completos,Voir les résultats complets,"Link to the new quiz-results.tsx screen, only shown for saved-list quizzes (a session exists)"
+204,quiz-results.tsx,full_results_title,Full Results,Resultados,Résultats,"Dropped ""completo(s)""/""complets"" — redundant, the screen itself already shows the complete breakdown"
+205,quiz-results.tsx,no_recorded_answers,No recorded answers for this quiz.,No hay respuestas registradas para este cuestionario.,Aucune réponse enregistrée pour ce quiz.,
+206,quiz-results.tsx,your_answer_label,Your answer:,Tu respuesta:,Ta réponse :,
+207,quiz-results.tsx,correct_answer_label,Correct answer:,Respuesta correcta:,Bonne réponse :,Shown only for incorrect rows
+208,quiz-results.tsx,blank_answer_fallback,(blank),(en blanco),(vide),Shown when a skipped/empty answer was recorded
+209,quiz-results.tsx,error_loading_results,Something went wrong loading results.,Algo salió mal al cargar los resultados.,Une erreur s'est produite lors du chargement des résultats.,
+210,pairs-review.tsx,list_type_info_alert_title,List Types,Tipos de lista,Types de liste,New info icon next to the List type label
+211,pairs-review.tsx,list_type_info_vocab,"Vocab — plain word pairs (nouns, adjectives, etc.), tested as-is.","Vocabulario — pares de palabras simples (sustantivos, adjetivos, etc.), evaluados tal cual.","Vocabulaire — paires de mots simples (noms, adjectifs, etc.), testées telles quelles.",
+212,pairs-review.tsx,list_type_info_verb,"Verb — infinitives get conjugated in context on Generate Quiz, so you're tested on actual verb forms (e.g. ""habla"") instead of just recalling the infinitive (""hablar"").","Verbo — los infinitivos se conjugan en contexto al generar el cuestionario, así que se te evalúa con formas verbales reales (p. ej. ""habla"") en lugar de solo recordar el infinitivo (""hablar"").","Verbe — les infinitifs sont conjugués en contexte lors de la génération du quiz, donc tu es testé sur de vraies formes verbales (ex. « habla ») plutôt que de simplement retenir l'infinitif (« hablar »).",
+213,pairs-review.tsx,save_input_placeholder_new,Name this list,Nombra esta lista,Nomme cette liste,"Placeholder text — shortened from ""Name this list to save it"", didn't fit alongside the Save button"
+214,pairs-review.tsx,save_input_placeholder_update,List name (updates it),Nombre de la lista (la actualiza),Nom de la liste (la met à jour),Placeholder shown once the list is already saved — shortened to fit
+215,my-lists.tsx,edit_list_link,Edit,Editar,Modifier,New row action — loads the list into Add Words for editing instead of only Generate Quiz
+216,pairs-review.tsx,remove_word_icon,✕,✕,✕,"New per-word remove button in the word list, was append/undo-last/clear-all only before — icon glyph, same in every language"
+217,translate-skipped-lines.tsx,translate_prompt_template,"{n} line(s) looked like single word(s), not pairs — translate into:","{n} línea(s) parecían palabras sueltas, no pares — traducir a:","{n} ligne(s) semblaient être des mots isolés, pas des paires — traduire vers :","New — shown under a parse's ""couldn't parse N lines"" message on Upload File and Paste"
+218,translate-skipped-lines.tsx,translate_button,Translate,Traducir,Traduire,
+219,translate-skipped-lines.tsx,translating_ellipsis,Translating…,Traduciendo…,Traduction en cours…,
+220,translate-skipped-lines.tsx,error_translating,Something went wrong translating those words.,Algo salió mal al traducir esas palabras.,Une erreur s'est produite lors de la traduction de ces mots.,
+221,onboarding.tsx,slide1_body_updated,"Type words, paste a list, or upload a file — AI reads it for you. Or jump right in with a few ready-made sample lists in My Lists.","Escribe palabras, pega una lista o sube un archivo — la IA la lee por ti. O empieza directamente con algunas listas de ejemplo ya preparadas en Mis listas.","Tape des mots, colle une liste ou importe un fichier — l'IA la lit pour toi. Ou commence directement avec quelques listes types déjà prêtes dans Mes listes.","Updated — removed ""or snap a photo"" since Upload Photo was tabled"
+222,pairs-review.tsx,rename_link,Rename,Cambiar nombre,Renommer,New — separates renaming an already-saved list from saving its pairs
+223,pairs-review.tsx,rename_save_button,Save,Guardar,Enregistrer,Inline rename confirm button
+224,pairs-review.tsx,rename_cancel_button,Cancel,Cancelar,Annuler,Inline rename cancel button
+225,pairs-review.tsx,error_renaming,Something went wrong renaming.,Algo salió mal al cambiar el nombre.,Une erreur s'est produite lors du renommage.,
+226,pairs-review.tsx,save_changes_button,Save Changes,Guardar cambios,Enregistrer les modifications,"Replaces ""Save List""+name field once a list is already saved — updates pairs by id, no name field"
+227,pairs-review.tsx,list_type_locked_label,List type (locked),Tipo de lista (bloqueado),Type de liste (verrouillé),Appended to the label once a list is saved — type can't change after first save
+228,pairs-review.tsx,list_type_locked_explanation,"Can't be changed after a list is saved — quiz history is tied to how a word is tested, so switching types on an existing list would make its past results inconsistent. Save a new list instead if you need the other type.","No se puede cambiar después de guardar una lista — el historial del cuestionario está vinculado a cómo se evalúa una palabra, así que cambiar el tipo en una lista existente haría que sus resultados anteriores fueran incoherentes. Guarda una lista nueva si necesitas el otro tipo.","Ne peut pas être modifié après l'enregistrement d'une liste — l'historique des quiz est lié à la façon dont un mot est testé, donc changer le type d'une liste existante rendrait ses résultats passés incohérents. Enregistre une nouvelle liste si tu as besoin de l'autre type.",Appended to the existing List Types info alert once locked
+229,my-quizzes.tsx,past_quizzes_section_title,Past Quizzes,Cuestionarios anteriores,Quiz précédents,"New section showing completed quiz history, fetched from GET /quiz-sessions/completed"
+230,my-quizzes.tsx,no_past_quizzes,No completed quizzes yet.,Aún no hay cuestionarios completados.,Aucun quiz terminé pour l'instant.,Renamed from no_completed_quizzes — collided with list-history.tsx's key of the same name
+231,my-quizzes.tsx,past_quiz_score_template,{correct}/{total} correct ({pct}%),{correct}/{total} correctas ({pct}%),{correct}/{total} correctes ({pct} %),Template
+232,my-quizzes.tsx,deleted_list_fallback,Deleted list,Lista eliminada,Liste supprimée,Shown when a past quiz's list no longer exists
+233,back-button.tsx,discard_unsaved_alert_title,Discard unsaved words?,¿Descartar palabras sin guardar?,Abandonner les mots non enregistrés ?,New — shown when backing out of Add Words with 3+ unsaved words
+234,back-button.tsx,discard_unsaved_alert_message,You've added words that haven't been saved yet. Leaving now will lose them.,"Has añadido palabras que aún no se han guardado. Si sales ahora, se perderán.","Tu as ajouté des mots qui n'ont pas encore été enregistrés. Si tu quittes maintenant, tu les perdras.",
+235,back-button.tsx,leave_without_saving,Leave Without Saving,Salir sin guardar,Quitter sans enregistrer,Destructive confirm action
+236,language-order-confirm.tsx,order_confirm_prompt_template,Detected {first} and {second}. Which one do you already know?,Detectamos {first} y {second}. ¿Cuál de los dos ya conoces?,Nous avons détecté {first} et {second}. Lequel connais-tu déjà ?,"New — shown once after a fresh parse/translation detects two languages, replaces blindly assuming column order = known-then-learning"
+237,language-order-confirm.tsx,order_confirm_option_template,I know {language},Ya sé {language},Je connais déjà {language},"Two buttons, one per detected language"
+238,add-words.tsx,source_word_placeholder_dynamic,Word in {language},Palabra en {language},Mot en {language},"Simplified — dropped ""(known)"" qualifier, the From/To picker above already establishes direction"
+239,add-words.tsx,target_word_placeholder_dynamic,Word in {language},Palabra en {language},Mot en {language},"Simplified — dropped ""(learning)"" qualifier, same reasoning"
+240,settings.tsx,app_language_title,App Language,Idioma de la app,Langue de l'application,"New — the UI locale picker itself, part of building the actual i18n layer"
+241,pairs-review.tsx,list_type_label,List type,Tipo de lista,Type de liste,New — plain unlocked label; list_type_locked_label is the separate (locked) variant
+242,my-lists.tsx,select_label,Select,Seleccionar,Sélectionner,"Split from the old combined ""Select / Done"" doc row — separate key needed for actual t() usage. Shared pattern, My Lists and My Quizzes"
+243,my-lists.tsx,done_label,Done,Listo,Terminé,"Split from ""Select / Done"". Shared pattern, My Lists and My Quizzes"
+244,my-lists.tsx,select_all_label,Select All,Seleccionar todo,Tout sélectionner,"Split from ""Select All / Deselect All"". Shared pattern, My Lists and My Quizzes"
+245,my-lists.tsx,deselect_all_label,Deselect All,Deseleccionar todo,Tout désélectionner,"Split from ""Select All / Deselect All"". Shared pattern, My Lists and My Quizzes"
+246,my-lists.tsx,sample_list_type_verb_singular,Verb,Verbo,Verbe,"Singular form for the sample-list card title (""Verb {count}""), distinct from sample_list_type_verbs (""Verbs"", used elsewhere)"
+247,my-lists.tsx,error_deleting_lists_bulk,Something went wrong deleting those lists.,Algo salió mal al eliminar esas listas.,Une erreur s'est produite lors de la suppression de ces listes.,"Plural — bulk-delete error, distinct from error_deleting_list (singular)"
+248,my-quizzes.tsx,error_deleting_quizzes_bulk,Something went wrong deleting those quizzes.,Algo salió mal al eliminar esos cuestionarios.,Une erreur s'est produite lors de la suppression de ces quiz.,"Plural — bulk-delete error, distinct from error_deleting_quiz (singular)"
+249,my-lists.tsx,loading_ellipsis,Loading…,Cargando…,Chargement…,Reused wherever a screen shows a generic loading state
+250,login.tsx,forgot_password_link,Forgot password?,¿Olvidaste tu contraseña?,Mot de passe oublié ?,
+251,forgot-password.tsx,forgot_password_title,Forgot Password,Contraseña olvidada,Mot de passe oublié,
+252,forgot-password.tsx,forgot_password_sent_message,"If an account exists for that email, we've sent a link to reset your password. Check your inbox.","Si existe una cuenta con ese correo, te hemos enviado un enlace para restablecer tu contraseña. Revisa tu bandeja de entrada.","Si un compte existe pour cette adresse e-mail, nous t'avons envoyé un lien pour réinitialiser ton mot de passe. Vérifie ta boîte de réception.",Deliberately non-revealing — matches backend's response regardless of whether the email has an account
+253,forgot-password.tsx,forgot_password_instructions,Enter your email and we'll send you a link to reset your password.,Introduce tu correo y te enviaremos un enlace para restablecer tu contraseña.,Entre ton e-mail et nous t'enverrons un lien pour réinitialiser ton mot de passe.,
+254,forgot-password.tsx,sending_ellipsis,Sending…,Enviando…,Envoi en cours…,
+255,forgot-password.tsx,send_reset_link,Send Reset Link,Enviar enlace de restablecimiento,Envoyer le lien de réinitialisation,
+256,reset-password.tsx,reset_password_title,Reset Password,Restablecer contraseña,Réinitialiser le mot de passe,
+257,reset-password.tsx,reset_link_invalid_message,This link looks invalid or expired. Request a new reset link from the login screen.,Este enlace parece no válido o ha caducado. Solicita un nuevo enlace desde la pantalla de inicio de sesión.,Ce lien semble invalide ou expiré. Demande un nouveau lien depuis l'écran de connexion.,
+258,reset-password.tsx,set_new_password_title,Set a New Password,Establece una nueva contraseña,Définis un nouveau mot de passe,
+259,reset-password.tsx,new_password_placeholder,New password,Nueva contraseña,Nouveau mot de passe,
+260,reset-password.tsx,save_new_password,Save New Password,Guardar nueva contraseña,Enregistrer le nouveau mot de passe,

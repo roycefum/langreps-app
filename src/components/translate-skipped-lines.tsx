@@ -4,6 +4,7 @@ import { Pressable, StyleSheet, Text, View } from "react-native";
 import { Dropdown } from "@/components/dropdown";
 import { shared } from "@/constants/styles";
 import { apiRequest } from "@/lib/api";
+import { useI18n } from "@/lib/i18n";
 import type { VocabPair } from "@/lib/pairs-context";
 import { LANGUAGES } from "@/lib/types";
 
@@ -21,6 +22,7 @@ type TranslateSkippedLinesProps = {
 // into a language of the user's choice instead of leaving them stuck as
 // unusable skipped lines.
 export function TranslateSkippedLines({ lines, onTranslated }: TranslateSkippedLinesProps) {
+  const { t } = useI18n();
   const [targetLanguage, setTargetLanguage] = useState<string>(LANGUAGES[0]);
   const [isTranslating, setIsTranslating] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -37,7 +39,7 @@ export function TranslateSkippedLines({ lines, onTranslated }: TranslateSkippedL
       );
       onTranslated(result.pairs, result.source_language, targetLanguage);
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Something went wrong translating those words.");
+      setError(e instanceof Error ? e.message : t("error_translating"));
     } finally {
       setIsTranslating(false);
     }
@@ -46,8 +48,7 @@ export function TranslateSkippedLines({ lines, onTranslated }: TranslateSkippedL
   return (
     <View style={styles.container}>
       <Text style={shared.hint}>
-        {lines.length} line{lines.length === 1 ? "" : "s"} looked like single word
-        {lines.length === 1 ? "" : "s"}, not pairs — translate into:
+        {t("translate_prompt_template", { n: lines.length })}
       </Text>
       <View style={styles.row}>
         <Dropdown value={targetLanguage} onChange={setTargetLanguage} options={LANGUAGES} />
@@ -57,7 +58,7 @@ export function TranslateSkippedLines({ lines, onTranslated }: TranslateSkippedL
           disabled={isTranslating}
         >
           <Text style={[shared.secondaryButtonText, shared.accentButtonText]}>
-            {isTranslating ? "Translating…" : "Translate"}
+            {isTranslating ? t("translating_ellipsis") : t("translate_button")}
           </Text>
         </Pressable>
       </View>

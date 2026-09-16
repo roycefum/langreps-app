@@ -6,6 +6,7 @@ import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { AppSplash, MIN_VISIBLE_MS } from "@/components/app-splash";
 import { colors } from "@/constants/styles";
 import { AuthProvider, useAuth } from "@/lib/auth-context";
+import { LocaleProvider } from "@/lib/i18n";
 import { PairsProvider } from "@/lib/pairs-context";
 import { QuizProvider } from "@/lib/quiz-context";
 
@@ -32,27 +33,29 @@ function AppGate({ children }: { children: React.ReactNode }) {
 export default function RootLayout() {
   return (
     <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <PairsProvider>
-          <QuizProvider>
-            <SafeAreaProvider>
-              {/* Every screen already has its own title text and back
-                  navigation (a "← Back to Home" link or button) — the native
-                  stack header just duplicated that with raw route filenames
-                  ("index", "generate-quiz", etc.) showing to real users.
-                  Hiding it also removed the safe-area padding it used to
-                  provide, so that's applied here instead (top edge only —
-                  bottom is handled per-screen where needed, e.g. a
-                  ScrollView's contentContainerStyle padding). */}
-              <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }} edges={["top"]}>
-                <AppGate>
-                  <Stack screenOptions={{ headerShown: false }} />
-                </AppGate>
-              </SafeAreaView>
-            </SafeAreaProvider>
-          </QuizProvider>
-        </PairsProvider>
-      </AuthProvider>
+      <LocaleProvider>
+        <AuthProvider>
+          <PairsProvider>
+            <QuizProvider>
+              <SafeAreaProvider>
+                {/* Every screen already has its own title text and back
+                    navigation (a "← Back to Home" link or button) — the native
+                    stack header just duplicated that with raw route filenames
+                    ("index", "generate-quiz", etc.) showing to real users.
+                    Hiding it also removed the safe-area padding it used to
+                    provide, so that's applied here instead (top edge only —
+                    bottom is handled per-screen where needed, e.g. a
+                    ScrollView's contentContainerStyle padding). */}
+                <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }} edges={["top"]}>
+                  <AppGate>
+                    <Stack screenOptions={{ headerShown: false }} />
+                  </AppGate>
+                </SafeAreaView>
+              </SafeAreaProvider>
+            </QuizProvider>
+          </PairsProvider>
+        </AuthProvider>
+      </LocaleProvider>
     </QueryClientProvider>
   );
 }

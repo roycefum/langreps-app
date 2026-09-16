@@ -9,6 +9,7 @@ import { PairsReview } from "@/components/pairs-review";
 import { TranslateSkippedLines } from "@/components/translate-skipped-lines";
 import { shared } from "@/constants/styles";
 import { apiRequest } from "@/lib/api";
+import { useI18n } from "@/lib/i18n";
 import { detectLanguages } from "@/lib/language-detect";
 import { usePairs } from "@/lib/pairs-context";
 import type { VocabPair } from "@/lib/pairs-context";
@@ -17,6 +18,7 @@ import { swapPairLanguages } from "@/lib/text";
 type PendingOrder = { firstLanguage: string; secondLanguage: string };
 
 export default function UploadFile() {
+  const { t } = useI18n();
   const { pairs, addPairs, setPairs, setSourceLanguage, setTargetLanguage } = usePairs();
   const [isParsing, setIsParsing] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -78,7 +80,7 @@ export default function UploadFile() {
         }
       }
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Something went wrong parsing that file.");
+      setError(e instanceof Error ? e.message : t("error_parsing_file"));
     } finally {
       setIsParsing(false);
     }
@@ -87,12 +89,9 @@ export default function UploadFile() {
   return (
     <ScrollView style={shared.screen} contentContainerStyle={styles.content}>
       <BackButton href="/" />
-      <Text style={shared.title}>Upload a File</Text>
+      <Text style={shared.title}>{t("upload_a_file_title")}</Text>
 
-      <Text style={shared.hint}>
-        A plain text or CSV file, one pair per line — a tab, &quot;-&gt;&quot;, &quot;:&quot;, or
-        similar between each word and its translation.
-      </Text>
+      <Text style={shared.hint}>{t("upload_file_instructions")}</Text>
 
       <Pressable
         style={[shared.secondaryButton, shared.fileActionButton]}
@@ -100,17 +99,18 @@ export default function UploadFile() {
         disabled={isParsing}
       >
         <Text style={[shared.secondaryButtonText, shared.accentButtonText]}>
-          {isParsing ? "Parsing…" : "Choose File"}
+          {isParsing ? t("parsing_ellipsis") : t("choose_file")}
         </Text>
       </Pressable>
 
-      {lastFileName && !error && <Text style={shared.hint}>Last file: {lastFileName}</Text>}
+      {lastFileName && !error && (
+        <Text style={shared.hint}>{t("last_file", { name: lastFileName })}</Text>
+      )}
       {error && <Text style={shared.errorText}>{error}</Text>}
 
       {skippedLines.length > 0 && (
         <Text style={shared.errorText}>
-          Couldn&apos;t parse {skippedLines.length} line{skippedLines.length === 1 ? "" : "s"}:{" "}
-          {skippedLines.join(" / ")}
+          {t("couldnt_parse_lines", { n: skippedLines.length, list: skippedLines.join(" / ") })}
         </Text>
       )}
 

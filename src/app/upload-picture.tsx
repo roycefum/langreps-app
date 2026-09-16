@@ -7,6 +7,7 @@ import { BackButton } from "@/components/back-button";
 import { PairsReview } from "@/components/pairs-review";
 import { shared } from "@/constants/styles";
 import { apiRequest } from "@/lib/api";
+import { useI18n } from "@/lib/i18n";
 import { detectLanguages } from "@/lib/language-detect";
 import { usePairs } from "@/lib/pairs-context";
 
@@ -17,6 +18,7 @@ import { usePairs } from "@/lib/pairs-context";
 type ExtractedPair = { source_term: string; target_term: string };
 
 export default function UploadPicture() {
+  const { t } = useI18n();
   const { pairs, addPairs, setSourceLanguage, setTargetLanguage } = usePairs();
   const [isExtracting, setIsExtracting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -51,7 +53,7 @@ export default function UploadPicture() {
         }
       }
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Something went wrong reading that image.");
+      setError(e instanceof Error ? e.message : t("error_reading_image"));
     } finally {
       setIsExtracting(false);
     }
@@ -60,7 +62,7 @@ export default function UploadPicture() {
   async function handleTakePhoto() {
     const permission = await ImagePicker.requestCameraPermissionsAsync();
     if (!permission.granted) {
-      setError("Camera access is needed to take a photo.");
+      setError(t("error_camera_permission"));
       return;
     }
     const result = await ImagePicker.launchCameraAsync({ mediaTypes: "images", quality: 0.8 });
@@ -71,7 +73,7 @@ export default function UploadPicture() {
   async function handleChooseFromLibrary() {
     const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (!permission.granted) {
-      setError("Photo library access is needed to choose an image.");
+      setError(t("error_library_permission"));
       return;
     }
     const result = await ImagePicker.launchImageLibraryAsync({
@@ -85,12 +87,9 @@ export default function UploadPicture() {
   return (
     <ScrollView style={shared.screen} contentContainerStyle={styles.content}>
       <BackButton href="/" />
-      <Text style={shared.title}>Upload a Photo</Text>
+      <Text style={shared.title}>{t("share_a_picture_title")}</Text>
 
-      <Text style={shared.hint}>
-        A photo or screenshot of word pairs (e.g. &quot;house -&gt; casa&quot;) — AI will read the
-        pairs out of it.
-      </Text>
+      <Text style={shared.hint}>{t("share_picture_instructions")}</Text>
 
       <Pressable
         style={[shared.secondaryButton, shared.photoActionButton]}
@@ -98,7 +97,7 @@ export default function UploadPicture() {
         disabled={isExtracting}
       >
         <Text style={[shared.secondaryButtonText, shared.accentButtonText]}>
-          {isExtracting ? "Reading…" : "Take Photo"}
+          {isExtracting ? t("reading_ellipsis") : t("take_photo")}
         </Text>
       </Pressable>
       <Pressable
@@ -107,7 +106,7 @@ export default function UploadPicture() {
         disabled={isExtracting}
       >
         <Text style={[shared.secondaryButtonText, shared.accentButtonText]}>
-          {isExtracting ? "Reading…" : "Choose from Library"}
+          {isExtracting ? t("reading_ellipsis") : t("choose_from_library")}
         </Text>
       </Pressable>
 

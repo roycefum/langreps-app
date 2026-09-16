@@ -6,6 +6,7 @@ import Svg, { Circle, Polyline } from "react-native-svg";
 import { BackButton } from "@/components/back-button";
 import { colors, shared } from "@/constants/styles";
 import { apiRequest } from "@/lib/api";
+import { useI18n } from "@/lib/i18n";
 import { getTrendFeedback, type QuizHistoryEntry } from "@/lib/quiz-feedback";
 import { getAutoDeleteOldQuizzes } from "@/lib/settings-storage";
 
@@ -14,6 +15,7 @@ const GRAPH_HEIGHT = 140;
 const GRAPH_PADDING = 12;
 
 export default function ListHistory() {
+  const { t } = useI18n();
   const { listId, listName } = useLocalSearchParams<{ listId: string; listName?: string }>();
   const [history, setHistory] = useState<QuizHistoryEntry[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -40,7 +42,7 @@ export default function ListHistory() {
       );
       setHistory(result.history);
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Something went wrong loading quiz history.");
+      setError(e instanceof Error ? e.message : t("error_loading_history"));
     } finally {
       setIsLoading(false);
     }
@@ -55,7 +57,7 @@ export default function ListHistory() {
   // Picked fresh on every screen visit rather than memoized on history
   // itself, so re-opening this screen can surface a different phrasing of
   // the same trend instead of always showing the same canned line.
-  const feedback = useMemo(() => getTrendFeedback(history), [history]);
+  const feedbackKey = useMemo(() => getTrendFeedback(history), [history]);
 
   const points = useMemo(() => {
     if (history.length < 2) return null;
@@ -70,14 +72,14 @@ export default function ListHistory() {
   return (
     <ScrollView style={shared.screen} contentContainerStyle={styles.content}>
       <BackButton href="/my-lists" />
-      <Text style={shared.title}>{listName ?? "Progress"}</Text>
-      <Text style={shared.hint}>Progress</Text>
+      <Text style={shared.title}>{listName ?? t("progress_title")}</Text>
+      <Text style={shared.hint}>{t("progress_title")}</Text>
 
       {error && <Text style={shared.errorText}>{error}</Text>}
-      {isLoading && <Text style={shared.hint}>Loading…</Text>}
+      {isLoading && <Text style={shared.hint}>{t("loading_ellipsis")}</Text>}
 
       {!isLoading && history.length === 0 && (
-        <Text style={shared.hint}>No completed quizzes for this list yet.</Text>
+        <Text style={shared.hint}>{t("no_completed_quizzes")}</Text>
       )}
 
       {!isLoading && history.length > 0 && (
@@ -96,14 +98,19 @@ export default function ListHistory() {
             </Svg>
           )}
 
-          {feedback && <Text style={[shared.hint, styles.feedback]}>{feedback}</Text>}
+          {feedbackKey && (
+            <Text style={[shared.hint, styles.feedback]}>{t(feedbackKey)}</Text>
+          )}
 
           <View style={styles.section}>
             {[...history].reverse().map((entry) => (
               <View key={entry.session_id} style={styles.row}>
                 <Text style={styles.rowScore}>
-                  {entry.correct}/{entry.total} (
-                  {entry.total > 0 ? Math.round((entry.correct / entry.total) * 100) : 0}%)
+                  {t("score_fraction_pct", {
+                    correct: entry.correct,
+                    total: entry.total,
+                    pct: entry.total > 0 ? Math.round((entry.correct / entry.total) * 100) : 0,
+                  })}
                 </Text>
                 <Text style={shared.hint}>
                   {new Date(entry.completed_at).toLocaleDateString()}

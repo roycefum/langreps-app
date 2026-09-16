@@ -5,6 +5,7 @@ import { Alert, Pressable, ScrollView, StyleSheet, Text, View } from "react-nati
 import { BackButton } from "@/components/back-button";
 import { colors, shared } from "@/constants/styles";
 import { apiRequest } from "@/lib/api";
+import { useI18n } from "@/lib/i18n";
 import { useQuiz } from "@/lib/quiz-context";
 import { displayListName } from "@/lib/text";
 import { TENSES_BY_LANGUAGE, type Question } from "@/lib/types";
@@ -38,6 +39,7 @@ type SortBy = "name" | "date";
 
 export default function MyQuizzes() {
   const router = useRouter();
+  const { t } = useI18n();
   const { startQuiz } = useQuiz();
   const [lists, setLists] = useState<ListSummary[]>([]);
   const [sessions, setSessions] = useState<QuizSessionRow[]>([]);
@@ -84,7 +86,7 @@ export default function MyQuizzes() {
       setSessions(sessionsResult.sessions);
       setCompletedSessions(completedResult.sessions);
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Something went wrong loading your quizzes.");
+      setError(e instanceof Error ? e.message : t("error_loading_quizzes"));
     } finally {
       setIsLoading(false);
     }
@@ -110,19 +112,19 @@ export default function MyQuizzes() {
   function confirmDelete(session: QuizSessionRow) {
     const list = lists.find((l) => l.id === session.list_id);
     Alert.alert(
-      "Delete Quiz",
-      `Delete this quiz${list ? ` for "${displayListName(list.name)}"` : ""}? This can't be undone.`,
+      t("delete_quiz_alert_title"),
+      list ? t("delete_quiz_confirm", { name: displayListName(list.name) }) : t("delete_quiz_alert_title"),
       [
-        { text: "Cancel", style: "cancel" },
+        { text: t("cancel"), style: "cancel" },
         {
-          text: "Delete",
+          text: t("delete"),
           style: "destructive",
           onPress: async () => {
             try {
               await apiRequest(`/quiz-sessions/${session.id}`, { method: "DELETE" });
               setSessions((prev) => prev.filter((s) => s.id !== session.id));
             } catch (e) {
-              setError(e instanceof Error ? e.message : "Something went wrong deleting that quiz.");
+              setError(e instanceof Error ? e.message : t("error_deleting_quiz"));
             }
           },
         },
@@ -137,12 +139,12 @@ export default function MyQuizzes() {
   function confirmDeleteCompleted(session: CompletedSessionRow) {
     const list = lists.find((l) => l.id === session.list_id);
     Alert.alert(
-      "Delete Quiz",
-      `Delete this quiz${list ? ` for "${displayListName(list.name)}"` : ""}? This can't be undone.`,
+      t("delete_quiz_alert_title"),
+      list ? t("delete_quiz_confirm", { name: displayListName(list.name) }) : t("delete_quiz_alert_title"),
       [
-        { text: "Cancel", style: "cancel" },
+        { text: t("cancel"), style: "cancel" },
         {
-          text: "Delete",
+          text: t("delete"),
           style: "destructive",
           onPress: async () => {
             try {
@@ -151,7 +153,7 @@ export default function MyQuizzes() {
                 prev.filter((s) => s.session_id !== session.session_id)
               );
             } catch (e) {
-              setError(e instanceof Error ? e.message : "Something went wrong deleting that quiz.");
+              setError(e instanceof Error ? e.message : t("error_deleting_quiz"));
             }
           },
         },
@@ -186,12 +188,12 @@ export default function MyQuizzes() {
     const count = selectedIds.size;
     if (count === 0) return;
     Alert.alert(
-      "Delete Quizzes",
-      `Delete ${count} quiz${count === 1 ? "" : "zes"}? This can't be undone.`,
+      t("bulk_delete_quizzes_alert_title"),
+      t("bulk_delete_quizzes_alert_message_template", { count }),
       [
-        { text: "Cancel", style: "cancel" },
+        { text: t("cancel"), style: "cancel" },
         {
-          text: "Delete",
+          text: t("delete"),
           style: "destructive",
           onPress: async () => {
             setIsBulkDeleting(true);
@@ -207,7 +209,7 @@ export default function MyQuizzes() {
               await load();
             } catch (e) {
               setError(
-                e instanceof Error ? e.message : "Something went wrong deleting those quizzes."
+                e instanceof Error ? e.message : t("error_deleting_quizzes_bulk")
               );
               await load();
             } finally {
@@ -248,12 +250,12 @@ export default function MyQuizzes() {
     const count = completedSelectedIds.size;
     if (count === 0) return;
     Alert.alert(
-      "Delete Quizzes",
-      `Delete ${count} quiz${count === 1 ? "" : "zes"}? This can't be undone.`,
+      t("bulk_delete_quizzes_alert_title"),
+      t("bulk_delete_quizzes_alert_message_template", { count }),
       [
-        { text: "Cancel", style: "cancel" },
+        { text: t("cancel"), style: "cancel" },
         {
-          text: "Delete",
+          text: t("delete"),
           style: "destructive",
           onPress: async () => {
             setIsBulkDeletingCompleted(true);
@@ -269,7 +271,7 @@ export default function MyQuizzes() {
               await load();
             } catch (e) {
               setError(
-                e instanceof Error ? e.message : "Something went wrong deleting those quizzes."
+                e instanceof Error ? e.message : t("error_deleting_quizzes_bulk")
               );
               await load();
             } finally {
@@ -284,23 +286,23 @@ export default function MyQuizzes() {
   return (
     <ScrollView style={shared.screen} contentContainerStyle={styles.content}>
       <BackButton href="/" />
-      <Text style={shared.title}>My Quizzes</Text>
+      <Text style={shared.title}>{t("my_quizzes_title")}</Text>
 
       {error && <Text style={shared.errorText}>{error}</Text>}
-      {isLoading && <Text style={shared.hint}>Loading…</Text>}
+      {isLoading && <Text style={shared.hint}>{t("loading_ellipsis")}</Text>}
 
       {!isLoading &&
         (sessions.length === 0 ? (
-          <Text style={shared.hint}>No quizzes in progress.</Text>
+          <Text style={shared.hint}>{t("no_quizzes_in_progress")}</Text>
         ) : (
           <View style={styles.section}>
             <View style={styles.sectionHeaderRow}>
-              <Text style={shared.hint}>{sessions.length} in progress</Text>
+              <Text style={shared.hint}>{t("quizzes_in_progress_count_template", { count: sessions.length })}</Text>
               {selectMode ? (
                 <View style={styles.headerActions}>
                   <Pressable onPress={toggleSelectAll}>
                     <Text style={styles.headerActionText}>
-                      {selectedIds.size === sessions.length ? "Deselect All" : "Select All"}
+                      {selectedIds.size === sessions.length ? t("deselect_all_label") : t("select_all_label")}
                     </Text>
                   </Pressable>
                   <Pressable
@@ -314,30 +316,30 @@ export default function MyQuizzes() {
                         selectedIds.size === 0 && styles.disabled,
                       ]}
                     >
-                      {isBulkDeleting ? "Deleting…" : `Delete (${selectedIds.size})`}
+                      {isBulkDeleting ? t("bulk_deleting") : t("bulk_delete_selected_template", { count: selectedIds.size })}
                     </Text>
                   </Pressable>
                   <Pressable onPress={toggleSelectMode}>
-                    <Text style={styles.headerActionText}>Done</Text>
+                    <Text style={styles.headerActionText}>{t("done_label")}</Text>
                   </Pressable>
                 </View>
               ) : (
                 <Pressable onPress={toggleSelectMode}>
-                  <Text style={shared.linkText}>Select</Text>
+                  <Text style={shared.linkText}>{t("select_label")}</Text>
                 </Pressable>
               )}
             </View>
 
             <View style={styles.sortRow}>
-              <Text style={shared.hint}>Sort by</Text>
+              <Text style={shared.hint}>{t("sort_by_label")}</Text>
               <Pressable onPress={() => setSortBy("date")}>
                 <Text style={[styles.sortOption, sortBy === "date" && styles.sortOptionActive]}>
-                  Last Updated
+                  {t("sort_by_last_updated")}
                 </Text>
               </Pressable>
               <Pressable onPress={() => setSortBy("name")}>
                 <Text style={[styles.sortOption, sortBy === "name" && styles.sortOptionActive]}>
-                  Name
+                  {t("sort_by_name")}
                 </Text>
               </Pressable>
             </View>
@@ -347,12 +349,12 @@ export default function MyQuizzes() {
               const typeLine = !list
                 ? null
                 : list.list_type === "verb"
-                  ? `Verb — ${
+                  ? `${t("quiz_type_badge_verb")} — ${
                       TENSES_BY_LANGUAGE[list.target_language]?.find(
                         (t) => t.value === session.verb_tense
-                      )?.label ?? "Mixed"
+                      )?.label ?? t("mixed_tense")
                     }`
-                  : "Vocab";
+                  : t("quiz_type_badge_vocab");
               return (
                 <View key={session.id} style={styles.row}>
                   <Pressable
@@ -362,18 +364,18 @@ export default function MyQuizzes() {
                     }
                   >
                     <Text style={styles.rowTitle}>
-                      {list ? displayListName(list.name) : "Quiz in progress"}
+                      {list ? displayListName(list.name) : t("quiz_in_progress_fallback")}
                     </Text>
                     {typeLine && <Text style={styles.typeLine}>{typeLine}</Text>}
                     <Text style={shared.hint}>
-                      Question {session.current_index + 1} of {session.questions.length}
+                      {t("question_n_of_total", { n: session.current_index + 1, total: session.questions.length })}
                     </Text>
                     <Text style={shared.hint}>
-                      Last updated: {new Date(session.last_active_at).toLocaleDateString()}
+                      {t("last_updated_template", { date: new Date(session.last_active_at).toLocaleDateString() })}
                     </Text>
                   </Pressable>
                   <Pressable onPress={() => confirmDelete(session)}>
-                    <Text style={styles.deleteText}>Delete</Text>
+                    <Text style={styles.deleteText}>{t("delete")}</Text>
                   </Pressable>
                   {selectMode && (
                     <Pressable
@@ -395,15 +397,15 @@ export default function MyQuizzes() {
       {!isLoading && (
         <View style={styles.section}>
           <View style={styles.sectionHeaderRow}>
-            <Text style={styles.sectionTitle}>Past Quizzes</Text>
+            <Text style={styles.sectionTitle}>{t("past_quizzes_section_title")}</Text>
             {completedSessions.length > 0 &&
               (completedSelectMode ? (
                 <View style={styles.headerActions}>
                   <Pressable onPress={toggleCompletedSelectAll}>
                     <Text style={styles.headerActionText}>
                       {completedSelectedIds.size === completedSessions.length
-                        ? "Deselect All"
-                        : "Select All"}
+                        ? t("deselect_all_label")
+                        : t("select_all_label")}
                     </Text>
                   </Pressable>
                   <Pressable
@@ -418,23 +420,23 @@ export default function MyQuizzes() {
                       ]}
                     >
                       {isBulkDeletingCompleted
-                        ? "Deleting…"
-                        : `Delete (${completedSelectedIds.size})`}
+                        ? t("bulk_deleting")
+                        : t("bulk_delete_selected_template", { count: completedSelectedIds.size })}
                     </Text>
                   </Pressable>
                   <Pressable onPress={toggleCompletedSelectMode}>
-                    <Text style={styles.headerActionText}>Done</Text>
+                    <Text style={styles.headerActionText}>{t("done_label")}</Text>
                   </Pressable>
                 </View>
               ) : (
                 <Pressable onPress={toggleCompletedSelectMode}>
-                  <Text style={shared.linkText}>Select</Text>
+                  <Text style={shared.linkText}>{t("select_label")}</Text>
                 </Pressable>
               ))}
           </View>
 
           {completedSessions.length === 0 ? (
-            <Text style={shared.hint}>No completed quizzes yet.</Text>
+            <Text style={shared.hint}>{t("no_past_quizzes")}</Text>
           ) : (
             completedSessions.map((session) => {
               const list = lists.find((l) => l.id === session.list_id);
@@ -451,17 +453,17 @@ export default function MyQuizzes() {
                     }
                   >
                     <Text style={styles.rowTitle}>
-                      {list ? displayListName(list.name) : "Deleted list"}
+                      {list ? displayListName(list.name) : t("deleted_list_fallback")}
                     </Text>
                     <Text style={shared.hint}>
-                      {session.correct}/{session.total} correct ({pct}%)
+                      {t("past_quiz_score_template", { correct: session.correct, total: session.total, pct })}
                     </Text>
                     <Text style={shared.hint}>
                       {new Date(session.completed_at).toLocaleDateString()}
                     </Text>
                   </Pressable>
                   <Pressable onPress={() => confirmDeleteCompleted(session)}>
-                    <Text style={styles.deleteText}>Delete</Text>
+                    <Text style={styles.deleteText}>{t("delete")}</Text>
                   </Pressable>
                   {completedSelectMode && (
                     <Pressable

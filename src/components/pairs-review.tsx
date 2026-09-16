@@ -7,24 +7,10 @@ import { LanguagePicker } from "@/components/language-picker";
 import { colors, shared } from "@/constants/styles";
 import { apiRequest } from "@/lib/api";
 import { useAuth } from "@/lib/auth-context";
+import { useI18n } from "@/lib/i18n";
 import { usePairs } from "@/lib/pairs-context";
 import { displayListName } from "@/lib/text";
 import { LIST_TYPES } from "@/lib/types";
-
-function showListTypeExplanation(isLocked: boolean) {
-  Alert.alert(
-    "List Types",
-    "Vocab — plain word pairs (nouns, adjectives, etc.), tested as-is.\n\n" +
-      "Verb — infinitives get conjugated in context on Generate Quiz, so you're " +
-      "tested on actual verb forms (e.g. \"habla\") instead of just recalling the " +
-      "infinitive (\"hablar\")." +
-      (isLocked
-        ? "\n\nCan't be changed after a list is saved — quiz history is tied to how a " +
-          "word is tested, so switching types on an existing list would make its past " +
-          "results inconsistent. Save a new list instead if you need the other type."
-        : "")
-  );
-}
 
 type PairsReviewProps = {
   // Matches the Streamlit prototype's render_save_button(source, ...)
@@ -42,6 +28,7 @@ type PairsReviewProps = {
 // so they all end with the same review/edit/save/generate step.
 export function PairsReview({ source, children }: PairsReviewProps) {
   const router = useRouter();
+  const { t } = useI18n();
   const {
     pairs,
     removePair,
@@ -65,6 +52,14 @@ export function PairsReview({ source, children }: PairsReviewProps) {
   const [isSavingRename, setIsSavingRename] = useState(false);
   const [renameError, setRenameError] = useState<string | null>(null);
 
+  function showListTypeExplanation(isLocked: boolean) {
+    Alert.alert(
+      t("list_type_info_alert_title"),
+      `${t("list_type_info_vocab")}\n\n${t("list_type_info_verb")}` +
+        (isLocked ? `\n\n${t("list_type_locked_explanation")}` : "")
+    );
+  }
+
   // Creates a brand-new list — only reachable when there's no savedListId
   // yet, since an already-saved list is updated by id (see
   // handleSaveChanges) rather than re-upserted by name.
@@ -86,9 +81,9 @@ export function PairsReview({ source, children }: PairsReviewProps) {
         },
       });
       setSavedList(result.list_id, name.trim());
-      setSaveMessage("Saved!");
+      setSaveMessage(t("saved_message"));
     } catch (e) {
-      setSaveError(e instanceof Error ? e.message : "Something went wrong saving.");
+      setSaveError(e instanceof Error ? e.message : t("error_saving"));
     } finally {
       setIsSaving(false);
     }
@@ -113,9 +108,9 @@ export function PairsReview({ source, children }: PairsReviewProps) {
           list_type: listType.toLowerCase(),
         },
       });
-      setSaveMessage("Saved!");
+      setSaveMessage(t("saved_message"));
     } catch (e) {
-      setSaveError(e instanceof Error ? e.message : "Something went wrong saving.");
+      setSaveError(e instanceof Error ? e.message : t("error_saving"));
     } finally {
       setIsSaving(false);
     }
@@ -139,7 +134,7 @@ export function PairsReview({ source, children }: PairsReviewProps) {
       setSavedList(savedListId, renameValue.trim());
       setIsRenaming(false);
     } catch (e) {
-      setRenameError(e instanceof Error ? e.message : "Something went wrong renaming.");
+      setRenameError(e instanceof Error ? e.message : t("error_renaming"));
     } finally {
       setIsSavingRename(false);
     }
@@ -151,7 +146,7 @@ export function PairsReview({ source, children }: PairsReviewProps) {
         <View style={styles.headingRow}>
           <Text style={styles.savedListHeading}>{displayListName(listName)}</Text>
           <Pressable onPress={startRenaming} hitSlop={8}>
-            <Text style={styles.renameLink}>Rename</Text>
+            <Text style={styles.renameLink}>{t("rename_link")}</Text>
           </Pressable>
         </View>
       )}
@@ -176,14 +171,14 @@ export function PairsReview({ source, children }: PairsReviewProps) {
               onPress={handleRename}
             >
               <Text style={[shared.secondaryButtonText, shared.accentButtonText]}>
-                {isSavingRename ? "…" : "Save"}
+                {isSavingRename ? "…" : t("rename_save_button")}
               </Text>
             </Pressable>
             <Pressable
               style={[shared.secondaryButton, styles.renameButton]}
               onPress={() => setIsRenaming(false)}
             >
-              <Text style={shared.secondaryButtonText}>Cancel</Text>
+              <Text style={shared.secondaryButtonText}>{t("rename_cancel_button")}</Text>
             </Pressable>
           </View>
           {renameError && <Text style={shared.errorText}>{renameError}</Text>}
@@ -193,7 +188,7 @@ export function PairsReview({ source, children }: PairsReviewProps) {
       {userId && (
         <View style={styles.typeRow}>
           <View style={styles.typeGroup}>
-            <Text style={styles.typeLabel}>List type{savedListId ? " (locked)" : ""}</Text>
+            <Text style={styles.typeLabel}>{savedListId ? t("list_type_locked_label") : t("list_type_label")}</Text>
             <Pressable
               onPress={() => showListTypeExplanation(!!savedListId)}
               hitSlop={{ top: 8, bottom: 8, left: 8, right: 2 }}
@@ -211,7 +206,7 @@ export function PairsReview({ source, children }: PairsReviewProps) {
             href="/my-lists"
             style={[shared.secondaryButton, shared.myListsButton, styles.myListsInline]}
           >
-            <Text style={[shared.secondaryButtonText, shared.accentButtonText]}>My Lists</Text>
+            <Text style={[shared.secondaryButtonText, shared.accentButtonText]}>{t("my_lists_link")}</Text>
           </Link>
         </View>
       )}
@@ -219,7 +214,7 @@ export function PairsReview({ source, children }: PairsReviewProps) {
         <View style={shared.row}>
           <TextInput
             style={[shared.input, styles.rowButton]}
-            placeholder="Name this list"
+            placeholder={t("save_input_placeholder_new")}
             placeholderTextColor={colors.placeholder}
             value={name}
             onChangeText={setName}
@@ -235,7 +230,7 @@ export function PairsReview({ source, children }: PairsReviewProps) {
             onPress={handleSave}
           >
             <Text style={[shared.secondaryButtonText, shared.accentButtonText]}>
-              {isSaving ? "Saving…" : "Save List"}
+              {isSaving ? t("saving_ellipsis") : t("save_list")}
             </Text>
           </Pressable>
         </View>
@@ -251,7 +246,7 @@ export function PairsReview({ source, children }: PairsReviewProps) {
           onPress={handleSaveChanges}
         >
           <Text style={[shared.secondaryButtonText, shared.accentButtonText]}>
-            {isSaving ? "Saving…" : "Save Changes"}
+            {isSaving ? t("saving_ellipsis") : t("save_changes_button")}
           </Text>
         </Pressable>
       )}
@@ -269,8 +264,8 @@ export function PairsReview({ source, children }: PairsReviewProps) {
       >
         <Text style={shared.primaryButtonText}>
           {pairs.length < 3
-            ? `Add ${3 - pairs.length} more word${3 - pairs.length === 1 ? "" : "s"} to generate a quiz`
-            : "Generate Quiz"}
+            ? t("add_more_words_to_quiz", { n: 3 - pairs.length })
+            : t("generate_quiz_button")}
         </Text>
       </Pressable>
 
@@ -280,10 +275,10 @@ export function PairsReview({ source, children }: PairsReviewProps) {
 
       <View style={shared.row}>
         <Pressable style={[shared.secondaryButton, styles.rowButton]} onPress={undoLast}>
-          <Text style={shared.secondaryButtonText}>Undo last</Text>
+          <Text style={shared.secondaryButtonText}>{t("undo_last")}</Text>
         </Pressable>
         <Pressable style={[shared.secondaryButton, styles.rowButton]} onPress={clearPairs}>
-          <Text style={shared.secondaryButtonText}>Clear list</Text>
+          <Text style={shared.secondaryButtonText}>{t("clear_list")}</Text>
         </Pressable>
       </View>
 
@@ -291,7 +286,7 @@ export function PairsReview({ source, children }: PairsReviewProps) {
           Generate Quiz) would otherwise sit below the whole word list,
           forcing a scroll just to reach them. */}
       {pairs.length === 0 ? (
-        <Text style={styles.emptyText}>No words added yet.</Text>
+        <Text style={styles.emptyText}>{t("no_words_added")}</Text>
       ) : (
         <View style={styles.list}>
           {pairs.map((pair, index) => (

@@ -4,9 +4,11 @@ import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from "react-
 import { BackButton } from "@/components/back-button";
 import { PairsReview } from "@/components/pairs-review";
 import { colors, shared } from "@/constants/styles";
+import { useI18n } from "@/lib/i18n";
 import { usePairs } from "@/lib/pairs-context";
 
 export default function AddWords() {
+  const { t } = useI18n();
   const { pairs, addPair, savedListId, sourceLanguage, targetLanguage } = usePairs();
   const [sourceWord, setSourceWord] = useState("");
   const [targetWord, setTargetWord] = useState("");
@@ -21,20 +23,20 @@ export default function AddWords() {
   return (
     <ScrollView style={shared.screen} contentContainerStyle={styles.content}>
       <BackButton href="/" confirmLeave={() => !savedListId && pairs.length >= 3} />
-      <Text style={shared.title}>Add Words</Text>
+      <Text style={shared.title}>{t("add_words_title")}</Text>
 
       <PairsReview source="manual">
         <View style={shared.row}>
           <TextInput
             style={[shared.input, styles.rowInput]}
-            placeholder={`Word in ${sourceLanguage}`}
+            placeholder={t("source_word_placeholder_dynamic", { language: sourceLanguage })}
             placeholderTextColor={colors.placeholder}
             value={sourceWord}
             onChangeText={setSourceWord}
           />
           <TextInput
             style={[shared.input, styles.rowInput]}
-            placeholder={`Word in ${targetLanguage}`}
+            placeholder={t("target_word_placeholder_dynamic", { language: targetLanguage })}
             placeholderTextColor={colors.placeholder}
             value={targetWord}
             onChangeText={setTargetWord}
@@ -42,7 +44,7 @@ export default function AddWords() {
         </View>
 
         <Pressable style={[shared.secondaryButton, shared.addActionButton]} onPress={handleAdd}>
-          <Text style={[shared.secondaryButtonText, shared.accentButtonText]}>Add to list</Text>
+          <Text style={[shared.secondaryButtonText, shared.accentButtonText]}>{t("add_to_list")}</Text>
         </Pressable>
       </PairsReview>
     </ScrollView>

@@ -19,13 +19,12 @@ import { LanguageSummary } from "@/components/language-picker";
 import { colors, shared } from "@/constants/styles";
 import { apiRequest } from "@/lib/api";
 import { useAuth } from "@/lib/auth-context";
+import { useI18n } from "@/lib/i18n";
 import { usePairs, type VocabPair } from "@/lib/pairs-context";
 import { useQuiz } from "@/lib/quiz-context";
 import { getAdaptiveQuizzesEnabled, getDefaultCefrLevel } from "@/lib/settings-storage";
 import { chunk, dedupePairs, displayListName, sample } from "@/lib/text";
 import { DEFAULT_CEFR_LEVEL, TENSES_BY_LANGUAGE, type CefrLevel, type Question } from "@/lib/types";
-
-const MIXED_TENSE_LABEL = "Mixed";
 
 const BATCH_SIZE = 5;
 const DEFAULT_QUIZ_LENGTH = 15;
@@ -37,6 +36,7 @@ type QuizInsight = {
 
 export default function GenerateQuiz() {
   const router = useRouter();
+  const { t } = useI18n();
   const { pairs, sourceLanguage, targetLanguage, listType, savedListId, listName } = usePairs();
   const { userId } = useAuth();
   const { startQuiz } = useQuiz();
@@ -58,9 +58,9 @@ export default function GenerateQuiz() {
   const [insight, setInsight] = useState<QuizInsight | null>(null);
 
   const tenseOptions = TENSES_BY_LANGUAGE[targetLanguage] ?? [];
-  const tenseLabels = [MIXED_TENSE_LABEL, ...tenseOptions.map((t) => t.label)];
+  const tenseLabels = [t("mixed_tense"), ...tenseOptions.map((tense) => tense.label)];
   const selectedTenseLabel =
-    tenseOptions.find((t) => t.value === verbTense)?.label ?? MIXED_TENSE_LABEL;
+    tenseOptions.find((tense) => tense.value === verbTense)?.label ?? t("mixed_tense");
 
   useEffect(() => {
     getDefaultCefrLevel().then(setCefrLevel);
@@ -176,7 +176,7 @@ export default function GenerateQuiz() {
       startQuiz(allQuestions, sessionId);
       router.push("/quiz");
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Something went wrong generating your quiz.");
+      setError(e instanceof Error ? e.message : t("error_generating_quiz"));
     } finally {
       setIsGenerating(false);
     }
@@ -186,20 +186,20 @@ export default function GenerateQuiz() {
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
     <View style={[shared.screenCentered, styles.container]}>
       <BackButton href="/" />
-      <Text style={[shared.title, styles.centerText]}>Generate Quiz</Text>
+      <Text style={[shared.title, styles.centerText]}>{t("generate_quiz_title")}</Text>
       <Text style={[styles.centerText, styles.listNameHeading]}>
-        {listName ? displayListName(listName) : "Unsaved list"}
+        {listName ? displayListName(listName) : t("unsaved_list")}
       </Text>
 
       {pairs.length < 3 ? (
-        <Text style={[shared.hint, styles.centerText]}>
-          You need at least 3 words to generate a quiz.
-        </Text>
+        <Text style={[shared.hint, styles.centerText]}>{t("min_words_warning")}</Text>
       ) : (
         <>
-          <Text style={[shared.hint, styles.centerText]}>{pairs.length} words in this list.</Text>
+          <Text style={[shared.hint, styles.centerText]}>
+            {t("words_in_list", { n: pairs.length })}
+          </Text>
           <View style={styles.countRow}>
-            <Text style={shared.hint}>How many questions?</Text>
+            <Text style={shared.hint}>{t("how_many_questions")}</Text>
             <TextInput
               style={[shared.input, styles.countInput]}
               value={countText}
@@ -216,7 +216,7 @@ export default function GenerateQuiz() {
       {listType === "Vocab" && (
         <View style={styles.countRow}>
           <Text style={shared.hint}>
-            Flip: translate {targetLanguage} → {sourceLanguage}
+            {t("flip_toggle_label", { target: targetLanguage, source: sourceLanguage })}
           </Text>
           <Switch value={flip} onValueChange={setFlip} />
         </View>
@@ -224,11 +224,11 @@ export default function GenerateQuiz() {
 
       {listType === "Verb" && tenseOptions.length > 0 && (
         <View style={styles.countRow}>
-          <Text style={shared.hint}>Tense</Text>
+          <Text style={shared.hint}>{t("tense_label")}</Text>
           <Dropdown
             value={selectedTenseLabel}
             onChange={(label) => {
-              if (label === MIXED_TENSE_LABEL) {
+              if (label === t("mixed_tense")) {
                 setVerbTense(null);
                 return;
               }
@@ -251,7 +251,7 @@ export default function GenerateQuiz() {
       {isGenerating ? (
         <View style={styles.generating}>
           <ActivityIndicator size="large" />
-          <Text>Generating your quiz…</Text>
+          <Text>{t("generating_quiz")}</Text>
         </View>
       ) : insight?.message ? (
         <>
@@ -264,14 +264,14 @@ export default function GenerateQuiz() {
             disabled={pairs.length < 3}
             onPress={() => handleGenerate("targeted")}
           >
-            <Text style={shared.primaryButtonText}>Target My Mistakes</Text>
+            <Text style={shared.primaryButtonText}>{t("target_my_mistakes")}</Text>
           </Pressable>
           <Pressable
             style={[shared.secondaryButton, pairs.length < 3 && shared.primaryButtonDisabled]}
             disabled={pairs.length < 3}
             onPress={() => handleGenerate("similar")}
           >
-            <Text style={shared.secondaryButtonText}>Generate Similar Quiz</Text>
+            <Text style={shared.secondaryButtonText}>{t("generate_similar_quiz")}</Text>
           </Pressable>
         </>
       ) : (
@@ -284,7 +284,7 @@ export default function GenerateQuiz() {
           disabled={pairs.length < 3}
           onPress={() => handleGenerate("similar")}
         >
-          <Text style={shared.primaryButtonText}>Generate Quiz</Text>
+          <Text style={shared.primaryButtonText}>{t("generate_quiz_title")}</Text>
         </Pressable>
       )}
     </View>

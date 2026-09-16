@@ -4,6 +4,7 @@ import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 
 import { colors, shared } from "@/constants/styles";
 import { apiRequest } from "@/lib/api";
+import { useI18n } from "@/lib/i18n";
 
 // Reached via the deep link in Supabase's password-reset email
 // (langrepsapp://reset-password, configured in
@@ -11,6 +12,7 @@ import { apiRequest } from "@/lib/api";
 // refresh_token/type=recovery as URL params on that redirect.
 export default function ResetPassword() {
   const router = useRouter();
+  const { t } = useI18n();
   const { access_token, refresh_token } = useLocalSearchParams<{
     access_token?: string;
     refresh_token?: string;
@@ -33,7 +35,7 @@ export default function ResetPassword() {
       });
       router.replace("/login");
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Something went wrong.");
+      setError(e instanceof Error ? e.message : t("error_generic"));
     } finally {
       setIsSubmitting(false);
     }
@@ -42,23 +44,21 @@ export default function ResetPassword() {
   if (!hasValidLink) {
     return (
       <View style={shared.screenCentered}>
-        <Text style={[shared.title, styles.centerText]}>Reset Password</Text>
-        <Text style={[shared.hint, styles.centerText]}>
-          This link looks invalid or expired. Request a new reset link from the login screen.
-        </Text>
+        <Text style={[shared.title, styles.centerText]}>{t("reset_password_title")}</Text>
+        <Text style={[shared.hint, styles.centerText]}>{t("reset_link_invalid_message")}</Text>
       </View>
     );
   }
 
   return (
     <View style={shared.screenCentered}>
-      <Text style={[shared.title, styles.centerText]}>Set a New Password</Text>
+      <Text style={[shared.title, styles.centerText]}>{t("set_new_password_title")}</Text>
 
       {error && <Text style={[shared.errorText, styles.centerText]}>{error}</Text>}
 
       <TextInput
         style={shared.input}
-        placeholder="New password"
+        placeholder={t("new_password_placeholder")}
         placeholderTextColor={colors.placeholder}
         value={newPassword}
         onChangeText={setNewPassword}
@@ -76,7 +76,7 @@ export default function ResetPassword() {
         onPress={handleSubmit}
       >
         <Text style={shared.primaryButtonText}>
-          {isSubmitting ? "Saving…" : "Save New Password"}
+          {isSubmitting ? t("saving_ellipsis") : t("save_new_password")}
         </Text>
       </Pressable>
     </View>

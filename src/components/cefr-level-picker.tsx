@@ -1,6 +1,7 @@
 import { Alert, Pressable, StyleSheet, Text, View } from "react-native";
 
 import { colors } from "@/constants/styles";
+import { useI18n } from "@/lib/i18n";
 import { CEFR_LEVELS, type CefrLevel } from "@/lib/types";
 
 type CefrLevelPickerProps = {
@@ -8,33 +9,36 @@ type CefrLevelPickerProps = {
   onChange: (level: CefrLevel) => void;
 };
 
-// Plain-language summaries of the official CEFR level names/descriptors —
-// just enough for someone to place themselves, not the full framework.
-const CEFR_LEVEL_EXPLANATIONS: Record<CefrLevel, string> = {
-  A1: "Breakthrough — basic words and phrases for everyday needs.",
-  A2: "Waystage — simple sentences about familiar topics like family and shopping.",
-  B1: "Threshold — comfortable with everyday situations, travel, and routine topics.",
-  B2: "Vantage — can discuss general and some abstract topics with varied vocabulary.",
-  C1: "Advanced — fluent, spontaneous use for social, academic, or work purposes.",
-  C2: "Mastery — near-native fluency with precise, nuanced expression.",
+// Keys into the translation tables for each level's plain-language
+// summary — just enough for someone to place themselves, not the full
+// CEFR framework.
+const CEFR_EXPLANATION_KEYS: Record<CefrLevel, string> = {
+  A1: "cefr_a1_explanation",
+  A2: "cefr_a2_explanation",
+  B1: "cefr_b1_explanation",
+  B2: "cefr_b2_explanation",
+  C1: "cefr_c1_explanation",
+  C2: "cefr_c2_explanation",
 };
-
-function showCefrExplanation() {
-  Alert.alert(
-    "CEFR Levels",
-    CEFR_LEVELS.map((level) => `${level} — ${CEFR_LEVEL_EXPLANATIONS[level]}`).join("\n\n")
-  );
-}
 
 // Level isn't a property of a list (unlike language) — it's a per-quiz
 // choice that defaults from Settings but can be overridden for one
 // generation, so this is a plain value/onChange component (like Dropdown)
 // rather than reading/writing shared list state directly.
 export function CefrLevelPicker({ value, onChange }: CefrLevelPickerProps) {
+  const { t } = useI18n();
+
+  function showCefrExplanation() {
+    Alert.alert(
+      t("cefr_info_alert_title"),
+      CEFR_LEVELS.map((level) => `${level} — ${t(CEFR_EXPLANATION_KEYS[level])}`).join("\n\n")
+    );
+  }
+
   return (
     <View>
       <View style={styles.labelRow}>
-        <Text style={styles.label}>Level</Text>
+        <Text style={styles.label}>{t("level_label")}</Text>
         <Pressable onPress={showCefrExplanation} hitSlop={8}>
           <Text style={styles.infoIcon}>ⓘ</Text>
         </Pressable>

@@ -5,6 +5,7 @@ import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { BackButton } from "@/components/back-button";
 import { colors, shared } from "@/constants/styles";
 import { apiRequest } from "@/lib/api";
+import { useI18n } from "@/lib/i18n";
 
 type Attempt = {
   question_text: string;
@@ -14,6 +15,7 @@ type Attempt = {
 };
 
 export default function QuizResults() {
+  const { t } = useI18n();
   const { sessionId } = useLocalSearchParams<{ sessionId: string }>();
   const [attempts, setAttempts] = useState<Attempt[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -31,7 +33,7 @@ export default function QuizResults() {
         if (!cancelled) setAttempts(result.attempts);
       } catch (e) {
         if (!cancelled) {
-          setError(e instanceof Error ? e.message : "Something went wrong loading results.");
+          setError(e instanceof Error ? e.message : t("error_loading_results"));
         }
       } finally {
         if (!cancelled) setIsLoading(false);
@@ -45,13 +47,13 @@ export default function QuizResults() {
   return (
     <ScrollView style={shared.screen} contentContainerStyle={styles.content}>
       <BackButton href="/quiz-complete" />
-      <Text style={shared.title}>Full Results</Text>
+      <Text style={shared.title}>{t("full_results_title")}</Text>
 
       {error && <Text style={shared.errorText}>{error}</Text>}
-      {isLoading && <Text style={shared.hint}>Loading…</Text>}
+      {isLoading && <Text style={shared.hint}>{t("loading_ellipsis")}</Text>}
 
       {!isLoading && attempts.length === 0 && !error && (
-        <Text style={shared.hint}>No recorded answers for this quiz.</Text>
+        <Text style={shared.hint}>{t("no_recorded_answers")}</Text>
       )}
 
       {attempts.map((attempt, i) => (
@@ -64,14 +66,14 @@ export default function QuizResults() {
         >
           <Text style={styles.question}>{attempt.question_text}</Text>
           <View style={styles.answerLine}>
-            <Text style={shared.hint}>Your answer: </Text>
+            <Text style={shared.hint}>{t("your_answer_label")} </Text>
             <Text style={[styles.answerText, attempt.was_correct ? styles.correctText : styles.incorrectText]}>
-              {attempt.user_answer || "(blank)"}
+              {attempt.user_answer || t("blank_answer_fallback")}
             </Text>
           </View>
           {!attempt.was_correct && (
             <View style={styles.answerLine}>
-              <Text style={shared.hint}>Correct answer: </Text>
+              <Text style={shared.hint}>{t("correct_answer_label")} </Text>
               <Text style={[styles.answerText, styles.correctText]}>{attempt.correct_answer}</Text>
             </View>
           )}

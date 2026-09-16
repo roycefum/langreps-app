@@ -4,6 +4,7 @@ import { Pressable, StyleSheet, Text, View } from "react-native";
 import Svg, { Circle, Line, Polyline, Rect } from "react-native-svg";
 
 import { colors, shared } from "@/constants/styles";
+import { useI18n } from "@/lib/i18n";
 import { setHasSeenOnboarding } from "@/lib/settings-storage";
 
 // Simple geometric shapes rather than actual app screenshots — screenshots
@@ -56,30 +57,31 @@ function ProgressIllustration() {
 
 type Slide = {
   Illustration: ComponentType;
-  headline: string;
-  body: string;
+  headlineKey: string;
+  bodyKey: string;
 };
 
 const SLIDES: Slide[] = [
   {
     Illustration: BuildListIllustration,
-    headline: "Build Your List",
-    body: "Type words, paste a list, or upload a file — AI reads it for you. Or jump right in with a few ready-made sample lists in My Lists.",
+    headlineKey: "slide1_headline",
+    bodyKey: "slide1_body_updated",
   },
   {
     Illustration: QuizIllustration,
-    headline: "Practice With Adaptive Quizzes",
-    body: "AI generates real sentences to test you — and the more you practice, the more it targets what you're actually struggling with.",
+    headlineKey: "slide2_headline",
+    bodyKey: "slide2_body",
   },
   {
     Illustration: ProgressIllustration,
-    headline: "Watch Your Progress",
-    body: "See your scores improve over time, list by list.",
+    headlineKey: "slide3_headline",
+    bodyKey: "slide3_body",
   },
 ];
 
 export default function Onboarding() {
   const router = useRouter();
+  const { t } = useI18n();
   const [slideIndex, setSlideIndex] = useState(0);
   const isLast = slideIndex === SLIDES.length - 1;
   const slide = SLIDES[slideIndex];
@@ -104,15 +106,15 @@ export default function Onboarding() {
   return (
     <View style={[shared.screenCentered, styles.container]}>
       <Pressable style={styles.skip} onPress={finish}>
-        <Text style={shared.linkText}>Skip</Text>
+        <Text style={shared.linkText}>{t("skip")}</Text>
       </Pressable>
 
       <View style={styles.illustration}>
         <slide.Illustration />
       </View>
 
-      <Text style={[shared.title, styles.centerText]}>{slide.headline}</Text>
-      <Text style={[shared.hint, styles.centerText, styles.body]}>{slide.body}</Text>
+      <Text style={[shared.title, styles.centerText]}>{t(slide.headlineKey)}</Text>
+      <Text style={[shared.hint, styles.centerText, styles.body]}>{t(slide.bodyKey)}</Text>
 
       <View style={styles.dots}>
         {SLIDES.map((_, i) => (
@@ -123,7 +125,7 @@ export default function Onboarding() {
       <View style={styles.navRow}>
         {slideIndex > 0 ? (
           <Pressable onPress={back}>
-            <Text style={shared.linkText}>Back</Text>
+            <Text style={shared.linkText}>{t("back")}</Text>
           </Pressable>
         ) : (
           <View style={styles.navSpacer} />
@@ -132,7 +134,7 @@ export default function Onboarding() {
           style={[shared.primaryButton, shared.generateQuizButton, styles.nextButton]}
           onPress={next}
         >
-          <Text style={shared.primaryButtonText}>{isLast ? "Get Started" : "Next"}</Text>
+          <Text style={shared.primaryButtonText}>{isLast ? t("get_started") : t("next")}</Text>
         </Pressable>
       </View>
     </View>

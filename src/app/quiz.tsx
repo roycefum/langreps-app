@@ -5,10 +5,12 @@ import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from "react-
 import { BackButton } from "@/components/back-button";
 import { ProgressBar } from "@/components/progress-bar";
 import { colors, shared } from "@/constants/styles";
+import { useI18n } from "@/lib/i18n";
 import { useQuiz } from "@/lib/quiz-context";
 
 export default function Quiz() {
   const router = useRouter();
+  const { t } = useI18n();
   const { questions, currentIndex, phase, lastAnswer, wasCorrect, isComplete, submitAnswer, skipQuestion, nextQuestion } =
     useQuiz();
   const [answer, setAnswer] = useState("");
@@ -53,7 +55,7 @@ export default function Quiz() {
       <ProgressBar progress={currentIndex / total} />
 
       <Text style={[shared.hint, styles.centerText]}>
-        Question {currentIndex + 1} of {total}
+        {t("question_n_of_total", { n: currentIndex + 1, total })}
       </Text>
 
       <View style={styles.body}>
@@ -63,7 +65,7 @@ export default function Quiz() {
           <>
             <TextInput
               style={[shared.input, styles.answerInput]}
-              placeholder="Your answer"
+              placeholder={t("your_answer_placeholder")}
               placeholderTextColor={colors.placeholder}
               value={answer}
               onChangeText={setAnswer}
@@ -71,14 +73,14 @@ export default function Quiz() {
               autoCorrect={false}
             />
             <Pressable style={shared.primaryButton} onPress={handleSubmit}>
-              <Text style={shared.primaryButtonText}>Submit</Text>
+              <Text style={shared.primaryButtonText}>{t("submit")}</Text>
             </Pressable>
             <Pressable style={shared.backLink} onPress={skipQuestion}>
-              <Text style={styles.skipButtonText}>Skip this question</Text>
+              <Text style={styles.skipButtonText}>{t("skip_question")}</Text>
             </Pressable>
             <Pressable style={shared.backLink} onPress={() => setShowWordList((v) => !v)}>
               <Text style={styles.skipButtonText}>
-                {showWordList ? "Hide word list" : "Stuck? See the word list"}
+                {showWordList ? t("hide_word_list") : t("stuck_see_word_list")}
               </Text>
             </Pressable>
             {showWordList && (
@@ -89,17 +91,17 @@ export default function Quiz() {
           </>
         ) : (
           <>
-            <Text style={styles.centerText}>Your answer: {lastAnswer}</Text>
+            <Text style={styles.centerText}>{t("your_answer_was", { answer: lastAnswer })}</Text>
             {wasCorrect ? (
-              <Text style={[styles.correct, styles.centerText]}>That&apos;s correct!</Text>
+              <Text style={[styles.correct, styles.centerText]}>{t("correct_feedback")}</Text>
             ) : (
               <Text style={[styles.incorrect, styles.centerText]}>
-                Sorry, that&apos;s incorrect. The answer was: {currentQuestion.correct_answer}
+                {t("incorrect_feedback", { answer: currentQuestion.correct_answer })}
               </Text>
             )}
             <Pressable style={shared.primaryButton} onPress={handleNext}>
               <Text style={shared.primaryButtonText}>
-                {currentIndex + 1 >= total ? "Finish Quiz" : "Next Question"}
+                {currentIndex + 1 >= total ? t("finish_quiz") : t("next_question")}
               </Text>
             </Pressable>
           </>

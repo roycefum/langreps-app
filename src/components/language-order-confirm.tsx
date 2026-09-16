@@ -1,6 +1,7 @@
 import { Pressable, StyleSheet, Text, View } from "react-native";
 
 import { shared } from "@/constants/styles";
+import { useI18n } from "@/lib/i18n";
 
 type LanguageOrderConfirmProps = {
   // The two languages involved, in whatever order the source data implied
@@ -23,10 +24,11 @@ export function LanguageOrderConfirm({
   secondLanguage,
   onConfirm,
 }: LanguageOrderConfirmProps) {
+  const { t } = useI18n();
   return (
     <View style={styles.container}>
       <Text style={shared.hint}>
-        Detected {firstLanguage} and {secondLanguage}. Which one do you already know?
+        {t("order_confirm_prompt_template", { first: firstLanguage, second: secondLanguage })}
       </Text>
       <View style={styles.row}>
         <Pressable
@@ -34,7 +36,7 @@ export function LanguageOrderConfirm({
           onPress={() => onConfirm(true)}
         >
           <Text style={[shared.secondaryButtonText, shared.accentButtonText]}>
-            I know {firstLanguage}
+            {t("order_confirm_option_template", { language: firstLanguage })}
           </Text>
         </Pressable>
         <Pressable
@@ -42,7 +44,7 @@ export function LanguageOrderConfirm({
           onPress={() => onConfirm(false)}
         >
           <Text style={[shared.secondaryButtonText, shared.accentButtonText]}>
-            I know {secondLanguage}
+            {t("order_confirm_option_template", { language: secondLanguage })}
           </Text>
         </Pressable>
       </View>

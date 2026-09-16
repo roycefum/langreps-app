@@ -2,6 +2,7 @@ import { useRouter, type Href } from "expo-router";
 import { Alert, Pressable, Text } from "react-native";
 
 import { shared } from "@/constants/styles";
+import { useI18n } from "@/lib/i18n";
 
 type BackButtonProps = {
   href: Href;
@@ -16,16 +17,17 @@ type BackButtonProps = {
 // which was an awkward spot to reach for the app's main way back.
 export function BackButton({ href, confirmLeave }: BackButtonProps) {
   const router = useRouter();
+  const { t } = useI18n();
 
   function handlePress() {
     if (confirmLeave?.()) {
       Alert.alert(
-        "Discard unsaved words?",
-        "You've added words that haven't been saved yet. Leaving now will lose them.",
+        t("discard_unsaved_alert_title"),
+        t("discard_unsaved_alert_message"),
         [
-          { text: "Cancel", style: "cancel" },
+          { text: t("cancel"), style: "cancel" },
           {
-            text: "Leave Without Saving",
+            text: t("leave_without_saving"),
             style: "destructive",
             onPress: () => router.push(href),
           },

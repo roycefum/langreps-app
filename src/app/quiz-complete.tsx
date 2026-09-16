@@ -5,6 +5,7 @@ import { Pressable, StyleSheet, Text, View } from "react-native";
 import { shared } from "@/constants/styles";
 import { apiRequest } from "@/lib/api";
 import { useAuth } from "@/lib/auth-context";
+import { useI18n } from "@/lib/i18n";
 import { usePairs } from "@/lib/pairs-context";
 import { useQuiz } from "@/lib/quiz-context";
 
@@ -12,24 +13,20 @@ import { useQuiz } from "@/lib/quiz-context";
 // pattern (see MIN_WRONG_ATTEMPTS_FOR_INSIGHT/MIN_DISTINCT_MISSED_WORDS_FOR_INSIGHT
 // in api/main.py) — a quiz should never end with no feedback at all, so
 // this fills in with a substantive score-based message instead of a bare
-// one-liner, including a concrete next-step suggestion.
-function cannedFeedback(correct: number, total: number): string {
+// one-liner, including a concrete next-step suggestion. Returns a
+// translation key, not display text — pass it through t() before showing.
+function cannedFeedbackKey(correct: number, total: number): string {
   if (total === 0) return "";
   const pct = correct / total;
-  if (pct >= 0.9) {
-    return "You show mastery of the material and a good understanding of the concepts. You recall these words well and have successfully added them to your vocabulary. Keep up the good work — we suggest upping the CEFR level or training on a new list.";
-  }
-  if (pct >= 0.7) {
-    return "You have a solid grasp of this list — most of these words are sticking. A few are still slipping through, so one more pass at this level should lock them in before you move up or take on a new list.";
-  }
-  if (pct >= 0.4) {
-    return "You're recognizing some of these words, but a good chunk aren't sticking yet. That's normal at this stage — stick with this list at the same level for now rather than adding new words.";
-  }
-  return "This list is still tripping you up more than not — that's useful information, not a setback. Try lowering the CEFR level or running a shorter, more focused quiz on just this list before moving on.";
+  if (pct >= 0.9) return "canned_feedback_mastery";
+  if (pct >= 0.7) return "canned_feedback_solid";
+  if (pct >= 0.4) return "canned_feedback_building";
+  return "canned_feedback_struggling";
 }
 
 export default function QuizComplete() {
   const router = useRouter();
+  const { t } = useI18n();
   const { questions, correctCount, resetQuiz, sessionId } = useQuiz();
   const { clearPairs, savedListId } = usePairs();
   const { userId } = useAuth();
@@ -37,7 +34,8 @@ export default function QuizComplete() {
 
   useEffect(() => {
     let cancelled = false;
-    const fallback = cannedFeedback(correctCount, questions.length);
+    const fallbackKey = cannedFeedbackKey(correctCount, questions.length);
+    const fallback = fallbackKey ? t(fallbackKey) : "";
 
     if (!userId || !savedListId) {
       setFeedback(fallback);
@@ -69,18 +67,18 @@ export default function QuizComplete() {
 
   return (
     <View style={[shared.screenCentered, styles.container]}>
-      <Text style={styles.title}>Quiz Complete!</Text>
+      <Text style={styles.title}>{t("quiz_complete_title")}</Text>
       <Text style={styles.score}>
-        {correctCount} / {questions.length} correct
+        {t("score_correct", { n: correctCount, total: questions.length })}
       </Text>
       <Text style={styles.feedback}>{feedback ?? " "}</Text>
       {sessionId && (
         <Link href={{ pathname: "/quiz-results", params: { sessionId } }} style={shared.linkText}>
-          See Full Results
+          {t("see_full_results")}
         </Link>
       )}
       <Pressable style={shared.primaryButton} onPress={handleBackToHome}>
-        <Text style={shared.primaryButtonText}>Back to Home</Text>
+        <Text style={shared.primaryButtonText}>{t("back_to_home")}</Text>
       </Pressable>
     </View>
   );

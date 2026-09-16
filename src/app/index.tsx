@@ -4,11 +4,13 @@ import { Alert, Pressable, StyleSheet, Text, View } from "react-native";
 
 import { colors, shared } from "@/constants/styles";
 import { useAuth } from "@/lib/auth-context";
+import { useI18n } from "@/lib/i18n";
 import { usePairs } from "@/lib/pairs-context";
 import { getHasSeenOnboarding } from "@/lib/settings-storage";
 
 export default function Home() {
   const router = useRouter();
+  const { t } = useI18n();
   const { userId, email, isLoading, logout, deleteAccount } = useAuth();
   const { clearPairs } = usePairs();
   const [deleteError, setDeleteError] = useState<string | null>(null);
@@ -32,19 +34,19 @@ export default function Home() {
 
   function confirmDeleteAccount() {
     Alert.alert(
-      "Delete Account",
-      "This permanently deletes your account and all your saved lists. This can't be undone.",
+      t("delete_account"),
+      t("delete_account_confirm"),
       [
-        { text: "Cancel", style: "cancel" },
+        { text: t("cancel"), style: "cancel" },
         {
-          text: "Delete",
+          text: t("delete"),
           style: "destructive",
           onPress: async () => {
             setDeleteError(null);
             try {
               await deleteAccount();
             } catch (e) {
-              setDeleteError(e instanceof Error ? e.message : "Something went wrong.");
+              setDeleteError(e instanceof Error ? e.message : t("error_generic"));
             }
           },
         },
@@ -54,14 +56,12 @@ export default function Home() {
 
   return (
     <View style={[shared.screenCentered, styles.container]}>
-      <Text style={styles.title}>LangReps</Text>
-      <Text style={styles.subtitle}>
-        Build a vocab list, then generate an adaptive quiz for it.
-      </Text>
+      <Text style={styles.title}>{t("app_name")}</Text>
+      <Text style={styles.subtitle}>{t("home_subtitle")}</Text>
 
       {/* Device-local, not account-bound, so shown regardless of auth state. */}
       <Link href="/settings" style={styles.authLink}>
-        Settings
+        {t("settings_link")}
       </Link>
 
       {!isLoading && (
@@ -69,24 +69,23 @@ export default function Home() {
           {userId ? (
             <>
               <Text style={shared.hint}>
-                Signed in as <Text style={styles.emailBold}>{email}</Text>
+                {t("signed_in_as", { email: "" })}
+                <Text style={styles.emailBold}>{email}</Text>
               </Text>
               <Pressable onPress={logout}>
-                <Text style={styles.authLink}>Log Out</Text>
+                <Text style={styles.authLink}>{t("log_out")}</Text>
               </Pressable>
               <Pressable onPress={confirmDeleteAccount}>
-                <Text style={styles.deleteLink}>Delete Account</Text>
+                <Text style={styles.deleteLink}>{t("delete_account")}</Text>
               </Pressable>
               {deleteError && <Text style={shared.errorText}>{deleteError}</Text>}
             </>
           ) : (
             <>
               <Link href="/login" style={[styles.authLink, shared.linkText]}>
-                Log In / Sign Up
+                {t("log_in_sign_up")}
               </Link>
-              <Text style={[shared.hint, styles.centerText]}>
-                Sign up to save your lists and track your progress over time
-              </Text>
+              <Text style={[shared.hint, styles.centerText]}>{t("signup_incentive_hint")}</Text>
             </>
           )}
         </View>
@@ -94,21 +93,21 @@ export default function Home() {
 
       <View style={styles.buttonGroup}>
         <Pressable style={shared.primaryButton} onPress={() => startFreshList("/add-words")}>
-          <Text style={shared.primaryButtonText}>Add Words Manually</Text>
+          <Text style={shared.primaryButtonText}>{t("add_words_manually")}</Text>
         </Pressable>
         <Pressable style={shared.primaryButton} onPress={() => startFreshList("/paste-text")}>
-          <Text style={shared.primaryButtonText}>Paste Vocab List</Text>
+          <Text style={shared.primaryButtonText}>{t("paste_vocab_list")}</Text>
         </Pressable>
         <Pressable style={shared.primaryButton} onPress={() => startFreshList("/upload-file")}>
-          <Text style={shared.primaryButtonText}>Upload a File</Text>
+          <Text style={shared.primaryButtonText}>{t("upload_a_file")}</Text>
         </Pressable>
         {userId && (
           <>
             <Link href="/my-lists" style={[shared.primaryButton, shared.generateQuizButton]}>
-              <Text style={shared.primaryButtonText}>My Lists</Text>
+              <Text style={shared.primaryButtonText}>{t("my_lists")}</Text>
             </Link>
             <Link href="/my-quizzes" style={[shared.primaryButton, shared.generateQuizButton]}>
-              <Text style={shared.primaryButtonText}>My Quizzes</Text>
+              <Text style={shared.primaryButtonText}>{t("my_quizzes")}</Text>
             </Link>
           </>
         )}

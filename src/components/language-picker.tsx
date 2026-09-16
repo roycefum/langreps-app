@@ -2,22 +2,26 @@ import { StyleSheet, Text, View } from "react-native";
 
 import { Dropdown } from "@/components/dropdown";
 import { shared } from "@/constants/styles";
+import { useI18n } from "@/lib/i18n";
 import { usePairs } from "@/lib/pairs-context";
 import { LANGUAGES } from "@/lib/types";
 
 // Editable version — shown on each builder screen (add/paste/file/photo),
-// where the language pair for the list being built is chosen.
+// where the language pair for the list being built is chosen. Language
+// names themselves are never translated (always native form, per the
+// language_names decision) — only the From/To labels are.
 export function LanguagePicker() {
+  const { t } = useI18n();
   const { sourceLanguage, targetLanguage, setSourceLanguage, setTargetLanguage } = usePairs();
 
   return (
     <View style={styles.container}>
       <View style={styles.field}>
-        <Text style={shared.hint}>From</Text>
+        <Text style={shared.hint}>{t("from_label")}</Text>
         <Dropdown value={sourceLanguage} onChange={setSourceLanguage} options={LANGUAGES} />
       </View>
       <View style={styles.field}>
-        <Text style={shared.hint}>To</Text>
+        <Text style={shared.hint}>{t("to_label")}</Text>
         <Dropdown value={targetLanguage} onChange={setTargetLanguage} options={LANGUAGES} />
       </View>
     </View>

@@ -5,6 +5,7 @@ import { Alert, Pressable, ScrollView, StyleSheet, Text, View } from "react-nati
 import { BackButton } from "@/components/back-button";
 import { colors, shared } from "@/constants/styles";
 import { apiRequest } from "@/lib/api";
+import { useI18n } from "@/lib/i18n";
 import { usePairs, type SavedList, type VocabPair } from "@/lib/pairs-context";
 import { getStarterPairs } from "@/lib/starter-vocab";
 import { getStarterVerbPairs } from "@/lib/starter-verbs";
@@ -88,6 +89,7 @@ const SAMPLE_LISTS: SampleListEntry[] = LANGUAGE_PAIRS.flatMap(([source, target]
 
 export default function MyLists() {
   const router = useRouter();
+  const { t } = useI18n();
   const { loadList } = usePairs();
   const [lists, setLists] = useState<ListSummary[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -119,7 +121,7 @@ export default function MyLists() {
       const listsResult = await apiRequest<{ lists: ListSummary[] }>("/lists");
       setLists(listsResult.lists);
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Something went wrong loading your lists.");
+      setError(e instanceof Error ? e.message : t("error_loading_lists"));
     } finally {
       setIsLoading(false);
     }
@@ -143,7 +145,7 @@ export default function MyLists() {
       loadList(list);
       router.push("/generate-quiz");
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Something went wrong loading that list.");
+      setError(e instanceof Error ? e.message : t("error_loading_list"));
     } finally {
       isBusyRef.current = false;
     }
@@ -161,17 +163,17 @@ export default function MyLists() {
       // instead of only ever landing on Generate Quiz.
       router.push("/add-words");
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Something went wrong loading that list.");
+      setError(e instanceof Error ? e.message : t("error_loading_list"));
     } finally {
       isBusyRef.current = false;
     }
   }
 
   function confirmDelete(list: ListSummary) {
-    Alert.alert("Delete List", `Delete "${displayListName(list.name)}"? This can't be undone.`, [
-      { text: "Cancel", style: "cancel" },
+    Alert.alert(t("delete_list_alert_title"), t("delete_list_confirm", { name: displayListName(list.name) }), [
+      { text: t("cancel"), style: "cancel" },
       {
-        text: "Delete",
+        text: t("delete"),
         style: "destructive",
         onPress: async () => {
           if (isBusyRef.current) return;
@@ -216,12 +218,12 @@ export default function MyLists() {
     const count = selectedIds.size;
     if (count === 0) return;
     Alert.alert(
-      "Delete Lists",
-      `Delete ${count} list${count === 1 ? "" : "s"}? This can't be undone.`,
+      t("bulk_delete_lists_alert_title"),
+      t("bulk_delete_lists_alert_message_template", { count }),
       [
-        { text: "Cancel", style: "cancel" },
+        { text: t("cancel"), style: "cancel" },
         {
-          text: "Delete",
+          text: t("delete"),
           style: "destructive",
           onPress: async () => {
             setIsBulkDeleting(true);
@@ -237,7 +239,7 @@ export default function MyLists() {
               await load();
             } catch (e) {
               setError(
-                e instanceof Error ? e.message : "Something went wrong deleting those lists."
+                e instanceof Error ? e.message : t("error_deleting_lists_bulk")
               );
               await load();
             } finally {
@@ -267,7 +269,7 @@ export default function MyLists() {
       });
       await load();
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Something went wrong adding that sample list.");
+      setError(e instanceof Error ? e.message : t("error_adding_sample"));
     } finally {
       setAddingKey(null);
     }
@@ -276,21 +278,21 @@ export default function MyLists() {
   return (
     <ScrollView style={shared.screen} contentContainerStyle={styles.content}>
       <BackButton href="/" />
-      <Text style={shared.title}>My Lists</Text>
+      <Text style={shared.title}>{t("my_lists_title")}</Text>
 
       {error && <Text style={shared.errorText}>{error}</Text>}
-      {isLoading && <Text style={shared.hint}>Loading…</Text>}
+      {isLoading && <Text style={shared.hint}>{t("loading_ellipsis")}</Text>}
 
       {!isLoading && (
         <View style={styles.section}>
           <View style={styles.sectionHeaderRow}>
-            <Text style={styles.sectionTitle}>Your Lists</Text>
+            <Text style={styles.sectionTitle}>{t("your_lists_section_title")}</Text>
             {lists.length > 0 &&
               (selectMode ? (
                 <View style={styles.headerActions}>
                   <Pressable onPress={toggleSelectAll}>
                     <Text style={styles.headerActionText}>
-                      {selectedIds.size === lists.length ? "Deselect All" : "Select All"}
+                      {selectedIds.size === lists.length ? t("deselect_all_label") : t("select_all_label")}
                     </Text>
                   </Pressable>
                   <Pressable
@@ -304,38 +306,38 @@ export default function MyLists() {
                         selectedIds.size === 0 && styles.disabled,
                       ]}
                     >
-                      {isBulkDeleting ? "Deleting…" : `Delete (${selectedIds.size})`}
+                      {isBulkDeleting ? t("bulk_deleting") : t("bulk_delete_selected_template", { count: selectedIds.size })}
                     </Text>
                   </Pressable>
                   <Pressable onPress={toggleSelectMode}>
-                    <Text style={styles.headerActionText}>Done</Text>
+                    <Text style={styles.headerActionText}>{t("done_label")}</Text>
                   </Pressable>
                 </View>
               ) : (
                 <Pressable onPress={toggleSelectMode}>
-                  <Text style={shared.linkText}>Select</Text>
+                  <Text style={shared.linkText}>{t("select_label")}</Text>
                 </Pressable>
               ))}
           </View>
 
           {lists.length > 0 && (
             <View style={styles.sortRow}>
-              <Text style={shared.hint}>Sort by</Text>
+              <Text style={shared.hint}>{t("sort_by_label")}</Text>
               <Pressable onPress={() => setSortBy("date")}>
                 <Text style={[styles.sortOption, sortBy === "date" && styles.sortOptionActive]}>
-                  Last Uploaded
+                  {t("sort_by_date")}
                 </Text>
               </Pressable>
               <Pressable onPress={() => setSortBy("name")}>
                 <Text style={[styles.sortOption, sortBy === "name" && styles.sortOptionActive]}>
-                  Name
+                  {t("sort_by_name")}
                 </Text>
               </Pressable>
             </View>
           )}
 
           {lists.length === 0 ? (
-            <Text style={shared.hint}>No saved lists yet.</Text>
+            <Text style={shared.hint}>{t("no_saved_lists")}</Text>
           ) : (
             sortedLists.map((list) => (
               <View key={list.id} style={styles.row}>
@@ -350,7 +352,7 @@ export default function MyLists() {
                     {list.source_language} → {list.target_language}
                   </Text>
                   <Text style={shared.hint}>
-                    Last uploaded: {new Date(list.last_modified).toLocaleDateString()}
+                    {t("last_uploaded_template", { date: new Date(list.last_modified).toLocaleDateString() })}
                   </Text>
                 </Pressable>
                 <Link
@@ -359,13 +361,13 @@ export default function MyLists() {
                     params: { listId: list.id, listName: displayListName(list.name) },
                   }}
                 >
-                  <Text style={styles.historyText}>Progress</Text>
+                  <Text style={styles.historyText}>{t("progress_link")}</Text>
                 </Link>
                 <Pressable onPress={() => editList(list.id)}>
-                  <Text style={styles.editText}>Edit</Text>
+                  <Text style={styles.editText}>{t("edit_list_link")}</Text>
                 </Pressable>
                 <Pressable onPress={() => confirmDelete(list)}>
-                  <Text style={styles.deleteText}>Delete</Text>
+                  <Text style={styles.deleteText}>{t("delete")}</Text>
                 </Pressable>
                 {selectMode && (
                   <Pressable
@@ -391,22 +393,19 @@ export default function MyLists() {
             onPress={() => setShowSampleLists((v) => !v)}
           >
             <Text style={styles.sectionTitle}>
-              {showSampleLists ? "▾" : "▸"} Sample Lists
+              {showSampleLists ? "▾" : "▸"} {t("sample_lists_title")}
             </Text>
           </Pressable>
           {showSampleLists && (
             <>
-              <Text style={shared.hint}>
-                Add a ready-made 50-word list for any language pair — add as many as you want,
-                whenever you want.
-              </Text>
+              <Text style={shared.hint}>{t("sample_lists_hint")}</Text>
               {SAMPLE_LISTS.map((entry) => {
                 const alreadyAdded = lists.some((l) => l.name === entry.name);
                 return (
                   <View key={entry.key} style={styles.row}>
                     <View style={styles.rowMain}>
                       <Text style={styles.rowTitle}>
-                        {entry.listType === "vocab" ? "Vocab" : "Verb"} {entry.pairs.length}
+                        {entry.listType === "vocab" ? t("sample_list_type_vocab") : t("sample_list_type_verb_singular")} {entry.pairs.length}
                       </Text>
                       <Text style={shared.hint}>
                         {LANGUAGE_FLAGS[entry.sourceLanguage]} → {LANGUAGE_FLAGS[entry.targetLanguage]}
@@ -418,7 +417,7 @@ export default function MyLists() {
                       onPress={() => handleAddSample(entry)}
                     >
                       <Text style={[shared.secondaryButtonText, shared.accentButtonText]}>
-                        {addingKey === entry.key ? "Adding…" : alreadyAdded ? "Added" : "Add"}
+                        {addingKey === entry.key ? t("sample_list_adding") : alreadyAdded ? t("sample_list_added") : t("sample_list_add")}
                       </Text>
                     </Pressable>
                   </View>
