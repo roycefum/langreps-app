@@ -20,10 +20,13 @@ export function Dropdown({ value, onChange, options, disabled }: DropdownProps) 
   return (
     <>
       <Pressable
-        style={[shared.input, disabled && styles.disabled]}
+        style={[shared.input, styles.button, disabled && styles.disabled]}
         onPress={() => !disabled && setIsOpen(true)}
       >
         <Text style={styles.value}>{value}</Text>
+        {/* Without this, a Dropdown looked identical to a plain, static
+            text field — nothing signaled it was tappable/editable. */}
+        <Text style={styles.chevron}>▾</Text>
       </Pressable>
       <Modal visible={isOpen} transparent animationType="fade" onRequestClose={() => setIsOpen(false)}>
         <Pressable style={styles.backdrop} onPress={() => setIsOpen(false)}>
@@ -58,6 +61,12 @@ export function Dropdown({ value, onChange, options, disabled }: DropdownProps) 
 }
 
 const styles = StyleSheet.create({
+  button: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    gap: 8,
+  },
   disabled: {
     opacity: 0.5,
   },
@@ -65,6 +74,11 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "600",
     color: colors.text,
+  },
+  chevron: {
+    fontSize: 20,
+    color: colors.tertiary,
+    fontWeight: "700",
   },
   backdrop: {
     flex: 1,

@@ -234,7 +234,6 @@ export const fr = {
   "order_confirm_option_template": "Je connais déjà {language}",
   "source_word_placeholder_dynamic": "Mot en {language}",
   "target_word_placeholder_dynamic": "Mot en {language}",
-  "app_language_title": "Langue de l'application",
   "list_type_label": "Type de liste",
   "select_label": "Sélectionner",
   "done_label": "Terminé",
@@ -269,4 +268,5 @@ export const fr = {
   "no_languages_added": "Tu n'as encore ajouté aucune langue — ajoutes-en une ci-dessous pour commencer.",
   "remove_language_confirm_title": "Supprimer la langue ?",
   "remove_language_confirm_message": "Cela supprime {source} → {target} de tes langues. Tes listes enregistrées ne sont pas affectées.",
+  "require_accents_desc": "Désactivé accepte \"cafe\" pour \"café\"",
 };

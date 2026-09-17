@@ -8,7 +8,7 @@ import { Dropdown } from "@/components/dropdown";
 import { colors, shared } from "@/constants/styles";
 import { apiRequest } from "@/lib/api";
 import { useAuth } from "@/lib/auth-context";
-import { LOCALE_FLAGS, LOCALES, LOCALE_LABELS, useI18n, type Locale } from "@/lib/i18n";
+import { useI18n } from "@/lib/i18n";
 import {
   addLanguagePair,
   getAdaptiveQuizzesEnabled,
@@ -22,14 +22,8 @@ import {
 } from "@/lib/settings-storage";
 import { DEFAULT_SOURCE_LANGUAGE, DEFAULT_TARGET_LANGUAGE, LANGUAGES, type CefrLevel } from "@/lib/types";
 
-function localeOptionLabel(locale: Locale): string {
-  return `${LOCALE_FLAGS[locale]}  ${LOCALE_LABELS[locale]}`;
-}
-
-const LOCALE_OPTIONS = LOCALES.map(localeOptionLabel);
-
 export default function Settings() {
-  const { locale, setLocale, t } = useI18n();
+  const { t } = useI18n();
   const { userId } = useAuth();
   const [autoDelete, setAutoDelete] = useState(false);
   const [adaptiveQuizzes, setAdaptiveQuizzes] = useState(true);
@@ -124,11 +118,6 @@ export default function Settings() {
     await setAdaptiveQuizzesEnabled(enabled);
   }
 
-  function handleLocaleChange(label: string) {
-    const next = LOCALES.find((l) => localeOptionLabel(l) === label);
-    if (next) setLocale(next);
-  }
-
   return (
     <View style={shared.screen}>
       {/* Blocks the native edge-swipe-back gesture too, not just the
@@ -157,7 +146,10 @@ export default function Settings() {
             </View>
             <CefrLevelPicker value={pair.cefrLevel} onChange={(level) => handlePairCefrChange(pair, level)} />
             <View style={[shared.row, styles.accentsRow]}>
-              <Text style={[shared.hint, styles.accentsLabel]}>{t("require_accents_title")}</Text>
+              <View style={styles.accentsLabel}>
+                <Text style={shared.hint}>{t("require_accents_title")}</Text>
+                <Text style={styles.accentsDesc}>{t("require_accents_desc")}</Text>
+              </View>
               <Switch
                 value={pair.requireAccents}
                 onValueChange={(enabled) => handlePairAccentsChange(pair, enabled)}
@@ -222,14 +214,6 @@ export default function Settings() {
       <Link href="/onboarding" style={[shared.backLink, shared.linkText]}>
         {t("about_langreps_link")}
       </Link>
-
-      {/* De-emphasized deliberately — this is a set-once-and-forget
-          preference, unlike the language/level settings above that people
-          actually come back to adjust. */}
-      <View style={styles.appLanguageBlock}>
-        <Text style={styles.appLanguageTitle}>{t("app_language_title")}</Text>
-        <Dropdown value={localeOptionLabel(locale)} onChange={handleLocaleChange} options={LOCALE_OPTIONS} />
-      </View>
     </View>
   );
 }
@@ -272,6 +256,11 @@ const styles = StyleSheet.create({
   },
   accentsLabel: {
     flex: 1,
+    gap: 2,
+  },
+  accentsDesc: {
+    fontSize: 12,
+    opacity: 0.55,
   },
   addLanguageRow: {
     flexDirection: "row",
@@ -284,13 +273,5 @@ const styles = StyleSheet.create({
   },
   addLanguageButton: {
     paddingHorizontal: 16,
-  },
-  appLanguageBlock: {
-    marginTop: 12,
-    gap: 6,
-  },
-  appLanguageTitle: {
-    fontSize: 13,
-    opacity: 0.6,
   },
 });

@@ -1,3 +1,4 @@
+import * as Haptics from "expo-haptics";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import {
@@ -104,6 +105,9 @@ export default function GenerateQuiz() {
   const requestedCount = Math.max(1, Math.min(parseInt(countText, 10) || 1, pairs.length));
 
   async function handleGenerate(mode: "similar" | "targeted" = "similar") {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium).catch(() => {
+      // No-op on platforms/devices without haptic support (e.g. web).
+    });
     setIsGenerating(true);
     setError(null);
     try {
@@ -177,9 +181,15 @@ export default function GenerateQuiz() {
       }
 
       startQuiz(allQuestions, sessionId, sourceLanguage, targetLanguage);
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(() => {
+        // No-op on platforms/devices without haptic support (e.g. web).
+      });
       router.push("/quiz");
     } catch (e) {
       setError(e instanceof Error ? e.message : t("error_generating_quiz"));
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error).catch(() => {
+        // No-op on platforms/devices without haptic support (e.g. web).
+      });
     } finally {
       setIsGenerating(false);
     }
@@ -187,8 +197,9 @@ export default function GenerateQuiz() {
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-    <View style={[shared.screenCentered, styles.container]}>
+    <View style={shared.screen}>
       <BackButton href="back" />
+      <View style={[styles.centeredContent, styles.container]}>
       <Text style={[shared.title, styles.centerText]}>{t("generate_quiz_title")}</Text>
       <Text style={[styles.centerText, styles.listNameHeading]}>
         {listName ? displayListName(listName) : t("unsaved_list")}
@@ -290,12 +301,18 @@ export default function GenerateQuiz() {
           <Text style={shared.primaryButtonText}>{t("generate_quiz_title")}</Text>
         </Pressable>
       )}
+      </View>
     </View>
     </TouchableWithoutFeedback>
   );
 }
 
 const styles = StyleSheet.create({
+  centeredContent: {
+    flex: 1,
+    justifyContent: "center",
+    gap: 16,
+  },
   container: {
     alignItems: "stretch",
   },

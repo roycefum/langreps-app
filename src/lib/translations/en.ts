@@ -234,7 +234,6 @@ export const en = {
   "order_confirm_option_template": "I know {language}",
   "source_word_placeholder_dynamic": "Word in {language}",
   "target_word_placeholder_dynamic": "Word in {language}",
-  "app_language_title": "App Language",
   "list_type_label": "List type",
   "select_label": "Select",
   "done_label": "Done",
@@ -269,4 +268,5 @@ export const en = {
   "no_languages_added": "No languages added yet — add one below to get started.",
   "remove_language_confirm_title": "Remove language?",
   "remove_language_confirm_message": "This removes {source} → {target} from your languages. Your saved lists aren't affected.",
+  "require_accents_desc": "Off accepts \"cafe\" for \"café\"",
 };

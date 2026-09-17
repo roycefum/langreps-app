@@ -232,38 +232,38 @@
 231,language-order-confirm.tsx,order_confirm_option_template,I know {language},Ya sé {language},Je connais déjà {language},"Two buttons, one per detected language"
 232,list-details.tsx,source_word_placeholder_dynamic,Word in {language},Palabra en {language},Mot en {language},"Simplified — dropped ""(known)"" qualifier, the From/To picker above already establishes direction"
 233,list-details.tsx,target_word_placeholder_dynamic,Word in {language},Palabra en {language},Mot en {language},"Simplified — dropped ""(learning)"" qualifier, same reasoning"
-234,settings.tsx,app_language_title,App Language,Idioma de la app,Langue de l'application,"New — the UI locale picker itself, part of building the actual i18n layer"
-235,pairs-review.tsx,list_type_label,List type,Tipo de lista,Type de liste,New — plain unlocked label; list_type_locked_label is the separate (locked) variant
-236,my-lists.tsx,select_label,Select,Seleccionar,Sélectionner,"Split from the old combined ""Select / Done"" doc row — separate key needed for actual t() usage. Shared pattern, My Lists and My Quizzes"
-237,my-lists.tsx,done_label,Done,Listo,Terminé,"Split from ""Select / Done"". Shared pattern, My Lists and My Quizzes"
-238,my-lists.tsx,select_all_label,Select All,Seleccionar todo,Tout sélectionner,"Split from ""Select All / Deselect All"". Shared pattern, My Lists and My Quizzes"
-239,my-lists.tsx,deselect_all_label,Deselect All,Deseleccionar todo,Tout désélectionner,"Split from ""Select All / Deselect All"". Shared pattern, My Lists and My Quizzes"
-240,my-lists.tsx,error_deleting_lists_bulk,Something went wrong deleting those lists.,Algo salió mal al eliminar esas listas.,Une erreur s'est produite lors de la suppression de ces listes.,"Plural — bulk-delete error, distinct from error_deleting_list (singular)"
-241,my-quizzes.tsx,error_deleting_quizzes_bulk,Something went wrong deleting those quizzes.,Algo salió mal al eliminar esos cuestionarios.,Une erreur s'est produite lors de la suppression de ces quiz.,"Plural — bulk-delete error, distinct from error_deleting_quiz (singular)"
-242,my-lists.tsx,loading_ellipsis,Loading…,Cargando…,Chargement…,Reused wherever a screen shows a generic loading state
-243,login.tsx,forgot_password_link,Forgot password?,¿Olvidaste tu contraseña?,Mot de passe oublié ?,
-244,forgot-password.tsx,forgot_password_title,Forgot Password,Contraseña olvidada,Mot de passe oublié,
-245,forgot-password.tsx,forgot_password_sent_message,"If an account exists for that email, we've sent a link to reset your password. Check your inbox.","Si existe una cuenta con ese correo, te hemos enviado un enlace para restablecer tu contraseña. Revisa tu bandeja de entrada.","Si un compte existe pour cette adresse e-mail, nous t'avons envoyé un lien pour réinitialiser ton mot de passe. Vérifie ta boîte de réception.",Deliberately non-revealing — matches backend's response regardless of whether the email has an account
-246,forgot-password.tsx,forgot_password_instructions,Enter your email and we'll send you a link to reset your password.,Introduce tu correo y te enviaremos un enlace para restablecer tu contraseña.,Entre ton e-mail et nous t'enverrons un lien pour réinitialiser ton mot de passe.,
-247,forgot-password.tsx,sending_ellipsis,Sending…,Enviando…,Envoi en cours…,
-248,forgot-password.tsx,send_reset_link,Send Reset Link,Enviar enlace de restablecimiento,Envoyer le lien de réinitialisation,
-249,reset-password.tsx,reset_password_title,Reset Password,Restablecer contraseña,Réinitialiser le mot de passe,
-250,reset-password.tsx,reset_link_invalid_message,This link looks invalid or expired. Request a new reset link from the login screen.,Este enlace parece no válido o ha caducado. Solicita un nuevo enlace desde la pantalla de inicio de sesión.,Ce lien semble invalide ou expiré. Demande un nouveau lien depuis l'écran de connexion.,
-251,reset-password.tsx,set_new_password_title,Set a New Password,Establece una nueva contraseña,Définis un nouveau mot de passe,
-252,reset-password.tsx,new_password_placeholder,New password,Nueva contraseña,Nouveau mot de passe,
-253,reset-password.tsx,save_new_password,Save New Password,Guardar nueva contraseña,Enregistrer le nouveau mot de passe,
-254,list-details.tsx,sort_by_added_order,Order Added,Orden de añadido,Ordre d'ajout,Word-list sort option — mirrors My Lists' sort-by pattern; default order (insertion order)
-255,list-details.tsx,bulk_delete_words_alert_title,Delete Words,Eliminar palabras,Supprimer les mots,
-256,list-details.tsx,bulk_delete_words_alert_message_template,Delete {count} word(s)? This can't be undone.,¿Eliminar {count} palabra(s)? Esta acción no se puede deshacer.,Supprimer {count} mot(s) ? Cette action est irréversible.,Template
-257,my-lists.tsx,sample_category_common_words,Common Words,Palabras comunes,Mots courants,Sample-list category label
-258,my-lists.tsx,sample_category_common_verbs,Common Verbs,Verbos comunes,Verbes courants,Sample-list category label
-259,my-lists.tsx,sample_category_irregular_verbs,Irregular Verbs,Verbos irregulares,Verbes irréguliers,"Sample-list category label — new dedicated dataset, distinct from Common Verbs"
-260,my-lists.tsx,sample_category_food,Food Words,Palabras de comida,Mots de nourriture,Sample-list category label — new dedicated dataset
-261,settings.tsx,learning_pair_title,What are you learning?,¿Qué estás aprendiendo?,Qu'apprends-tu ?,
-262,settings.tsx,learning_pair_hint,Add every language you're learning — each gets its own level and starter lists.,Añade cada idioma que estás aprendiendo — cada uno tiene su propio nivel y sus propias listas iniciales.,Ajoute chaque langue que tu apprends — chacune a son propre niveau et ses propres listes de départ.,"Updated for multi-language support — was singular ('your default pair'), now plural"
-263,settings.tsx,generating_starter_lists,Setting up your starter lists…,Preparando tus listas iniciales…,Préparation de tes listes de départ…,Shown while the first-time PATCH /me/profile call is generating sample lists via Gemini
-264,settings.tsx,starter_lists_ready_message,Your starter lists are ready — check My Lists!,¡Tus listas iniciales ya están listas — échales un vistazo en Mis listas!,Tes listes de départ sont prêtes — jette un œil dans Mes listes !,
-265,settings.tsx,add_language_button,Add Language,Añadir idioma,Ajouter une langue,
-266,settings.tsx,no_languages_added,No languages added yet — add one below to get started.,Aún no has añadido ningún idioma — añade uno abajo para empezar.,Tu n'as encore ajouté aucune langue — ajoutes-en une ci-dessous pour commencer.,
-267,settings.tsx,remove_language_confirm_title,Remove language?,¿Eliminar idioma?,Supprimer la langue ?,"Alert title — does not delete any saved lists, just this pair's level/accent settings"
-268,settings.tsx,remove_language_confirm_message,This removes {source} → {target} from your languages. Your saved lists aren't affected.,Esto elimina {source} → {target} de tus idiomas. Tus listas guardadas no se ven afectadas.,Cela supprime {source} → {target} de tes langues. Tes listes enregistrées ne sont pas affectées.,Template
+234,pairs-review.tsx,list_type_label,List type,Tipo de lista,Type de liste,New — plain unlocked label; list_type_locked_label is the separate (locked) variant
+235,my-lists.tsx,select_label,Select,Seleccionar,Sélectionner,"Split from the old combined ""Select / Done"" doc row — separate key needed for actual t() usage. Shared pattern, My Lists and My Quizzes"
+236,my-lists.tsx,done_label,Done,Listo,Terminé,"Split from ""Select / Done"". Shared pattern, My Lists and My Quizzes"
+237,my-lists.tsx,select_all_label,Select All,Seleccionar todo,Tout sélectionner,"Split from ""Select All / Deselect All"". Shared pattern, My Lists and My Quizzes"
+238,my-lists.tsx,deselect_all_label,Deselect All,Deseleccionar todo,Tout désélectionner,"Split from ""Select All / Deselect All"". Shared pattern, My Lists and My Quizzes"
+239,my-lists.tsx,error_deleting_lists_bulk,Something went wrong deleting those lists.,Algo salió mal al eliminar esas listas.,Une erreur s'est produite lors de la suppression de ces listes.,"Plural — bulk-delete error, distinct from error_deleting_list (singular)"
+240,my-quizzes.tsx,error_deleting_quizzes_bulk,Something went wrong deleting those quizzes.,Algo salió mal al eliminar esos cuestionarios.,Une erreur s'est produite lors de la suppression de ces quiz.,"Plural — bulk-delete error, distinct from error_deleting_quiz (singular)"
+241,my-lists.tsx,loading_ellipsis,Loading…,Cargando…,Chargement…,Reused wherever a screen shows a generic loading state
+242,login.tsx,forgot_password_link,Forgot password?,¿Olvidaste tu contraseña?,Mot de passe oublié ?,
+243,forgot-password.tsx,forgot_password_title,Forgot Password,Contraseña olvidada,Mot de passe oublié,
+244,forgot-password.tsx,forgot_password_sent_message,"If an account exists for that email, we've sent a link to reset your password. Check your inbox.","Si existe una cuenta con ese correo, te hemos enviado un enlace para restablecer tu contraseña. Revisa tu bandeja de entrada.","Si un compte existe pour cette adresse e-mail, nous t'avons envoyé un lien pour réinitialiser ton mot de passe. Vérifie ta boîte de réception.",Deliberately non-revealing — matches backend's response regardless of whether the email has an account
+245,forgot-password.tsx,forgot_password_instructions,Enter your email and we'll send you a link to reset your password.,Introduce tu correo y te enviaremos un enlace para restablecer tu contraseña.,Entre ton e-mail et nous t'enverrons un lien pour réinitialiser ton mot de passe.,
+246,forgot-password.tsx,sending_ellipsis,Sending…,Enviando…,Envoi en cours…,
+247,forgot-password.tsx,send_reset_link,Send Reset Link,Enviar enlace de restablecimiento,Envoyer le lien de réinitialisation,
+248,reset-password.tsx,reset_password_title,Reset Password,Restablecer contraseña,Réinitialiser le mot de passe,
+249,reset-password.tsx,reset_link_invalid_message,This link looks invalid or expired. Request a new reset link from the login screen.,Este enlace parece no válido o ha caducado. Solicita un nuevo enlace desde la pantalla de inicio de sesión.,Ce lien semble invalide ou expiré. Demande un nouveau lien depuis l'écran de connexion.,
+250,reset-password.tsx,set_new_password_title,Set a New Password,Establece una nueva contraseña,Définis un nouveau mot de passe,
+251,reset-password.tsx,new_password_placeholder,New password,Nueva contraseña,Nouveau mot de passe,
+252,reset-password.tsx,save_new_password,Save New Password,Guardar nueva contraseña,Enregistrer le nouveau mot de passe,
+253,list-details.tsx,sort_by_added_order,Order Added,Orden de añadido,Ordre d'ajout,Word-list sort option — mirrors My Lists' sort-by pattern; default order (insertion order)
+254,list-details.tsx,bulk_delete_words_alert_title,Delete Words,Eliminar palabras,Supprimer les mots,
+255,list-details.tsx,bulk_delete_words_alert_message_template,Delete {count} word(s)? This can't be undone.,¿Eliminar {count} palabra(s)? Esta acción no se puede deshacer.,Supprimer {count} mot(s) ? Cette action est irréversible.,Template
+256,my-lists.tsx,sample_category_common_words,Common Words,Palabras comunes,Mots courants,Sample-list category label
+257,my-lists.tsx,sample_category_common_verbs,Common Verbs,Verbos comunes,Verbes courants,Sample-list category label
+258,my-lists.tsx,sample_category_irregular_verbs,Irregular Verbs,Verbos irregulares,Verbes irréguliers,"Sample-list category label — new dedicated dataset, distinct from Common Verbs"
+259,my-lists.tsx,sample_category_food,Food Words,Palabras de comida,Mots de nourriture,Sample-list category label — new dedicated dataset
+260,settings.tsx,learning_pair_title,What are you learning?,¿Qué estás aprendiendo?,Qu'apprends-tu ?,
+261,settings.tsx,learning_pair_hint,Add every language you're learning — each gets its own level and starter lists.,Añade cada idioma que estás aprendiendo — cada uno tiene su propio nivel y sus propias listas iniciales.,Ajoute chaque langue que tu apprends — chacune a son propre niveau et ses propres listes de départ.,"Updated for multi-language support — was singular ('your default pair'), now plural"
+262,settings.tsx,generating_starter_lists,Setting up your starter lists…,Preparando tus listas iniciales…,Préparation de tes listes de départ…,Shown while the first-time PATCH /me/profile call is generating sample lists via Gemini
+263,settings.tsx,starter_lists_ready_message,Your starter lists are ready — check My Lists!,¡Tus listas iniciales ya están listas — échales un vistazo en Mis listas!,Tes listes de départ sont prêtes — jette un œil dans Mes listes !,
+264,settings.tsx,add_language_button,Add Language,Añadir idioma,Ajouter une langue,
+265,settings.tsx,no_languages_added,No languages added yet — add one below to get started.,Aún no has añadido ningún idioma — añade uno abajo para empezar.,Tu n'as encore ajouté aucune langue — ajoutes-en une ci-dessous pour commencer.,
+266,settings.tsx,remove_language_confirm_title,Remove language?,¿Eliminar idioma?,Supprimer la langue ?,"Alert title — does not delete any saved lists, just this pair's level/accent settings"
+267,settings.tsx,remove_language_confirm_message,This removes {source} → {target} from your languages. Your saved lists aren't affected.,Esto elimina {source} → {target} de tus idiomas. Tus listas guardadas no se ven afectadas.,Cela supprime {source} → {target} de tes langues. Tes listes enregistrées ne sont pas affectées.,Template
+268,settings.tsx,require_accents_desc,"Off accepts ""cafe"" for ""café""","Desactivado acepta ""cafe"" en lugar de ""café""","Désactivé accepte ""cafe"" pour ""café""","Restored — off by default, grading strips accents; app is a reinforcement tool, not a strict teaching tool"
