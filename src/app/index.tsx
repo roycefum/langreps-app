@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { Alert, Pressable, StyleSheet, Text, View } from "react-native";
 
 import { colors, shared } from "@/constants/styles";
+import { apiRequest } from "@/lib/api";
 import { useAuth } from "@/lib/auth-context";
 import { useI18n } from "@/lib/i18n";
 import { usePairs } from "@/lib/pairs-context";
@@ -17,11 +18,11 @@ export default function Home() {
 
   // pairs-context is one shared "list currently being built," so it
   // persists across navigation by design (that's what lets My Lists'
-  // "Edit" preload a list into Add Words). But entering a builder screen
-  // from Home should always start fresh — otherwise backing out of an
-  // Edit session and opening a different builder screen would silently
-  // keep showing the list you were editing.
-  function startFreshList(route: "/add-words" | "/paste-text" | "/upload-file") {
+  // tapping a saved list in My Lists loads it into List Details). But
+  // entering a builder screen from Home should always start fresh —
+  // otherwise backing out of a List Details session and opening a
+  // different builder screen would silently keep showing that list.
+  function startFreshList(route: "/list-details" | "/paste-text" | "/upload-file") {
     clearPairs();
     router.push(route);
   }
@@ -31,6 +32,28 @@ export default function Home() {
       if (!seen) router.replace("/onboarding");
     });
   }, [router]);
+
+  // Forces a first-ever-logged-in user (or one who closed the app before
+  // finishing) straight to Settings to pick a learning pair — checked on
+  // every login, not just right after signup, since they might not have
+  // gotten to it the first time. Anonymous users have no server-side
+  // profile at all, so this only runs once actually logged in.
+  useEffect(() => {
+    if (isLoading || !userId) return;
+    let cancelled = false;
+    apiRequest<{ learning_target_language: string | null }>("/me/profile")
+      .then((profile) => {
+        if (!cancelled && !profile.learning_target_language) {
+          router.replace("/settings");
+        }
+      })
+      .catch(() => {
+        // best-effort — a failed check just means no redirect this time
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [userId, isLoading, router]);
 
   function confirmDeleteAccount() {
     Alert.alert(
@@ -92,7 +115,7 @@ export default function Home() {
       )}
 
       <View style={styles.buttonGroup}>
-        <Pressable style={shared.primaryButton} onPress={() => startFreshList("/add-words")}>
+        <Pressable style={shared.primaryButton} onPress={() => startFreshList("/list-details")}>
           <Text style={shared.primaryButtonText}>{t("add_words_manually")}</Text>
         </Pressable>
         <Pressable style={shared.primaryButton} onPress={() => startFreshList("/paste-text")}>

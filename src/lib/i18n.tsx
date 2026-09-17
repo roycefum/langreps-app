@@ -16,6 +16,14 @@ export const LOCALE_LABELS: Record<Locale, string> = {
   fr: "Français",
 };
 
+// UK flag for English rather than US — no strong reason either way, just a
+// pick. Purely decorative labels for the Settings language picker.
+export const LOCALE_FLAGS: Record<Locale, string> = {
+  en: "🇬🇧",
+  es: "🇪🇸",
+  fr: "🇫🇷",
+};
+
 const TRANSLATIONS: Record<Locale, Record<string, string>> = { en, es, fr };
 
 const LOCALE_KEY = "langreps_locale";

@@ -5,7 +5,15 @@ import { DEFAULT_LIST_TYPE, DEFAULT_SOURCE_LANGUAGE, DEFAULT_TARGET_LANGUAGE, ty
 // `id` is present when a pair came from a saved list (needed to record
 // quiz attempts against it and to weight adaptive requiz selection), and
 // absent for freshly-typed/pasted/ad-hoc pairs that were never saved.
-export type VocabPair = { id?: string; "source word": string; "target word": string };
+// `partOfSpeech` is only ever set server-side (one batched Gemini call per
+// Save/Save Changes — see insert_vocab_pairs on the backend), so it's
+// always absent for an unsaved/ad-hoc list.
+export type VocabPair = {
+  id?: string;
+  "source word": string;
+  "target word": string;
+  partOfSpeech?: string | null;
+};
 
 // Matches GET /lists/{id}'s response shape — pairs come back keyed
 // source_term/target_term (the vocab_pairs table's own column names),
@@ -16,7 +24,12 @@ export type SavedList = {
   source_language: string;
   target_language: string;
   list_type: string;
-  pairs: { id: string; source_term: string; target_term: string }[];
+  pairs: {
+    id: string;
+    source_term: string;
+    target_term: string;
+    part_of_speech?: string | null;
+  }[];
 };
 
 type PairsState = {
@@ -105,6 +118,7 @@ export function PairsProvider({ children }: { children: ReactNode }) {
         id: p.id,
         "source word": p.source_term,
         "target word": p.target_term,
+        partOfSpeech: p.part_of_speech,
       }))
     );
     setSourceLanguage(list.source_language);

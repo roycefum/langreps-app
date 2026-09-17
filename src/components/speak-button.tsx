@@ -1,0 +1,30 @@
+import { Pressable, StyleSheet, Text } from "react-native";
+
+import { colors } from "@/constants/styles";
+import { speakWord } from "@/lib/pronunciation";
+
+type SpeakButtonProps = {
+  text: string;
+  language: string;
+};
+
+// Small icon button that plays a word's pronunciation via the device's own
+// TTS engine (see lib/pronunciation.ts) — no network call, no backend
+// involvement, so it's safe to drop next to any word anywhere in the app.
+export function SpeakButton({ text, language }: SpeakButtonProps) {
+  return (
+    <Pressable onPress={() => speakWord(text, language)} hitSlop={8} style={styles.button}>
+      <Text style={styles.icon}>🔊</Text>
+    </Pressable>
+  );
+}
+
+const styles = StyleSheet.create({
+  button: {
+    paddingHorizontal: 4,
+  },
+  icon: {
+    fontSize: 15,
+    color: colors.tertiary,
+  },
+});

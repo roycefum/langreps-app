@@ -11,7 +11,7 @@ export const colors = {
   tertiary: "#B89288",
   tertiaryShadow: "#977870",
   // One color per distinct action on the vocab-builder screens — "Add to
-  // list" (add-words, paste-text), "Choose File" (upload-file), and
+  // list" (list-details, paste-text), "Choose File" (upload-file), and
   // "Take Photo"/"Choose from Library" (upload-picture, same function:
   // extract pairs from an image) each get their own color so the builder
   // screens don't all look like plain grey secondary buttons.
@@ -28,6 +28,13 @@ export const colors = {
   saveActionShadow: "#978b70",
   secondaryBackground: "#eee",
   secondaryShadow: "#d4d4d4",
+  // Soft sage green — a cool break from the parchment/beige palette for
+  // "item card" rows (a list in My Lists, a word in List Details), instead
+  // of the plain grey secondaryBackground. cardAccent is its complement
+  // (same saturation/lightness, opposite hue — a dusty rose) used as a
+  // colored top border, like a tab highlight.
+  cardBackground: "#D3E8D3",
+  cardAccent: "#E8D3D3",
   // Darker than a typical light-grey border/text — the parchment
   // background (colors.background) washes out anything too pale.
   border: "#9C8F6E",

@@ -3,12 +3,11 @@ import { useCallback, useMemo, useRef, useState } from "react";
 import { Alert, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 
 import { BackButton } from "@/components/back-button";
+import { Dropdown } from "@/components/dropdown";
 import { colors, shared } from "@/constants/styles";
 import { apiRequest } from "@/lib/api";
 import { useI18n } from "@/lib/i18n";
-import { usePairs, type SavedList, type VocabPair } from "@/lib/pairs-context";
-import { getStarterPairs } from "@/lib/starter-vocab";
-import { getStarterVerbPairs } from "@/lib/starter-verbs";
+import { usePairs, type SavedList } from "@/lib/pairs-context";
 import { displayListName } from "@/lib/text";
 
 type ListSummary = {
@@ -22,70 +21,39 @@ type ListSummary = {
 
 type SortBy = "name" | "date";
 
-// Every direction between the app's supported languages — the underlying
-// data (starter-vocab.ts / starter-verbs.ts) has all three languages for
-// each concept, so any of these 6 directions works, not just ones that
-// happen to include English.
+// One canonical direction per language pair — the app's own Flip toggle
+// (Generate Quiz, for Vocab lists) already covers quizzing the reverse
+// direction, so offering both directions as separate options would just
+// be redundant clutter.
 const LANGUAGE_PAIRS: [string, string][] = [
   ["English", "Spanish"],
-  ["Spanish", "English"],
   ["English", "French"],
-  ["French", "English"],
   ["Spanish", "French"],
-  ["French", "Spanish"],
 ];
 
-// Flags sidestep language-name capitalization entirely, and read faster
-// when scanning a list of 12 sample entries anyway.
-const LANGUAGE_FLAGS: Record<string, string> = {
-  English: "🇬🇧",
-  Spanish: "🇪🇸",
-  French: "🇫🇷",
-};
+const PAIR_OPTIONS = LANGUAGE_PAIRS.map(([source, target]) => `${source} → ${target}`);
 
-type SampleListEntry = {
-  key: string;
-  name: string;
-  sourceLanguage: string;
-  targetLanguage: string;
-  listType: "vocab" | "verb";
-  pairs: VocabPair[];
-};
+// categoryKey matches the backend's SAMPLE_CATEGORY_META keys exactly
+// (core/sample_lists.py) — POST /sample-lists takes this literal string.
+// labelKey is the frontend's own translated display label, which can
+// differ from the backend's (always-English) stored list name.
+const SAMPLE_CATEGORY_DEFS = [
+  { categoryKey: "common_words", labelKey: "sample_category_common_words" },
+  { categoryKey: "common_verbs", labelKey: "sample_category_common_verbs" },
+  { categoryKey: "irregular_verbs", labelKey: "sample_category_irregular_verbs" },
+  { categoryKey: "food", labelKey: "sample_category_food" },
+];
 
-// A fixed catalog, not a single auto-picked list — the user can add as
-// many of these as they want, in any order, whenever they want, instead
-// of the app assuming up front which one language pair they're studying.
-const SAMPLE_LISTS: SampleListEntry[] = LANGUAGE_PAIRS.flatMap(([source, target]) => {
-  const entries: SampleListEntry[] = [];
-  // Includes the source language in the name (not just "Spanish
-  // Vocabulary") so two entries with the same target but different
-  // sources (e.g. English->Spanish and French->Spanish) can't collide —
-  // save-list treats a repeated name as "update this list in place",
-  // which would silently overwrite one with the other otherwise.
-  const vocabPairs = getStarterPairs(source, target);
-  if (vocabPairs) {
-    entries.push({
-      key: `${source}-${target}-vocab`,
-      name: `${target} Vocabulary (from ${source})`,
-      sourceLanguage: source,
-      targetLanguage: target,
-      listType: "vocab",
-      pairs: vocabPairs,
-    });
-  }
-  const verbPairs = getStarterVerbPairs(source, target);
-  if (verbPairs) {
-    entries.push({
-      key: `${source}-${target}-verb`,
-      name: `${target} Verbs (from ${source})`,
-      sourceLanguage: source,
-      targetLanguage: target,
-      listType: "verb",
-      pairs: verbPairs,
-    });
-  }
-  return entries;
-});
+// Mirrors core/sample_lists.py's SAMPLE_CATEGORY_META labels exactly —
+// used only to recognize an already-added list by name (the backend
+// always names a generated list in English, regardless of the app's UI
+// locale), never shown to the user.
+const ENGLISH_CATEGORY_LABELS: Record<string, string> = {
+  common_words: "Common Words",
+  common_verbs: "Common Verbs",
+  irregular_verbs: "Irregular Verbs",
+  food: "Food",
+};
 
 export default function MyLists() {
   const router = useRouter();
@@ -100,6 +68,11 @@ export default function MyLists() {
   const [selectMode, setSelectMode] = useState(false);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [isBulkDeleting, setIsBulkDeleting] = useState(false);
+  // One selected language-pair index per category, independent of each
+  // other — defaults to English -> Spanish (index 0) for all of them.
+  const [pairIndexByCategory, setPairIndexByCategory] = useState<Record<string, number>>(() =>
+    Object.fromEntries(SAMPLE_CATEGORY_DEFS.map((c) => [c.categoryKey, 0]))
+  );
 
   const sortedLists = useMemo(() => {
     const copy = [...lists];
@@ -137,31 +110,20 @@ export default function MyLists() {
   // the first one resolves (e.g. navigation away is slightly delayed).
   const isBusyRef = useRef(false);
 
+  // Lands on List Details with the list preloaded — that screen already
+  // supports updating an existing list in place (save_list treats a
+  // repeated name as "update this list"), and PairsReview's own Generate
+  // Quiz button is right there once you've seen the list. Previously this
+  // tap went straight to Generate Quiz, with viewing/editing the list only
+  // reachable via a separate "Edit" link — combined here since seeing the
+  // list you tapped is the more natural default action.
   async function openList(listId: string) {
     if (isBusyRef.current) return;
     isBusyRef.current = true;
     try {
       const list = await apiRequest<SavedList>(`/lists/${listId}`);
       loadList(list);
-      router.push("/generate-quiz");
-    } catch (e) {
-      setError(e instanceof Error ? e.message : t("error_loading_list"));
-    } finally {
-      isBusyRef.current = false;
-    }
-  }
-
-  async function editList(listId: string) {
-    if (isBusyRef.current) return;
-    isBusyRef.current = true;
-    try {
-      const list = await apiRequest<SavedList>(`/lists/${listId}`);
-      loadList(list);
-      // Add Words already supports updating an existing list in place
-      // (save_list treats a repeated name as "update this list") — this
-      // just needed a way to actually get there with the list preloaded,
-      // instead of only ever landing on Generate Quiz.
-      router.push("/add-words");
+      router.push("/list-details");
     } catch (e) {
       setError(e instanceof Error ? e.message : t("error_loading_list"));
     } finally {
@@ -251,21 +213,18 @@ export default function MyLists() {
     );
   }
 
-  async function handleAddSample(entry: SampleListEntry) {
+  // Generates (via Gemini, server-side) and saves one category's sample
+  // list for its currently-selected language pair — no more static local
+  // data, so this takes a moment rather than being instant.
+  async function handleAddSample(categoryKey: string) {
     if (addingKey) return;
-    setAddingKey(entry.key);
+    const [sourceLanguage, targetLanguage] = LANGUAGE_PAIRS[pairIndexByCategory[categoryKey] ?? 0];
+    setAddingKey(categoryKey);
     setError(null);
     try {
-      await apiRequest("/save-list", {
+      await apiRequest("/sample-lists", {
         method: "POST",
-        body: {
-          name: entry.name,
-          source: "sample",
-          source_language: entry.sourceLanguage,
-          target_language: entry.targetLanguage,
-          pairs: entry.pairs,
-          list_type: entry.listType,
-        },
+        body: { category: categoryKey, source_language: sourceLanguage, target_language: targetLanguage },
       });
       await load();
     } catch (e) {
@@ -363,9 +322,6 @@ export default function MyLists() {
                 >
                   <Text style={styles.historyText}>{t("progress_link")}</Text>
                 </Link>
-                <Pressable onPress={() => editList(list.id)}>
-                  <Text style={styles.editText}>{t("edit_list_link")}</Text>
-                </Pressable>
                 <Pressable onPress={() => confirmDelete(list)}>
                   <Text style={styles.deleteText}>{t("delete")}</Text>
                 </Pressable>
@@ -399,25 +355,40 @@ export default function MyLists() {
           {showSampleLists && (
             <>
               <Text style={shared.hint}>{t("sample_lists_hint")}</Text>
-              {SAMPLE_LISTS.map((entry) => {
-                const alreadyAdded = lists.some((l) => l.name === entry.name);
+              {SAMPLE_CATEGORY_DEFS.map((def) => {
+                const pairIndex = pairIndexByCategory[def.categoryKey] ?? 0;
+                const [sourceLanguage, targetLanguage] = LANGUAGE_PAIRS[pairIndex];
+                const expectedName = `${ENGLISH_CATEGORY_LABELS[def.categoryKey]} (${sourceLanguage} → ${targetLanguage})`;
+                const alreadyAdded = lists.some((l) => l.name === expectedName);
                 return (
-                  <View key={entry.key} style={styles.row}>
+                  <View key={def.categoryKey} style={styles.row}>
                     <View style={styles.rowMain}>
-                      <Text style={styles.rowTitle}>
-                        {entry.listType === "vocab" ? t("sample_list_type_vocab") : t("sample_list_type_verb_singular")} {entry.pairs.length}
-                      </Text>
-                      <Text style={shared.hint}>
-                        {LANGUAGE_FLAGS[entry.sourceLanguage]} → {LANGUAGE_FLAGS[entry.targetLanguage]}
-                      </Text>
+                      {/* Every category is a fixed 50-word set (see
+                          core/sample_lists.py) — no local data to read a
+                          real count from now that generation is on-demand. */}
+                      <Text style={styles.rowTitle}>{t(def.labelKey)} (50)</Text>
+                      <Dropdown
+                        value={PAIR_OPTIONS[pairIndex]}
+                        onChange={(label) => {
+                          const next = PAIR_OPTIONS.indexOf(label);
+                          if (next >= 0) {
+                            setPairIndexByCategory((prev) => ({ ...prev, [def.categoryKey]: next }));
+                          }
+                        }}
+                        options={PAIR_OPTIONS}
+                      />
                     </View>
                     <Pressable
                       style={[shared.secondaryButton, shared.saveActionButton, styles.addButton]}
-                      disabled={addingKey === entry.key}
-                      onPress={() => handleAddSample(entry)}
+                      disabled={addingKey === def.categoryKey}
+                      onPress={() => handleAddSample(def.categoryKey)}
                     >
                       <Text style={[shared.secondaryButtonText, shared.accentButtonText]}>
-                        {addingKey === entry.key ? t("sample_list_adding") : alreadyAdded ? t("sample_list_added") : t("sample_list_add")}
+                        {addingKey === def.categoryKey
+                          ? t("sample_list_adding")
+                          : alreadyAdded
+                            ? t("sample_list_added")
+                            : t("sample_list_add")}
                       </Text>
                     </Pressable>
                   </View>
@@ -495,8 +466,10 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    backgroundColor: colors.secondaryBackground,
+    backgroundColor: colors.cardBackground,
     borderRadius: 8,
+    borderTopWidth: 3,
+    borderTopColor: colors.cardAccent,
     paddingVertical: 12,
     paddingHorizontal: 12,
     gap: 8,
@@ -511,10 +484,6 @@ const styles = StyleSheet.create({
   },
   historyText: {
     color: colors.tertiary,
-    fontWeight: "600",
-  },
-  editText: {
-    color: colors.primary,
     fontWeight: "600",
   },
   deleteText: {

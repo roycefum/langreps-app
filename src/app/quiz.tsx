@@ -4,13 +4,16 @@ import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from "react-
 
 import { BackButton } from "@/components/back-button";
 import { ProgressBar } from "@/components/progress-bar";
+import { SpeakButton } from "@/components/speak-button";
 import { colors, shared } from "@/constants/styles";
 import { useI18n } from "@/lib/i18n";
+import { usePairs } from "@/lib/pairs-context";
 import { useQuiz } from "@/lib/quiz-context";
 
 export default function Quiz() {
   const router = useRouter();
   const { t } = useI18n();
+  const { targetLanguage } = usePairs();
   const { questions, currentIndex, phase, lastAnswer, wasCorrect, isComplete, submitAnswer, skipQuestion, nextQuestion } =
     useQuiz();
   const [answer, setAnswer] = useState("");
@@ -99,6 +102,13 @@ export default function Quiz() {
                 {t("incorrect_feedback", { answer: currentQuestion.correct_answer })}
               </Text>
             )}
+            {/* Assumes the correct answer is in targetLanguage — not
+                accounted for the "flip" reversed-direction mode, which
+                isn't tracked past Generate Quiz. Worst case a flipped quiz
+                pronounces with the wrong accent, not a crash. */}
+            <View style={styles.pronounceRow}>
+              <SpeakButton text={currentQuestion.correct_answer} language={targetLanguage} />
+            </View>
             <Pressable style={shared.primaryButton} onPress={handleNext}>
               <Text style={shared.primaryButtonText}>
                 {currentIndex + 1 >= total ? t("finish_quiz") : t("next_question")}
@@ -147,5 +157,8 @@ const styles = StyleSheet.create({
     backgroundColor: colors.secondaryBackground,
     borderRadius: 8,
     padding: 12,
+  },
+  pronounceRow: {
+    alignItems: "center",
   },
 });

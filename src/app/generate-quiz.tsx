@@ -185,7 +185,7 @@ export default function GenerateQuiz() {
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
     <View style={[shared.screenCentered, styles.container]}>
-      <BackButton href="/" />
+      <BackButton href="back" />
       <Text style={[shared.title, styles.centerText]}>{t("generate_quiz_title")}</Text>
       <Text style={[styles.centerText, styles.listNameHeading]}>
         {listName ? displayListName(listName) : t("unsaved_list")}
