@@ -22,7 +22,7 @@ import { useAuth } from "@/lib/auth-context";
 import { useI18n } from "@/lib/i18n";
 import { usePairs, type VocabPair } from "@/lib/pairs-context";
 import { useQuiz } from "@/lib/quiz-context";
-import { getAdaptiveQuizzesEnabled, getDefaultCefrLevel } from "@/lib/settings-storage";
+import { getAdaptiveQuizzesEnabled, getLanguagePairSettings } from "@/lib/settings-storage";
 import { chunk, dedupePairs, displayListName, sample } from "@/lib/text";
 import { DEFAULT_CEFR_LEVEL, TENSES_BY_LANGUAGE, type CefrLevel, type Question } from "@/lib/types";
 
@@ -41,8 +41,9 @@ export default function GenerateQuiz() {
   const { userId } = useAuth();
   const { startQuiz } = useQuiz();
   const [countText, setCountText] = useState(String(Math.min(pairs.length, DEFAULT_QUIZ_LENGTH)));
-  // Defaults from Settings (device-local), but changing it here only
-  // affects this one quiz — it's never written back to the stored default.
+  // Defaults from Settings' per-language pair settings (device-local), but
+  // changing it here only affects this one quiz — it's never written back
+  // to the stored default.
   const [cefrLevel, setCefrLevel] = useState<CefrLevel>(DEFAULT_CEFR_LEVEL);
   // Only meaningful for a "Verb" list — defaults to that language's present
   // tense (the first entry in TENSES_BY_LANGUAGE) rather than "Mixed", since
@@ -63,8 +64,10 @@ export default function GenerateQuiz() {
     tenseOptions.find((tense) => tense.value === verbTense)?.label ?? t("mixed_tense");
 
   useEffect(() => {
-    getDefaultCefrLevel().then(setCefrLevel);
-  }, []);
+    getLanguagePairSettings(sourceLanguage, targetLanguage).then((settings) =>
+      setCefrLevel(settings.cefrLevel)
+    );
+  }, [sourceLanguage, targetLanguage]);
 
   // Fetched once per list, using the default quiz length — not tied to
   // later edits to countText, so typing in the count field doesn't fire
@@ -173,7 +176,7 @@ export default function GenerateQuiz() {
         sessionId = session.session_id;
       }
 
-      startQuiz(allQuestions, sessionId);
+      startQuiz(allQuestions, sessionId, sourceLanguage, targetLanguage);
       router.push("/quiz");
     } catch (e) {
       setError(e instanceof Error ? e.message : t("error_generating_quiz"));

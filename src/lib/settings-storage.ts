@@ -3,28 +3,16 @@ import { Platform } from "react-native";
 
 import { DEFAULT_CEFR_LEVEL, type CefrLevel } from "./types";
 
-const DEFAULT_CEFR_LEVEL_KEY = "langreps_default_cefr_level";
 const AUTO_DELETE_OLD_QUIZZES_KEY = "langreps_auto_delete_old_quizzes";
 const ADAPTIVE_QUIZZES_ENABLED_KEY = "langreps_adaptive_quizzes_enabled";
 const HAS_SEEN_ONBOARDING_KEY = "langreps_has_seen_onboarding";
-const REQUIRE_ACCENTS_KEY = "langreps_require_accents";
+const LANGUAGE_PAIRS_KEY = "langreps_language_pairs";
 
 // Same web guard as auth-storage.ts — expo-secure-store throws (not
 // no-ops) on web, and this is a device-local setting anyway (explicitly
 // not account-level — see [[project-langreps-frontend]] memory), so
 // there's nothing to persist there regardless.
 const isWeb = Platform.OS === "web";
-
-export async function getDefaultCefrLevel(): Promise<CefrLevel> {
-  if (isWeb) return DEFAULT_CEFR_LEVEL;
-  const stored = await SecureStore.getItemAsync(DEFAULT_CEFR_LEVEL_KEY);
-  return (stored as CefrLevel | null) ?? DEFAULT_CEFR_LEVEL;
-}
-
-export async function setDefaultCefrLevel(level: CefrLevel): Promise<void> {
-  if (isWeb) return;
-  await SecureStore.setItemAsync(DEFAULT_CEFR_LEVEL_KEY, level);
-}
 
 // Off by default — deleting a user's quiz history is destructive, so it
 // should be an explicit opt-in rather than a surprise.
@@ -68,17 +56,82 @@ export async function setHasSeenOnboarding(seen: boolean): Promise<void> {
   await SecureStore.setItemAsync(HAS_SEEN_ONBOARDING_KEY, String(seen));
 }
 
-// Off by default — grading strips accents (café/cafe both count as
-// correct), which is friendlier for new learners who haven't learned to
-// type accented characters yet. Turning this on makes grading exact,
-// for users who want to be held to correct accents.
-export async function getRequireAccents(): Promise<boolean> {
-  if (isWeb) return false;
-  const stored = await SecureStore.getItemAsync(REQUIRE_ACCENTS_KEY);
-  return stored === "true";
+// ============================================================
+// LANGUAGE PAIRS — per-language settings for a polyglot studying more
+// than one pair at once. CEFR default and accent leniency genuinely vary
+// by language (a B1 in French isn't the same starting point as an A2 in
+// Spanish), unlike adaptive-quizzes/auto-delete above, which are plain
+// app-wide feature toggles — so those two live per pair, not globally.
+// ============================================================
+
+export type LanguagePairSettings = {
+  sourceLanguage: string;
+  targetLanguage: string;
+  cefrLevel: CefrLevel;
+  // Off by default — grading strips accents (café/cafe both count as
+  // correct), which is friendlier for new learners who haven't learned to
+  // type accented characters yet. Turning this on makes grading exact.
+  requireAccents: boolean;
+};
+
+async function readLanguagePairs(): Promise<LanguagePairSettings[]> {
+  if (isWeb) return [];
+  const stored = await SecureStore.getItemAsync(LANGUAGE_PAIRS_KEY);
+  if (!stored) return [];
+  try {
+    return JSON.parse(stored) as LanguagePairSettings[];
+  } catch {
+    return [];
+  }
 }
 
-export async function setRequireAccents(enabled: boolean): Promise<void> {
+async function writeLanguagePairs(pairs: LanguagePairSettings[]): Promise<void> {
   if (isWeb) return;
-  await SecureStore.setItemAsync(REQUIRE_ACCENTS_KEY, String(enabled));
+  await SecureStore.setItemAsync(LANGUAGE_PAIRS_KEY, JSON.stringify(pairs));
+}
+
+export async function getLanguagePairs(): Promise<LanguagePairSettings[]> {
+  return readLanguagePairs();
+}
+
+export async function addLanguagePair(sourceLanguage: string, targetLanguage: string): Promise<void> {
+  const pairs = await readLanguagePairs();
+  if (pairs.some((p) => p.sourceLanguage === sourceLanguage && p.targetLanguage === targetLanguage)) {
+    return;
+  }
+  pairs.push({ sourceLanguage, targetLanguage, cefrLevel: DEFAULT_CEFR_LEVEL, requireAccents: false });
+  await writeLanguagePairs(pairs);
+}
+
+export async function removeLanguagePair(sourceLanguage: string, targetLanguage: string): Promise<void> {
+  const pairs = await readLanguagePairs();
+  await writeLanguagePairs(
+    pairs.filter((p) => !(p.sourceLanguage === sourceLanguage && p.targetLanguage === targetLanguage))
+  );
+}
+
+export async function updateLanguagePairSettings(
+  sourceLanguage: string,
+  targetLanguage: string,
+  updates: Partial<Pick<LanguagePairSettings, "cefrLevel" | "requireAccents">>
+): Promise<void> {
+  const pairs = await readLanguagePairs();
+  const next = pairs.map((p) =>
+    p.sourceLanguage === sourceLanguage && p.targetLanguage === targetLanguage ? { ...p, ...updates } : p
+  );
+  await writeLanguagePairs(next);
+}
+
+// Looked up at quiz-generation time — falls back to the plain defaults if
+// this exact pair was never added in Settings (e.g. an ad-hoc list whose
+// language pair isn't one of the user's tracked languages).
+export async function getLanguagePairSettings(
+  sourceLanguage: string,
+  targetLanguage: string
+): Promise<{ cefrLevel: CefrLevel; requireAccents: boolean }> {
+  const pairs = await readLanguagePairs();
+  const match = pairs.find((p) => p.sourceLanguage === sourceLanguage && p.targetLanguage === targetLanguage);
+  return match
+    ? { cefrLevel: match.cefrLevel, requireAccents: match.requireAccents }
+    : { cefrLevel: DEFAULT_CEFR_LEVEL, requireAccents: false };
 }

@@ -1,31 +1,26 @@
 import { Link, Stack } from "expo-router";
 import { useEffect, useState } from "react";
-import { StyleSheet, Switch, Text, View } from "react-native";
+import { Alert, Pressable, StyleSheet, Switch, Text, View } from "react-native";
 
 import { BackButton } from "@/components/back-button";
 import { CefrLevelPicker } from "@/components/cefr-level-picker";
 import { Dropdown } from "@/components/dropdown";
-import { shared } from "@/constants/styles";
+import { colors, shared } from "@/constants/styles";
 import { apiRequest } from "@/lib/api";
 import { useAuth } from "@/lib/auth-context";
 import { LOCALE_FLAGS, LOCALES, LOCALE_LABELS, useI18n, type Locale } from "@/lib/i18n";
 import {
+  addLanguagePair,
   getAdaptiveQuizzesEnabled,
   getAutoDeleteOldQuizzes,
-  getDefaultCefrLevel,
-  getRequireAccents,
+  getLanguagePairs,
+  removeLanguagePair,
   setAdaptiveQuizzesEnabled,
   setAutoDeleteOldQuizzes,
-  setDefaultCefrLevel,
-  setRequireAccents,
+  updateLanguagePairSettings,
+  type LanguagePairSettings,
 } from "@/lib/settings-storage";
-import {
-  DEFAULT_CEFR_LEVEL,
-  DEFAULT_SOURCE_LANGUAGE,
-  DEFAULT_TARGET_LANGUAGE,
-  LANGUAGES,
-  type CefrLevel,
-} from "@/lib/types";
+import { DEFAULT_SOURCE_LANGUAGE, DEFAULT_TARGET_LANGUAGE, LANGUAGES, type CefrLevel } from "@/lib/types";
 
 function localeOptionLabel(locale: Locale): string {
   return `${LOCALE_FLAGS[locale]}  ${LOCALE_LABELS[locale]}`;
@@ -36,75 +31,87 @@ const LOCALE_OPTIONS = LOCALES.map(localeOptionLabel);
 export default function Settings() {
   const { locale, setLocale, t } = useI18n();
   const { userId } = useAuth();
-  const [level, setLevel] = useState<CefrLevel>(DEFAULT_CEFR_LEVEL);
   const [autoDelete, setAutoDelete] = useState(false);
   const [adaptiveQuizzes, setAdaptiveQuizzes] = useState(true);
-  const [requireAccents, setRequireAccentsState] = useState(false);
-  // Null until the profile fetch resolves — the pickers stay hidden until
-  // then rather than flashing a default pair that might not match what's
-  // actually saved server-side.
-  const [learningSource, setLearningSource] = useState<string | null>(null);
-  const [learningTarget, setLearningTarget] = useState<string | null>(null);
+  const [languagePairs, setLanguagePairsState] = useState<LanguagePairSettings[]>([]);
+  const [newPairSource, setNewPairSource] = useState<string>(DEFAULT_SOURCE_LANGUAGE);
+  const [newPairTarget, setNewPairTarget] = useState<string>(DEFAULT_TARGET_LANGUAGE);
+  // isSavingProfile only covers the FIRST language pair ever added — that's
+  // the one that syncs server-side and can trigger sample-list generation
+  // (see handleAddLanguage). Every pair after that is a purely local
+  // add, which is effectively instant.
   const [isSavingProfile, setIsSavingProfile] = useState(false);
   const [profileMessage, setProfileMessage] = useState<string | null>(null);
   const [profileError, setProfileError] = useState<string | null>(null);
 
   useEffect(() => {
-    getDefaultCefrLevel().then(setLevel);
     getAutoDeleteOldQuizzes().then(setAutoDelete);
     getAdaptiveQuizzesEnabled().then(setAdaptiveQuizzes);
-    getRequireAccents().then(setRequireAccentsState);
+    getLanguagePairs().then(setLanguagePairsState);
   }, []);
 
-  useEffect(() => {
-    if (!userId) return;
-    apiRequest<{ learning_source_language: string | null; learning_target_language: string | null }>(
-      "/me/profile"
-    )
-      .then((profile) => {
-        setLearningSource(profile.learning_source_language ?? DEFAULT_SOURCE_LANGUAGE);
-        setLearningTarget(profile.learning_target_language ?? DEFAULT_TARGET_LANGUAGE);
-      })
-      .catch(() => {
-        // best-effort — the pickers just stay hidden if this fails
-      });
-  }, [userId]);
+  async function refreshLanguagePairs() {
+    setLanguagePairsState(await getLanguagePairs());
+  }
 
-  // Saving triggers first-time sample-list generation server-side (see
-  // PATCH /me/profile) — only the very first save ever does this, later
-  // changes to the pair are just a preference update.
-  async function saveLearningPair(source: string, target: string) {
-    setIsSavingProfile(true);
-    setProfileMessage(null);
-    setProfileError(null);
-    try {
-      const result = await apiRequest<{ generated_sample_lists: boolean }>("/me/profile", {
-        method: "PATCH",
-        body: { source_language: source, target_language: target },
-      });
-      if (result.generated_sample_lists) {
-        setProfileMessage(t("starter_lists_ready_message"));
+  // The very first pair a user ever adds also syncs to the server (PATCH
+  // /me/profile) — that's what lifts the forced first-login redirect to
+  // this screen and triggers one-time sample-list generation for that
+  // pair (see index.tsx and core/sample_list_generator.py on the
+  // backend). Every pair after the first is purely local: CEFR level and
+  // accent leniency are device preferences, not account data.
+  async function handleAddLanguage() {
+    if (newPairSource === newPairTarget) return;
+    const isFirstEver = languagePairs.length === 0;
+    await addLanguagePair(newPairSource, newPairTarget);
+    await refreshLanguagePairs();
+
+    if (userId && isFirstEver) {
+      setIsSavingProfile(true);
+      setProfileMessage(null);
+      setProfileError(null);
+      try {
+        const result = await apiRequest<{ generated_sample_lists: boolean }>("/me/profile", {
+          method: "PATCH",
+          body: { source_language: newPairSource, target_language: newPairTarget },
+        });
+        if (result.generated_sample_lists) {
+          setProfileMessage(t("starter_lists_ready_message"));
+        }
+      } catch (e) {
+        setProfileError(e instanceof Error ? e.message : t("error_generic"));
+      } finally {
+        setIsSavingProfile(false);
       }
-    } catch (e) {
-      setProfileError(e instanceof Error ? e.message : t("error_generic"));
-    } finally {
-      setIsSavingProfile(false);
     }
   }
 
-  function handleLearningSourceChange(value: string) {
-    setLearningSource(value);
-    if (learningTarget) saveLearningPair(value, learningTarget);
+  function confirmRemoveLanguage(pair: LanguagePairSettings) {
+    Alert.alert(
+      t("remove_language_confirm_title"),
+      t("remove_language_confirm_message", { source: pair.sourceLanguage, target: pair.targetLanguage }),
+      [
+        { text: t("cancel"), style: "cancel" },
+        {
+          text: t("delete"),
+          style: "destructive",
+          onPress: async () => {
+            await removeLanguagePair(pair.sourceLanguage, pair.targetLanguage);
+            await refreshLanguagePairs();
+          },
+        },
+      ]
+    );
   }
 
-  function handleLearningTargetChange(value: string) {
-    setLearningTarget(value);
-    if (learningSource) saveLearningPair(learningSource, value);
+  async function handlePairCefrChange(pair: LanguagePairSettings, level: CefrLevel) {
+    await updateLanguagePairSettings(pair.sourceLanguage, pair.targetLanguage, { cefrLevel: level });
+    await refreshLanguagePairs();
   }
 
-  async function handleChange(newLevel: CefrLevel) {
-    setLevel(newLevel);
-    await setDefaultCefrLevel(newLevel);
+  async function handlePairAccentsChange(pair: LanguagePairSettings, enabled: boolean) {
+    await updateLanguagePairSettings(pair.sourceLanguage, pair.targetLanguage, { requireAccents: enabled });
+    await refreshLanguagePairs();
   }
 
   async function handleAutoDeleteChange(enabled: boolean) {
@@ -115,11 +122,6 @@ export default function Settings() {
   async function handleAdaptiveQuizzesChange(enabled: boolean) {
     setAdaptiveQuizzes(enabled);
     await setAdaptiveQuizzesEnabled(enabled);
-  }
-
-  async function handleRequireAccentsChange(enabled: boolean) {
-    setRequireAccentsState(enabled);
-    await setRequireAccents(enabled);
   }
 
   function handleLocaleChange(label: string) {
@@ -138,20 +140,39 @@ export default function Settings() {
       <Text style={shared.title}>{t("settings_title")}</Text>
 
       <View style={styles.settingBlock}>
-        <Text style={styles.settingTitle}>{t("app_language_title")}</Text>
-        <Dropdown value={localeOptionLabel(locale)} onChange={handleLocaleChange} options={LOCALE_OPTIONS} />
-      </View>
+        <Text style={styles.settingTitle}>{t("learning_pair_title")}</Text>
+        <Text style={shared.hint}>{t("learning_pair_hint")}</Text>
 
-      {userId && learningSource && learningTarget && (
-        <View style={styles.settingBlock}>
-          <Text style={styles.settingTitle}>{t("learning_pair_title")}</Text>
-          <Text style={shared.hint}>{t("learning_pair_hint")}</Text>
-          <View style={styles.pairRow}>
+        {languagePairs.length === 0 && <Text style={shared.hint}>{t("no_languages_added")}</Text>}
+
+        {languagePairs.map((pair) => (
+          <View key={`${pair.sourceLanguage}-${pair.targetLanguage}`} style={styles.languageCard}>
+            <View style={styles.languageCardHeader}>
+              <Text style={styles.languagePairLabel}>
+                {pair.sourceLanguage} → {pair.targetLanguage}
+              </Text>
+              <Pressable onPress={() => confirmRemoveLanguage(pair)} hitSlop={8}>
+                <Text style={styles.removeIcon}>✕</Text>
+              </Pressable>
+            </View>
+            <CefrLevelPicker value={pair.cefrLevel} onChange={(level) => handlePairCefrChange(pair, level)} />
+            <View style={[shared.row, styles.accentsRow]}>
+              <Text style={[shared.hint, styles.accentsLabel]}>{t("require_accents_title")}</Text>
+              <Switch
+                value={pair.requireAccents}
+                onValueChange={(enabled) => handlePairAccentsChange(pair, enabled)}
+              />
+            </View>
+          </View>
+        ))}
+
+        {userId && (
+          <View style={styles.addLanguageRow}>
             <View style={styles.pairField}>
               <Text style={shared.hint}>{t("from_label")}</Text>
               <Dropdown
-                value={learningSource}
-                onChange={handleLearningSourceChange}
+                value={newPairSource}
+                onChange={setNewPairSource}
                 options={LANGUAGES}
                 disabled={isSavingProfile}
               />
@@ -159,23 +180,27 @@ export default function Settings() {
             <View style={styles.pairField}>
               <Text style={shared.hint}>{t("to_label")}</Text>
               <Dropdown
-                value={learningTarget}
-                onChange={handleLearningTargetChange}
+                value={newPairTarget}
+                onChange={setNewPairTarget}
                 options={LANGUAGES}
                 disabled={isSavingProfile}
               />
             </View>
+            <Pressable
+              style={[shared.secondaryButton, shared.addActionButton, styles.addLanguageButton]}
+              onPress={handleAddLanguage}
+              disabled={isSavingProfile}
+            >
+              <Text style={[shared.secondaryButtonText, shared.accentButtonText]}>
+                {t("add_language_button")}
+              </Text>
+            </Pressable>
           </View>
-          {isSavingProfile && <Text style={shared.hint}>{t("generating_starter_lists")}</Text>}
-          {profileMessage && <Text style={shared.hint}>{profileMessage}</Text>}
-          {profileError && <Text style={shared.errorText}>{profileError}</Text>}
-        </View>
-      )}
+        )}
 
-      <View style={styles.settingBlock}>
-        <Text style={styles.settingTitle}>{t("default_level_title")}</Text>
-        <Text style={shared.hint}>{t("default_level_hint")}</Text>
-        <CefrLevelPicker value={level} onChange={handleChange} />
+        {isSavingProfile && <Text style={shared.hint}>{t("generating_starter_lists")}</Text>}
+        {profileMessage && <Text style={shared.hint}>{profileMessage}</Text>}
+        {profileError && <Text style={shared.errorText}>{profileError}</Text>}
       </View>
 
       <View style={[shared.row, styles.settingBlock]}>
@@ -184,14 +209,6 @@ export default function Settings() {
           <Text style={shared.hint}>{t("adaptive_quizzes_desc")}</Text>
         </View>
         <Switch value={adaptiveQuizzes} onValueChange={handleAdaptiveQuizzesChange} />
-      </View>
-
-      <View style={[shared.row, styles.settingBlock]}>
-        <View style={styles.settingText}>
-          <Text style={styles.settingTitle}>{t("require_accents_title")}</Text>
-          <Text style={shared.hint}>{t("require_accents_desc")}</Text>
-        </View>
-        <Switch value={requireAccents} onValueChange={handleRequireAccentsChange} />
       </View>
 
       <View style={[shared.row, styles.settingBlock]}>
@@ -205,6 +222,14 @@ export default function Settings() {
       <Link href="/onboarding" style={[shared.backLink, shared.linkText]}>
         {t("about_langreps_link")}
       </Link>
+
+      {/* De-emphasized deliberately — this is a set-once-and-forget
+          preference, unlike the language/level settings above that people
+          actually come back to adjust. */}
+      <View style={styles.appLanguageBlock}>
+        <Text style={styles.appLanguageTitle}>{t("app_language_title")}</Text>
+        <Dropdown value={localeOptionLabel(locale)} onChange={handleLocaleChange} options={LOCALE_OPTIONS} />
+      </View>
     </View>
   );
 }
@@ -221,12 +246,51 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: "700",
   },
-  pairRow: {
+  languageCard: {
+    gap: 6,
+    backgroundColor: colors.secondaryBackground,
+    borderRadius: 10,
+    padding: 12,
+  },
+  languageCardHeader: {
     flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  languagePairLabel: {
+    fontSize: 15,
+    fontWeight: "700",
+  },
+  removeIcon: {
+    fontSize: 16,
+    color: colors.error,
+    paddingHorizontal: 4,
+  },
+  accentsRow: {
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  accentsLabel: {
+    flex: 1,
+  },
+  addLanguageRow: {
+    flexDirection: "row",
+    alignItems: "flex-end",
     gap: 8,
   },
   pairField: {
     flex: 1,
     gap: 4,
+  },
+  addLanguageButton: {
+    paddingHorizontal: 16,
+  },
+  appLanguageBlock: {
+    marginTop: 12,
+    gap: 6,
+  },
+  appLanguageTitle: {
+    fontSize: 13,
+    opacity: 0.6,
   },
 });

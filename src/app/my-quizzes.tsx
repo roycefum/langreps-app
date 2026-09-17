@@ -105,7 +105,14 @@ export default function MyQuizzes() {
   function resumeSession(session: QuizSessionRow) {
     if (isResumingRef.current) return;
     isResumingRef.current = true;
-    startQuiz(session.questions, session.id, session.current_index);
+    const list = lists.find((l) => l.id === session.list_id);
+    startQuiz(
+      session.questions,
+      session.id,
+      list?.source_language ?? "English",
+      list?.target_language ?? "English",
+      session.current_index
+    );
     router.push("/quiz");
   }
 

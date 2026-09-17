@@ -2,7 +2,7 @@ import * as Haptics from "expo-haptics";
 import { createContext, useCallback, useContext, useMemo, useState, type ReactNode } from "react";
 
 import { apiRequest } from "./api";
-import { getRequireAccents } from "./settings-storage";
+import { getLanguagePairSettings } from "./settings-storage";
 import { removeAccents } from "./text";
 import type { Question } from "./types";
 
@@ -20,7 +20,13 @@ type QuizState = {
   // GET /quiz-sessions/{sessionId}/attempts — null for an anonymous/unsaved
   // quiz, which has no persisted attempt history to show.
   sessionId: string | null;
-  startQuiz: (questions: Question[], sessionId: string | null, startIndex?: number) => void;
+  startQuiz: (
+    questions: Question[],
+    sessionId: string | null,
+    sourceLanguage: string,
+    targetLanguage: string,
+    startIndex?: number
+  ) => void;
   submitAnswer: (answer: string) => void;
   skipQuestion: () => void;
   nextQuestion: () => Promise<void>;
@@ -46,15 +52,24 @@ export function QuizProvider({ children }: { children: ReactNode }) {
   const isComplete = questions.length > 0 && currentIndex >= questions.length;
 
   const startQuiz = useCallback(
-    (newQuestions: Question[], newSessionId: string | null, startIndex: number = 0) => {
+    (
+      newQuestions: Question[],
+      newSessionId: string | null,
+      sourceLanguage: string,
+      targetLanguage: string,
+      startIndex: number = 0
+    ) => {
       setQuestions(newQuestions);
       setCurrentIndex(startIndex);
       setPhase("question");
       setCorrectCount(0);
       setSessionId(newSessionId);
-      // Re-read fresh so a change made in Settings takes effect on the
-      // next quiz, without needing to restart the app.
-      getRequireAccents().then(setRequireAccentsState);
+      // Re-read fresh (per this specific language pair, not a flat global
+      // default) so a change made in Settings takes effect on the next
+      // quiz, without needing to restart the app.
+      getLanguagePairSettings(sourceLanguage, targetLanguage).then((settings) =>
+        setRequireAccentsState(settings.requireAccents)
+      );
     },
     []
   );
