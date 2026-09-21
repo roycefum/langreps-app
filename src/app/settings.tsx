@@ -35,6 +35,11 @@ export default function Settings() {
   // (see handleAddLanguage). Every pair after that is a purely local
   // add, which is effectively instant.
   const [isSavingProfile, setIsSavingProfile] = useState(false);
+  // Whether the SERVER knows this account's learning pair yet — null until
+  // checked. This, not the local pair list, decides when to sync: a pair
+  // added locally earlier (or while the request was failing) must not stop
+  // the server from ever getting told, or Home keeps redirecting back here.
+  const [serverProfileSet, setServerProfileSet] = useState<boolean | null>(null);
   const [profileMessage, setProfileMessage] = useState<string | null>(null);
   const [profileError, setProfileError] = useState<string | null>(null);
 
@@ -44,23 +49,33 @@ export default function Settings() {
     getLanguagePairs().then(setLanguagePairsState);
   }, []);
 
+  useEffect(() => {
+    if (!userId) return;
+    apiRequest<{ learning_target_language: string | null }>("/me/profile")
+      .then((profile) => setServerProfileSet(!!profile.learning_target_language))
+      .catch(() => {
+        // Unknown — handleAddLanguage syncs anyway; the server ignores a
+        // repeat, so guessing wrong is harmless.
+      });
+  }, [userId]);
+
   async function refreshLanguagePairs() {
     setLanguagePairsState(await getLanguagePairs());
   }
 
-  // The very first pair a user ever adds also syncs to the server (PATCH
-  // /me/profile) — that's what lifts the forced first-login redirect to
-  // this screen and triggers one-time sample-list generation for that
-  // pair (see index.tsx and core/sample_list_generator.py on the
-  // backend). Every pair after the first is purely local: CEFR level and
-  // accent leniency are device preferences, not account data.
+  // Adding a pair also syncs it to the server (PATCH /me/profile) whenever
+  // the server doesn't have a learning pair for this account yet — that's
+  // what lifts the forced redirect to this screen and triggers one-time
+  // sample-list generation for that pair (see index.tsx and
+  // core/sample_list_generator.py on the backend). Once the server has
+  // one, further pairs are purely local: CEFR level and accent leniency
+  // are device preferences, not account data.
   async function handleAddLanguage() {
     if (newPairSource === newPairTarget) return;
-    const isFirstEver = languagePairs.length === 0;
     await addLanguagePair(newPairSource, newPairTarget);
     await refreshLanguagePairs();
 
-    if (userId && isFirstEver) {
+    if (userId && serverProfileSet !== true) {
       setIsSavingProfile(true);
       setProfileMessage(null);
       setProfileError(null);
@@ -69,6 +84,7 @@ export default function Settings() {
           method: "PATCH",
           body: { source_language: newPairSource, target_language: newPairTarget },
         });
+        setServerProfileSet(true);
         if (result.generated_sample_lists) {
           setProfileMessage(t("starter_lists_ready_message"));
         }
