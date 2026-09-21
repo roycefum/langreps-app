@@ -86,6 +86,14 @@ export const shared = StyleSheet.create({
     flexDirection: "row",
     gap: 8,
   },
+  // Labels for settings/options a user actually reads and changes (e.g.
+  // Tense, How many questions?) — bigger and bolder than the faded `hint`
+  // used for fine print.
+  fieldLabel: {
+    fontSize: 16,
+    fontWeight: "700",
+    color: colors.text,
+  },
   input: {
     borderWidth: 1,
     borderColor: colors.border,

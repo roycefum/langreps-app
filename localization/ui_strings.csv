@@ -50,7 +50,7 @@
 49,generate-quiz.tsx,unsaved_list,Unsaved list,Lista sin guardar,Liste non enregistrée,Fallback when no list name
 50,generate-quiz.tsx,min_words_warning,You need at least 3 words to generate a quiz.,Necesitas al menos 3 palabras para generar un cuestionario.,Il te faut au moins 3 mots pour générer un quiz.,
 51,generate-quiz.tsx,words_in_list,{n} words in this list.,{n} palabras en esta lista.,{n} mots dans cette liste.,Template with pluralization
-52,generate-quiz.tsx,how_many_questions,How many questions?,¿Cuántas preguntas?,Combien de questions ?,
+52,generate-quiz.tsx,how_many_questions,No. Questions,N.º de preguntas,Nb de questions,
 53,generate-quiz.tsx,tense_label,Tense,Tiempo verbal,Temps,
 54,generate-quiz.tsx,mixed_tense,Mixed,Mixto,Mixte,Dropdown option meaning vary tense freely
 55,generate-quiz.tsx,flip_toggle_label,Flip: translate {target} → {source},Invertir: traducir de {target} a {source},Inverser : traduire de {target} vers {source},Template — language names not translated here
@@ -268,3 +268,4 @@
 267,settings.tsx,remove_language_confirm_message,This removes {source} → {target} from your languages. Your saved lists aren't affected.,Esto elimina {source} → {target} de tus idiomas. Tus listas guardadas no se ven afectadas.,Cela supprime {source} → {target} de tes langues. Tes listes enregistrées ne sont pas affectées.,Template
 268,settings.tsx,require_accents_desc,"Off accepts ""cafe"" for ""café""","Desactivado acepta ""cafe"" en lugar de ""café""","Désactivé accepte ""cafe"" pour ""café""","Restored — off by default, grading strips accents; app is a reinforcement tool, not a strict teaching tool"
 269,generate-quiz.tsx,insight_examples_label,From your last quiz:,De tu último cuestionario:,De ton dernier quiz :,Precedes the real 'typed → correct' examples shown under the tailored insight message
+270,generate-quiz.tsx,feedback_title,Feedback,Comentarios,Commentaires,Screen title used instead of Generate Quiz when the tailored feedback card is showing

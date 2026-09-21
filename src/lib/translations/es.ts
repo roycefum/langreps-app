@@ -52,7 +52,7 @@ export const es = {
   "unsaved_list": "Lista sin guardar",
   "min_words_warning": "Necesitas al menos 3 palabras para generar un cuestionario.",
   "words_in_list": "{n} palabras en esta lista.",
-  "how_many_questions": "¿Cuántas preguntas?",
+  "how_many_questions": "N.º de preguntas",
   "tense_label": "Tiempo verbal",
   "mixed_tense": "Mixto",
   "flip_toggle_label": "Invertir: traducir de {target} a {source}",
@@ -269,4 +269,5 @@ export const es = {
   "remove_language_confirm_message": "Esto elimina {source} → {target} de tus idiomas. Tus listas guardadas no se ven afectadas.",
   "require_accents_desc": "Desactivado acepta \"cafe\" en lugar de \"café\"",
   "insight_examples_label": "De tu último cuestionario:",
+  "feedback_title": "Comentarios",
 };

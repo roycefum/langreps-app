@@ -62,6 +62,7 @@ export function Dropdown({ value, onChange, options, disabled }: DropdownProps) 
 
 const styles = StyleSheet.create({
   button: {
+    minHeight: 52,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",

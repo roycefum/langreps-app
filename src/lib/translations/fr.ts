@@ -52,7 +52,7 @@ export const fr = {
   "unsaved_list": "Liste non enregistrée",
   "min_words_warning": "Il te faut au moins 3 mots pour générer un quiz.",
   "words_in_list": "{n} mots dans cette liste.",
-  "how_many_questions": "Combien de questions ?",
+  "how_many_questions": "Nb de questions",
   "tense_label": "Temps",
   "mixed_tense": "Mixte",
   "flip_toggle_label": "Inverser : traduire de {target} vers {source}",
@@ -269,4 +269,5 @@ export const fr = {
   "remove_language_confirm_message": "Cela supprime {source} → {target} de tes langues. Tes listes enregistrées ne sont pas affectées.",
   "require_accents_desc": "Désactivé accepte \"cafe\" pour \"café\"",
   "insight_examples_label": "De ton dernier quiz :",
+  "feedback_title": "Commentaires",
 };

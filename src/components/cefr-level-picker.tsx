@@ -69,8 +69,9 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   label: {
-    fontSize: 13,
-    opacity: 0.6,
+    fontSize: 16,
+    fontWeight: "700",
+    color: colors.text,
   },
   infoIcon: {
     fontSize: 14,

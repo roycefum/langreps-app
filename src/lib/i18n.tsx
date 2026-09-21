@@ -10,6 +10,15 @@ export type Locale = (typeof LOCALES)[number];
 
 const TRANSLATIONS: Record<Locale, Record<string, string>> = { en, es, fr };
 
+// English names for each UI language — sent to the server so AI-written
+// text (the tailored quiz feedback) comes back in the language the user
+// reads the app in, not the language they're studying.
+export const LOCALE_NAMES: Record<Locale, string> = {
+  en: "English",
+  es: "Spanish",
+  fr: "French",
+};
+
 // No manual override — the app just follows the device's own language.
 // There's no Settings UI for this (deliberately: it's a set-once,
 // rarely-revisited preference, and the device already has a perfectly

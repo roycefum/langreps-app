@@ -1,7 +1,7 @@
 import { StyleSheet, Text, View } from "react-native";
 
 import { Dropdown } from "@/components/dropdown";
-import { shared } from "@/constants/styles";
+import { colors, shared } from "@/constants/styles";
 import { useI18n } from "@/lib/i18n";
 import { usePairs } from "@/lib/pairs-context";
 import { LANGUAGES } from "@/lib/types";
@@ -36,13 +36,19 @@ export function LanguagePicker() {
 export function LanguageSummary() {
   const { sourceLanguage, targetLanguage } = usePairs();
   return (
-    <Text style={shared.hint}>
+    <Text style={styles.summary}>
       {sourceLanguage} → {targetLanguage}
     </Text>
   );
 }
 
 const styles = StyleSheet.create({
+  summary: {
+    fontSize: 16,
+    fontWeight: "600",
+    color: colors.text,
+    textAlign: "center",
+  },
   container: {
     flexDirection: "row",
     gap: 8,

@@ -5,6 +5,7 @@ import {
   ActivityIndicator,
   Keyboard,
   Pressable,
+  ScrollView,
   StyleSheet,
   Switch,
   Text,
@@ -16,11 +17,12 @@ import {
 import { BackButton } from "@/components/back-button";
 import { CefrLevelPicker } from "@/components/cefr-level-picker";
 import { Dropdown } from "@/components/dropdown";
+import { InsightCard } from "@/components/insight-card";
 import { LanguageSummary } from "@/components/language-picker";
 import { colors, shared } from "@/constants/styles";
 import { apiRequest } from "@/lib/api";
 import { useAuth } from "@/lib/auth-context";
-import { useI18n } from "@/lib/i18n";
+import { LOCALE_NAMES, useI18n } from "@/lib/i18n";
 import { usePairs, type VocabPair } from "@/lib/pairs-context";
 import { useQuiz } from "@/lib/quiz-context";
 import { getAdaptiveQuizzesEnabled, getLanguagePairSettings } from "@/lib/settings-storage";
@@ -44,7 +46,7 @@ type QuizInsight = {
 
 export default function GenerateQuiz() {
   const router = useRouter();
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
   const { pairs, sourceLanguage, targetLanguage, listType, savedListId, listName } = usePairs();
   const { userId } = useAuth();
   const { startQuiz } = useQuiz();
@@ -97,7 +99,9 @@ export default function GenerateQuiz() {
           examples: string[];
           focus: string | null;
           targeted_pair_ids: string[];
-        }>(`/lists/${savedListId}/quiz-insight?count=${initialCount}`);
+        }>(
+          `/lists/${savedListId}/quiz-insight?count=${initialCount}&language=${LOCALE_NAMES[locale]}`
+        );
         if (!cancelled && result.available) {
           setInsight({
             message: result.message,
@@ -211,12 +215,26 @@ export default function GenerateQuiz() {
     }
   }
 
+  const generatingBlock = (
+    <View style={styles.generating}>
+      <ActivityIndicator size="large" />
+      <Text>{t("generating_quiz")}</Text>
+    </View>
+  );
+
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
     <View style={shared.screen}>
       <BackButton href="back" />
-      <View style={[styles.centeredContent, styles.container]}>
-      <Text style={[shared.title, styles.centerText]}>{t("generate_quiz_title")}</Text>
+      <ScrollView
+        style={styles.scroll}
+        contentContainerStyle={[styles.centeredContent, styles.container]}
+        keyboardShouldPersistTaps="handled"
+        keyboardDismissMode="on-drag"
+      >
+      <Text style={[shared.title, styles.centerText]}>
+        {insight?.message ? t("feedback_title") : t("generate_quiz_title")}
+      </Text>
       <Text style={[styles.centerText, styles.listNameHeading]}>
         {listName ? displayListName(listName) : t("unsaved_list")}
       </Text>
@@ -224,12 +242,17 @@ export default function GenerateQuiz() {
       {pairs.length < 3 ? (
         <Text style={[shared.hint, styles.centerText]}>{t("min_words_warning")}</Text>
       ) : (
-        <>
-          <Text style={[shared.hint, styles.centerText]}>
-            {t("words_in_list", { n: pairs.length })}
-          </Text>
-          <View style={styles.countRow}>
-            <Text style={shared.hint}>{t("how_many_questions")}</Text>
+        <Text style={[shared.hint, styles.centerText]}>
+          {t("words_in_list", { n: pairs.length })}
+        </Text>
+      )}
+
+      {insight?.message && <InsightCard message={insight.message} examples={insight.examples} />}
+
+      {pairs.length >= 3 && (
+        <View style={styles.optionsRow}>
+          <View style={styles.countField}>
+            <Text style={shared.fieldLabel}>{t("how_many_questions")}</Text>
             <TextInput
               style={[shared.input, styles.countInput]}
               value={countText}
@@ -237,7 +260,24 @@ export default function GenerateQuiz() {
               keyboardType="number-pad"
             />
           </View>
-        </>
+          {listType === "Verb" && tenseOptions.length > 0 && (
+            <View style={styles.tenseField}>
+              <Text style={shared.fieldLabel}>{t("tense_label")}</Text>
+              <Dropdown
+                value={selectedTenseLabel}
+                onChange={(label) => {
+                  if (label === t("mixed_tense")) {
+                    setVerbTense(null);
+                    return;
+                  }
+                  const match = tenseOptions.find((t) => t.label === label);
+                  setVerbTense(match ? match.value : null);
+                }}
+                options={tenseLabels}
+              />
+            </View>
+          )}
+        </View>
       )}
 
       <LanguageSummary />
@@ -245,51 +285,17 @@ export default function GenerateQuiz() {
 
       {listType === "Vocab" && (
         <View style={styles.countRow}>
-          <Text style={shared.hint}>
+          <Text style={shared.fieldLabel}>
             {t("flip_toggle_label", { target: targetLanguage, source: sourceLanguage })}
           </Text>
           <Switch value={flip} onValueChange={setFlip} />
         </View>
       )}
 
-      {listType === "Verb" && tenseOptions.length > 0 && (
-        <View style={styles.countRow}>
-          <Text style={shared.hint}>{t("tense_label")}</Text>
-          <Dropdown
-            value={selectedTenseLabel}
-            onChange={(label) => {
-              if (label === t("mixed_tense")) {
-                setVerbTense(null);
-                return;
-              }
-              const match = tenseOptions.find((t) => t.label === label);
-              setVerbTense(match ? match.value : null);
-            }}
-            options={tenseLabels}
-          />
-        </View>
-      )}
-
       {error && <Text style={[shared.errorText, styles.centerText]}>{error}</Text>}
 
-      {insight?.message && !isGenerating && (
-        <>
-          <Text style={[shared.hint, styles.centerText, styles.insightMessage]}>
-            {insight.message}
-          </Text>
-          {insight.examples.length > 0 && (
-            <Text style={[shared.hint, styles.centerText]}>
-              {t("insight_examples_label")} {insight.examples.join("  ·  ")}
-            </Text>
-          )}
-        </>
-      )}
-
       {isGenerating ? (
-        <View style={styles.generating}>
-          <ActivityIndicator size="large" />
-          <Text>{t("generating_quiz")}</Text>
-        </View>
+        generatingBlock
       ) : insight?.message ? (
         <>
           <Pressable
@@ -324,15 +330,20 @@ export default function GenerateQuiz() {
           <Text style={shared.primaryButtonText}>{t("generate_quiz_title")}</Text>
         </Pressable>
       )}
-      </View>
+      </ScrollView>
     </View>
     </TouchableWithoutFeedback>
   );
 }
 
 const styles = StyleSheet.create({
-  centeredContent: {
+  scroll: {
     flex: 1,
+  },
+  // flexGrow (not flex) so short content stays vertically centered but a
+  // taller screen — e.g. with the insight card showing — can scroll.
+  centeredContent: {
+    flexGrow: 1,
     justifyContent: "center",
     gap: 16,
   },
@@ -342,6 +353,18 @@ const styles = StyleSheet.create({
   centerText: {
     textAlign: "center",
   },
+  optionsRow: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    gap: 12,
+  },
+  countField: {
+    gap: 4,
+  },
+  tenseField: {
+    flex: 1,
+    gap: 4,
+  },
   countRow: {
     flexDirection: "row",
     alignItems: "center",
@@ -349,6 +372,7 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   countInput: {
+    minHeight: 52,
     width: 64,
     textAlign: "center",
   },
@@ -360,9 +384,5 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: "700",
     color: colors.generateQuiz,
-  },
-  insightMessage: {
-    fontWeight: "600",
-    fontStyle: "italic",
   },
 });

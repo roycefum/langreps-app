@@ -2,10 +2,11 @@ import { Link, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 
+import { InsightCard } from "@/components/insight-card";
 import { shared } from "@/constants/styles";
 import { apiRequest } from "@/lib/api";
 import { useAuth } from "@/lib/auth-context";
-import { useI18n } from "@/lib/i18n";
+import { LOCALE_NAMES, useI18n } from "@/lib/i18n";
 import { usePairs } from "@/lib/pairs-context";
 import { useQuiz } from "@/lib/quiz-context";
 
@@ -26,11 +27,14 @@ function cannedFeedbackKey(correct: number, total: number): string {
 
 export default function QuizComplete() {
   const router = useRouter();
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
   const { questions, correctCount, resetQuiz, sessionId } = useQuiz();
   const { clearPairs, savedListId } = usePairs();
   const { userId } = useAuth();
   const [feedback, setFeedback] = useState<string | null>(null);
+  // Real "typed → correct" answers behind the tailored message — empty for the
+  // generic score-based fallback.
+  const [examples, setExamples] = useState<string[]>([]);
 
   useEffect(() => {
     let cancelled = false;
@@ -44,11 +48,18 @@ export default function QuizComplete() {
 
     (async () => {
       try {
-        const result = await apiRequest<{ available: boolean; message: string | null }>(
-          `/lists/${savedListId}/quiz-insight?count=1`
-        );
+        const result = await apiRequest<{
+          available: boolean;
+          message: string | null;
+          examples: string[];
+        }>(`/lists/${savedListId}/quiz-insight?count=1&language=${LOCALE_NAMES[locale]}`);
         if (cancelled) return;
-        setFeedback(result.available && result.message ? result.message : fallback);
+        if (result.available && result.message) {
+          setFeedback(result.message);
+          setExamples(result.examples);
+        } else {
+          setFeedback(fallback);
+        }
       } catch {
         if (!cancelled) setFeedback(fallback);
       }
@@ -71,7 +82,7 @@ export default function QuizComplete() {
       <Text style={styles.score}>
         {t("score_correct", { n: correctCount, total: questions.length })}
       </Text>
-      <Text style={styles.feedback}>{feedback ?? " "}</Text>
+      {feedback ? <InsightCard message={feedback} examples={examples} /> : null}
       {sessionId && (
         <Link href={{ pathname: "/quiz-results", params: { sessionId } }} style={shared.linkText}>
           {t("see_full_results")}
@@ -95,12 +106,5 @@ const styles = StyleSheet.create({
   score: {
     fontSize: 20,
     opacity: 0.8,
-  },
-  feedback: {
-    fontSize: 15,
-    lineHeight: 22,
-    textAlign: "center",
-    paddingHorizontal: 8,
-    minHeight: 20,
   },
 });
