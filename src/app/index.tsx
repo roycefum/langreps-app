@@ -102,6 +102,11 @@ export default function Home() {
                 <Text style={styles.deleteLink}>{t("delete_account")}</Text>
               </Pressable>
               {deleteError && <Text style={shared.errorText}>{deleteError}</Text>}
+              {__DEV__ && (
+                <Link href="/test-data" style={styles.authLink}>
+                  Test data
+                </Link>
+              )}
             </>
           ) : (
             <>
