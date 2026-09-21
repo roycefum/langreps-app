@@ -1,10 +1,11 @@
 import { File } from "expo-file-system";
 import * as ImagePicker from "expo-image-picker";
 import { useState } from "react";
-import { Pressable, ScrollView, StyleSheet, Text } from "react-native";
+import { ScrollView, StyleSheet, Text } from "react-native";
 
 import { BackButton } from "@/components/back-button";
 import { PairsReview } from "@/components/pairs-review";
+import { PressButton } from "@/components/press-button";
 import { shared } from "@/constants/styles";
 import { apiRequest } from "@/lib/api";
 import { useI18n } from "@/lib/i18n";
@@ -91,7 +92,7 @@ export default function UploadPicture() {
 
       <Text style={shared.hint}>{t("share_picture_instructions")}</Text>
 
-      <Pressable
+      <PressButton
         style={[shared.secondaryButton, shared.photoActionButton]}
         onPress={handleTakePhoto}
         disabled={isExtracting}
@@ -99,8 +100,8 @@ export default function UploadPicture() {
         <Text style={[shared.secondaryButtonText, shared.accentButtonText]}>
           {isExtracting ? t("reading_ellipsis") : t("take_photo")}
         </Text>
-      </Pressable>
-      <Pressable
+      </PressButton>
+      <PressButton
         style={[shared.secondaryButton, shared.photoActionButton]}
         onPress={handleChooseFromLibrary}
         disabled={isExtracting}
@@ -108,7 +109,7 @@ export default function UploadPicture() {
         <Text style={[shared.secondaryButtonText, shared.accentButtonText]}>
           {isExtracting ? t("reading_ellipsis") : t("choose_from_library")}
         </Text>
-      </Pressable>
+      </PressButton>
 
       {error && <Text style={shared.errorText}>{error}</Text>}
 

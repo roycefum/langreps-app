@@ -1,5 +1,6 @@
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 
+import { PressButton } from "@/components/press-button";
 import { shared } from "@/constants/styles";
 import { useI18n } from "@/lib/i18n";
 
@@ -31,22 +32,22 @@ export function LanguageOrderConfirm({
         {t("order_confirm_prompt_template", { first: firstLanguage, second: secondLanguage })}
       </Text>
       <View style={styles.row}>
-        <Pressable
+        <PressButton
           style={[shared.secondaryButton, shared.addActionButton, styles.button]}
           onPress={() => onConfirm(true)}
         >
           <Text style={[shared.secondaryButtonText, shared.accentButtonText]}>
             {t("order_confirm_option_template", { language: firstLanguage })}
           </Text>
-        </Pressable>
-        <Pressable
+        </PressButton>
+        <PressButton
           style={[shared.secondaryButton, shared.addActionButton, styles.button]}
           onPress={() => onConfirm(false)}
         >
           <Text style={[shared.secondaryButtonText, shared.accentButtonText]}>
             {t("order_confirm_option_template", { language: secondLanguage })}
           </Text>
-        </Pressable>
+        </PressButton>
       </View>
     </View>
   );

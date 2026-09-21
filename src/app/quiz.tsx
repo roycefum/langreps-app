@@ -1,10 +1,14 @@
 import { useRouter } from "expo-router";
 import { useEffect, useMemo, useState } from "react";
-import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
+import { Keyboard, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
 
+import Animated, { FadeIn, FadeInRight } from "react-native-reanimated";
+
+import { AnswerFeedback } from "@/components/answer-feedback";
 import { BackButton } from "@/components/back-button";
 import { ProgressBar } from "@/components/progress-bar";
 import { SpeakButton } from "@/components/speak-button";
+import { PressButton } from "@/components/press-button";
 import { colors, shared } from "@/constants/styles";
 import { useI18n } from "@/lib/i18n";
 import { usePairs } from "@/lib/pairs-context";
@@ -52,7 +56,10 @@ export default function Quiz() {
   }
 
   return (
-    <View style={shared.screen}>
+    // Padding-mode avoidance lifts the whole screen above the keyboard so
+    // Submit is never covered; the question sits near the top for the same
+    // reason (see styles.body).
+    <KeyboardAvoidingView style={shared.screen} behavior={Platform.OS === "ios" ? "padding" : undefined}>
       <BackButton href="/" />
 
       <ProgressBar progress={currentIndex / total} />
@@ -61,7 +68,8 @@ export default function Quiz() {
         {t("question_n_of_total", { n: currentIndex + 1, total })}
       </Text>
 
-      <View style={styles.body}>
+      {/* Keyed by question so each new question slides in fresh. */}
+      <Animated.View key={currentIndex} style={styles.body} entering={FadeInRight.duration(260)}>
         <Text style={styles.questionText}>{currentQuestion.question_text}</Text>
 
         {phase === "question" ? (
@@ -74,14 +82,20 @@ export default function Quiz() {
               onChangeText={setAnswer}
               autoCapitalize="none"
               autoCorrect={false}
+              returnKeyType="send"
+              onSubmitEditing={handleSubmit}
             />
-            <Pressable style={shared.primaryButton} onPress={handleSubmit}>
+            <PressButton style={shared.primaryButton} onPress={handleSubmit}>
               <Text style={shared.primaryButtonText}>{t("submit")}</Text>
-            </Pressable>
+            </PressButton>
             <Pressable style={shared.backLink} onPress={skipQuestion}>
               <Text style={styles.skipButtonText}>{t("skip_question")}</Text>
             </Pressable>
-            <Pressable style={shared.backLink} onPress={() => setShowWordList((v) => !v)}>
+            <Pressable style={shared.backLink} onPress={() => {
+                // Drop the keyboard so the list isn't hidden behind it.
+                if (!showWordList) Keyboard.dismiss();
+                setShowWordList((v) => !v);
+              }}>
               <Text style={styles.skipButtonText}>
                 {showWordList ? t("hide_word_list") : t("stuck_see_word_list")}
               </Text>
@@ -93,15 +107,17 @@ export default function Quiz() {
             )}
           </>
         ) : (
-          <>
-            <Text style={styles.centerText}>{t("your_answer_was", { answer: lastAnswer })}</Text>
-            {wasCorrect ? (
-              <Text style={[styles.correct, styles.centerText]}>{t("correct_feedback")}</Text>
-            ) : (
-              <Text style={[styles.incorrect, styles.centerText]}>
-                {t("incorrect_feedback", { answer: currentQuestion.correct_answer })}
-              </Text>
-            )}
+          <Animated.View style={styles.feedbackBlock} entering={FadeIn.duration(200)}>
+            <AnswerFeedback correct={wasCorrect}>
+              <Text style={styles.centerText}>{t("your_answer_was", { answer: lastAnswer })}</Text>
+              {wasCorrect ? (
+                <Text style={[styles.correct, styles.centerText]}>✓ {t("correct_feedback")}</Text>
+              ) : (
+                <Text style={[styles.incorrect, styles.centerText]}>
+                  {t("incorrect_feedback", { answer: currentQuestion.correct_answer })}
+                </Text>
+              )}
+            </AnswerFeedback>
             {/* Assumes the correct answer is in targetLanguage — not
                 accounted for the "flip" reversed-direction mode, which
                 isn't tracked past Generate Quiz. Worst case a flipped quiz
@@ -109,22 +125,23 @@ export default function Quiz() {
             <View style={styles.pronounceRow}>
               <SpeakButton text={currentQuestion.correct_answer} language={targetLanguage} />
             </View>
-            <Pressable style={shared.primaryButton} onPress={handleNext}>
+            <PressButton style={shared.primaryButton} onPress={handleNext}>
               <Text style={shared.primaryButtonText}>
                 {currentIndex + 1 >= total ? t("finish_quiz") : t("next_question")}
               </Text>
-            </Pressable>
-          </>
+            </PressButton>
+          </Animated.View>
         )}
-      </View>
-    </View>
+      </Animated.View>
+    </KeyboardAvoidingView>
   );
 }
 
 const styles = StyleSheet.create({
   body: {
     flex: 1,
-    justifyContent: "center",
+    justifyContent: "flex-start",
+    paddingTop: 32,
     gap: 16,
   },
   centerText: {
@@ -157,6 +174,9 @@ const styles = StyleSheet.create({
     backgroundColor: colors.secondaryBackground,
     borderRadius: 8,
     padding: 12,
+  },
+  feedbackBlock: {
+    gap: 16,
   },
   pronounceRow: {
     alignItems: "center",

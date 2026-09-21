@@ -2,7 +2,6 @@ import * as Haptics from "expo-haptics";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import {
-  ActivityIndicator,
   Keyboard,
   Pressable,
   ScrollView,
@@ -13,12 +12,15 @@ import {
   TouchableWithoutFeedback,
   View,
 } from "react-native";
+import Animated, { LinearTransition } from "react-native-reanimated";
 
 import { BackButton } from "@/components/back-button";
 import { CefrLevelPicker } from "@/components/cefr-level-picker";
 import { Dropdown } from "@/components/dropdown";
-import { InsightCard } from "@/components/insight-card";
+import { InsightCard, InsightSkeleton } from "@/components/insight-card";
 import { LanguageSummary } from "@/components/language-picker";
+import { ProgressBar } from "@/components/progress-bar";
+import { PressButton } from "@/components/press-button";
 import { colors, shared } from "@/constants/styles";
 import { apiRequest } from "@/lib/api";
 import { useAuth } from "@/lib/auth-context";
@@ -67,6 +69,10 @@ export default function GenerateQuiz() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [insight, setInsight] = useState<QuizInsight | null>(null);
+  const [insightLoading, setInsightLoading] = useState(false);
+  // Questions written so far, out of the total this quiz needs — drives the
+  // real progress shown while generating.
+  const [progress, setProgress] = useState({ done: 0, total: 0 });
 
   const tenseOptions = TENSES_BY_LANGUAGE[targetLanguage] ?? [];
   const tenseLabels = [t("mixed_tense"), ...tenseOptions.map((tense) => tense.label)];
@@ -91,6 +97,7 @@ export default function GenerateQuiz() {
     (async () => {
       const adaptiveEnabled = await getAdaptiveQuizzesEnabled();
       if (!adaptiveEnabled || cancelled) return;
+      setInsightLoading(true);
       try {
         const initialCount = Math.max(1, Math.min(pairs.length, DEFAULT_QUIZ_LENGTH));
         const result = await apiRequest<{
@@ -112,6 +119,8 @@ export default function GenerateQuiz() {
         }
       } catch {
         // best-effort — insight is a nice-to-have, never blocks quiz generation
+      } finally {
+        if (!cancelled) setInsightLoading(false);
       }
     })();
     return () => {
@@ -165,6 +174,7 @@ export default function GenerateQuiz() {
 
       const chunks = chunk(selectedPairs, BATCH_SIZE);
       const allQuestions: Question[] = [];
+      setProgress({ done: 0, total: selectedPairs.length });
       for (const c of chunks) {
         const result = await apiRequest<Question[]>("/generate-questions", {
           method: "POST",
@@ -182,6 +192,7 @@ export default function GenerateQuiz() {
           },
         });
         allQuestions.push(...result);
+        setProgress({ done: allQuestions.length, total: selectedPairs.length });
       }
 
       // A quiz session only makes sense for a saved list (quiz_sessions.list_id
@@ -217,8 +228,14 @@ export default function GenerateQuiz() {
 
   const generatingBlock = (
     <View style={styles.generating}>
-      <ActivityIndicator size="large" />
-      <Text>{t("generating_quiz")}</Text>
+      <Text>
+        {progress.total > 0
+          ? t("generating_progress", { done: progress.done, total: progress.total })
+          : t("generating_quiz")}
+      </Text>
+      <View style={styles.generatingBar}>
+        <ProgressBar progress={progress.total > 0 ? progress.done / progress.total : 0} height={20} />
+      </View>
     </View>
   );
 
@@ -247,10 +264,12 @@ export default function GenerateQuiz() {
         </Text>
       )}
 
+      {insightLoading && !insight?.message && <InsightSkeleton />}
+
       {insight?.message && <InsightCard message={insight.message} examples={insight.examples} />}
 
       {pairs.length >= 3 && (
-        <View style={styles.optionsRow}>
+        <Animated.View style={styles.optionsRow} layout={LinearTransition}>
           <View style={styles.countField}>
             <Text style={shared.fieldLabel}>{t("how_many_questions")}</Text>
             <TextInput
@@ -277,28 +296,39 @@ export default function GenerateQuiz() {
               />
             </View>
           )}
-        </View>
+        </Animated.View>
       )}
 
-      <LanguageSummary />
-      <CefrLevelPicker value={cefrLevel} onChange={setCefrLevel} />
+      <Animated.View layout={LinearTransition}>
+        <LanguageSummary />
+      </Animated.View>
+      <Animated.View layout={LinearTransition}>
+        <CefrLevelPicker value={cefrLevel} onChange={setCefrLevel} />
+      </Animated.View>
 
       {listType === "Vocab" && (
-        <View style={styles.countRow}>
+        <Animated.View style={styles.countRow} layout={LinearTransition}>
           <Text style={shared.fieldLabel}>
             {t("flip_toggle_label", { target: targetLanguage, source: sourceLanguage })}
           </Text>
-          <Switch value={flip} onValueChange={setFlip} />
-        </View>
+          <Switch
+            value={flip}
+            onValueChange={(v) => {
+              Haptics.selectionAsync().catch(() => {});
+              setFlip(v);
+            }}
+          />
+        </Animated.View>
       )}
 
       {error && <Text style={[shared.errorText, styles.centerText]}>{error}</Text>}
 
+      <Animated.View style={styles.actions} layout={LinearTransition}>
       {isGenerating ? (
         generatingBlock
       ) : insight?.message ? (
         <>
-          <Pressable
+          <PressButton
             style={[
               shared.primaryButton,
               shared.generateQuizButton,
@@ -308,17 +338,17 @@ export default function GenerateQuiz() {
             onPress={() => handleGenerate("targeted")}
           >
             <Text style={shared.primaryButtonText}>{t("target_my_mistakes")}</Text>
-          </Pressable>
-          <Pressable
+          </PressButton>
+          <PressButton
             style={[shared.secondaryButton, pairs.length < 3 && shared.primaryButtonDisabled]}
             disabled={pairs.length < 3}
             onPress={() => handleGenerate("similar")}
           >
             <Text style={shared.secondaryButtonText}>{t("generate_similar_quiz")}</Text>
-          </Pressable>
+          </PressButton>
         </>
       ) : (
-        <Pressable
+        <PressButton
           style={[
             shared.primaryButton,
             shared.generateQuizButton,
@@ -328,8 +358,9 @@ export default function GenerateQuiz() {
           onPress={() => handleGenerate("similar")}
         >
           <Text style={shared.primaryButtonText}>{t("generate_quiz_title")}</Text>
-        </Pressable>
+        </PressButton>
       )}
+      </Animated.View>
       </ScrollView>
     </View>
     </TouchableWithoutFeedback>
@@ -379,6 +410,12 @@ const styles = StyleSheet.create({
   generating: {
     alignItems: "center",
     gap: 12,
+  },
+  generatingBar: {
+    alignSelf: "stretch",
+  },
+  actions: {
+    gap: 16,
   },
   listNameHeading: {
     fontSize: 20,

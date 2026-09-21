@@ -270,4 +270,5 @@ export const es = {
   "require_accents_desc": "Desactivado acepta \"cafe\" en lugar de \"café\"",
   "insight_examples_label": "De tu último cuestionario:",
   "feedback_title": "Comentarios",
+  "generating_progress": "Escribiendo preguntas… {done} de {total}",
 };

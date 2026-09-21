@@ -1,6 +1,7 @@
 import { useRouter, type Href } from "expo-router";
-import { Alert, Pressable, Text } from "react-native";
+import { Alert, Text } from "react-native";
 
+import { PressButton } from "@/components/press-button";
 import { shared } from "@/constants/styles";
 import { useI18n } from "@/lib/i18n";
 
@@ -59,12 +60,12 @@ export function BackButton({ href, confirmLeave, disabled }: BackButtonProps) {
   }
 
   return (
-    <Pressable
+    <PressButton
       onPress={handlePress}
       disabled={disabled}
       style={[shared.topBackButton, disabled && shared.primaryButtonDisabled]}
     >
       <Text style={shared.topBackButtonText}>←</Text>
-    </Pressable>
+    </PressButton>
   );
 }

@@ -2,6 +2,7 @@ import { Link, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { Alert, Pressable, StyleSheet, Text, View } from "react-native";
 
+import { PressButton } from "@/components/press-button";
 import { colors, shared } from "@/constants/styles";
 import { apiRequest } from "@/lib/api";
 import { useAuth } from "@/lib/auth-context";
@@ -120,15 +121,15 @@ export default function Home() {
       )}
 
       <View style={styles.buttonGroup}>
-        <Pressable style={shared.primaryButton} onPress={() => startFreshList("/list-details")}>
+        <PressButton style={shared.primaryButton} onPress={() => startFreshList("/list-details")}>
           <Text style={shared.primaryButtonText}>{t("add_words_manually")}</Text>
-        </Pressable>
-        <Pressable style={shared.primaryButton} onPress={() => startFreshList("/paste-text")}>
+        </PressButton>
+        <PressButton style={shared.primaryButton} onPress={() => startFreshList("/paste-text")}>
           <Text style={shared.primaryButtonText}>{t("paste_vocab_list")}</Text>
-        </Pressable>
-        <Pressable style={shared.primaryButton} onPress={() => startFreshList("/upload-file")}>
+        </PressButton>
+        <PressButton style={shared.primaryButton} onPress={() => startFreshList("/upload-file")}>
           <Text style={shared.primaryButtonText}>{t("upload_a_file")}</Text>
-        </Pressable>
+        </PressButton>
         {userId && (
           <>
             <Link href="/my-lists" style={[shared.primaryButton, shared.generateQuizButton]}>

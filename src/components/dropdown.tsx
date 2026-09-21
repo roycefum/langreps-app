@@ -1,6 +1,8 @@
+import * as Haptics from "expo-haptics";
 import { useState } from "react";
-import { FlatList, Modal, Pressable, StyleSheet, Text, View } from "react-native";
+import { FlatList, Modal, Pressable, StyleSheet, Text } from "react-native";
 
+import { PressButton } from "@/components/press-button";
 import { colors, shared } from "@/constants/styles";
 
 type DropdownProps = {
@@ -19,7 +21,7 @@ export function Dropdown({ value, onChange, options, disabled }: DropdownProps) 
 
   return (
     <>
-      <Pressable
+      <PressButton
         style={[shared.input, styles.button, disabled && styles.disabled]}
         onPress={() => !disabled && setIsOpen(true)}
       >
@@ -27,8 +29,8 @@ export function Dropdown({ value, onChange, options, disabled }: DropdownProps) 
         {/* Without this, a Dropdown looked identical to a plain, static
             text field — nothing signaled it was tappable/editable. */}
         <Text style={styles.chevron}>▾</Text>
-      </Pressable>
-      <Modal visible={isOpen} transparent animationType="fade" onRequestClose={() => setIsOpen(false)}>
+      </PressButton>
+      <Modal visible={isOpen} transparent animationType="slide" onRequestClose={() => setIsOpen(false)}>
         <Pressable style={styles.backdrop} onPress={() => setIsOpen(false)}>
           {/* Empty onPress so a tap inside the sheet doesn't fall through
               to the backdrop's onPress and close it. */}
@@ -42,6 +44,7 @@ export function Dropdown({ value, onChange, options, disabled }: DropdownProps) 
                   <Pressable
                     style={styles.option}
                     onPress={() => {
+                      Haptics.selectionAsync().catch(() => {});
                       onChange(item);
                       setIsOpen(false);
                     }}

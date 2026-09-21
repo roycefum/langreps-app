@@ -5,6 +5,7 @@ import { Alert, Pressable, StyleSheet, Switch, Text, View } from "react-native";
 import { BackButton } from "@/components/back-button";
 import { CefrLevelPicker } from "@/components/cefr-level-picker";
 import { Dropdown } from "@/components/dropdown";
+import { PressButton } from "@/components/press-button";
 import { colors, shared } from "@/constants/styles";
 import { apiRequest } from "@/lib/api";
 import { useAuth } from "@/lib/auth-context";
@@ -195,7 +196,7 @@ export default function Settings() {
                 disabled={isSavingProfile}
               />
             </View>
-            <Pressable
+            <PressButton
               style={[shared.secondaryButton, shared.addActionButton, styles.addLanguageButton]}
               onPress={handleAddLanguage}
               disabled={isSavingProfile}
@@ -203,7 +204,7 @@ export default function Settings() {
               <Text style={[shared.secondaryButtonText, shared.accentButtonText]}>
                 {t("add_language_button")}
               </Text>
-            </Pressable>
+            </PressButton>
           </View>
         )}
 

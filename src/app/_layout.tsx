@@ -1,6 +1,7 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Stack } from "expo-router";
 import { useEffect, useState } from "react";
+import Animated, { FadeIn } from "react-native-reanimated";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 
 import { AppSplash, MIN_VISIBLE_MS } from "@/components/app-splash";
@@ -27,7 +28,12 @@ function AppGate({ children }: { children: React.ReactNode }) {
   if (isLoading || !minTimeElapsed) {
     return <AppSplash />;
   }
-  return <>{children}</>;
+  // Fades the app in as the splash leaves, instead of a hard cut.
+  return (
+    <Animated.View style={{ flex: 1 }} entering={FadeIn.duration(350)}>
+      {children}
+    </Animated.View>
+  );
 }
 
 export default function RootLayout() {
@@ -48,7 +54,15 @@ export default function RootLayout() {
                     ScrollView's contentContainerStyle padding). */}
                 <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }} edges={["top"]}>
                   <AppGate>
-                    <Stack screenOptions={{ headerShown: false }} />
+                    <Stack screenOptions={{ headerShown: false }}>
+                      {/* Finishing a quiz fades in rather than sliding like
+                          ordinary navigation, so it reads as a moment.
+                          Settings and the dev test screen rise from the
+                          bottom like a sheet. */}
+                      <Stack.Screen name="quiz-complete" options={{ animation: "fade" }} />
+                      <Stack.Screen name="settings" options={{ animation: "slide_from_bottom" }} />
+                      <Stack.Screen name="test-data" options={{ animation: "slide_from_bottom" }} />
+                    </Stack>
                   </AppGate>
                 </SafeAreaView>
               </SafeAreaProvider>

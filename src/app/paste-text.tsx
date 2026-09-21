@@ -1,10 +1,11 @@
 import { useState } from "react";
-import { Pressable, ScrollView, StyleSheet, Text, TextInput } from "react-native";
+import { ScrollView, StyleSheet, Text, TextInput } from "react-native";
 
 import { BackButton } from "@/components/back-button";
 import { LanguageOrderConfirm } from "@/components/language-order-confirm";
 import { PairsReview } from "@/components/pairs-review";
 import { TranslateSkippedLines } from "@/components/translate-skipped-lines";
+import { PressButton } from "@/components/press-button";
 import { colors, shared } from "@/constants/styles";
 import { apiRequest } from "@/lib/api";
 import { useI18n } from "@/lib/i18n";
@@ -123,7 +124,7 @@ export default function PasteText() {
         }}
       />
 
-      <Pressable
+      <PressButton
         style={[
           shared.secondaryButton,
           shared.addActionButton,
@@ -135,7 +136,7 @@ export default function PasteText() {
         <Text style={[shared.secondaryButtonText, shared.accentButtonText]}>
           {isParsing ? t("parsing_ellipsis") : t("add_to_list")}
         </Text>
-      </Pressable>
+      </PressButton>
 
       <PairsReview source="paste" />
     </ScrollView>

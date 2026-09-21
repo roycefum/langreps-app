@@ -1,3 +1,4 @@
+import * as Haptics from "expo-haptics";
 import { Alert, Pressable, StyleSheet, Text, View } from "react-native";
 
 import { colors } from "@/constants/styles";
@@ -50,7 +51,10 @@ export function CefrLevelPicker({ value, onChange }: CefrLevelPickerProps) {
             <Pressable
               key={level}
               style={[styles.pill, selected && styles.pillSelected]}
-              onPress={() => onChange(level)}
+              onPress={() => {
+                Haptics.selectionAsync().catch(() => {});
+                onChange(level);
+              }}
             >
               <Text style={[styles.pillText, selected && styles.pillTextSelected]}>{level}</Text>
             </Pressable>
