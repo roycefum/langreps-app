@@ -1,6 +1,7 @@
 import { useFocusEffect, useRouter } from "expo-router";
 import { useCallback, useMemo, useRef, useState } from "react";
 import { Alert, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import Animated, { FadeInDown, LinearTransition, SlideOutLeft } from "react-native-reanimated";
 
 import { BackButton } from "@/components/back-button";
 import { colors, shared } from "@/constants/styles";
@@ -102,16 +103,28 @@ export default function MyQuizzes() {
   // screen unmounts.
   const isResumingRef = useRef(false);
 
-  function resumeSession(session: QuizSessionRow) {
+  async function resumeSession(session: QuizSessionRow) {
     if (isResumingRef.current) return;
     isResumingRef.current = true;
     const list = lists.find((l) => l.id === session.list_id);
+    // Carry over how many were already right, or the final score would only
+    // count the questions answered after resuming.
+    let alreadyCorrect = 0;
+    try {
+      const result = await apiRequest<{ attempts: { was_correct: boolean }[] }>(
+        `/quiz-sessions/${session.id}/attempts`
+      );
+      alreadyCorrect = result.attempts.filter((a) => a.was_correct).length;
+    } catch {
+      // fall back to counting from zero rather than blocking the resume
+    }
     startQuiz(
       session.questions,
       session.id,
       list?.source_language ?? "English",
       list?.target_language ?? "English",
-      session.current_index
+      session.current_index,
+      alreadyCorrect
     );
     router.push("/quiz");
   }
@@ -351,7 +364,7 @@ export default function MyQuizzes() {
               </Pressable>
             </View>
 
-            {sortedSessions.map((session) => {
+            {sortedSessions.map((session, index) => {
               const list = lists.find((l) => l.id === session.list_id);
               const typeLine = !list
                 ? null
@@ -363,7 +376,13 @@ export default function MyQuizzes() {
                     }`
                   : t("quiz_type_badge_vocab");
               return (
-                <View key={session.id} style={styles.row}>
+                <Animated.View
+                  key={session.id}
+                  style={styles.row}
+                  entering={FadeInDown.delay(Math.min(index, 8) * 45).duration(300)}
+                  exiting={SlideOutLeft.duration(250)}
+                  layout={LinearTransition}
+                >
                   <Pressable
                     style={styles.rowMain}
                     onPress={() =>
@@ -395,7 +414,7 @@ export default function MyQuizzes() {
                       </Text>
                     </Pressable>
                   )}
-                </View>
+                </Animated.View>
               );
             })}
           </View>
@@ -445,12 +464,18 @@ export default function MyQuizzes() {
           {completedSessions.length === 0 ? (
             <Text style={shared.hint}>{t("no_past_quizzes")}</Text>
           ) : (
-            completedSessions.map((session) => {
+            completedSessions.map((session, index) => {
               const list = lists.find((l) => l.id === session.list_id);
               const pct =
                 session.total > 0 ? Math.round((session.correct / session.total) * 100) : 0;
               return (
-                <View key={session.session_id} style={styles.row}>
+                <Animated.View
+                  key={session.session_id}
+                  style={styles.row}
+                  entering={FadeInDown.delay(Math.min(index, 8) * 45).duration(300)}
+                  exiting={SlideOutLeft.duration(250)}
+                  layout={LinearTransition}
+                >
                   <Pressable
                     style={styles.rowMain}
                     onPress={() =>
@@ -483,7 +508,7 @@ export default function MyQuizzes() {
                       </Text>
                     </Pressable>
                   )}
-                </View>
+                </Animated.View>
               );
             })
           )}

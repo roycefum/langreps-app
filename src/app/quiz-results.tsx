@@ -46,7 +46,7 @@ export default function QuizResults() {
 
   return (
     <ScrollView style={shared.screen} contentContainerStyle={styles.content}>
-      <BackButton href="/quiz-complete" />
+      <BackButton href="back" />
       <Text style={shared.title}>{t("full_results_title")}</Text>
 
       {error && <Text style={shared.errorText}>{error}</Text>}

@@ -1,8 +1,9 @@
 import { useState } from "react";
-import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
+import { ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
 
 import { BackButton } from "@/components/back-button";
 import { PairsReview } from "@/components/pairs-review";
+import { PressButton } from "@/components/press-button";
 import { colors, shared } from "@/constants/styles";
 import { useI18n } from "@/lib/i18n";
 import { usePairs } from "@/lib/pairs-context";
@@ -43,9 +44,9 @@ export default function ListDetails() {
           />
         </View>
 
-        <Pressable style={[shared.secondaryButton, shared.addActionButton]} onPress={handleAdd}>
+        <PressButton style={[shared.secondaryButton, shared.addActionButton]} onPress={handleAdd}>
           <Text style={[shared.secondaryButtonText, shared.accentButtonText]}>{t("add_to_list")}</Text>
-        </Pressable>
+        </PressButton>
       </PairsReview>
     </ScrollView>
   );

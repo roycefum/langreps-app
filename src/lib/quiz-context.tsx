@@ -25,7 +25,10 @@ type QuizState = {
     sessionId: string | null,
     sourceLanguage: string,
     targetLanguage: string,
-    startIndex?: number
+    startIndex?: number,
+    // Answers already right before this point — only for resuming a
+    // partly-finished quiz, so the final score counts the earlier ones too.
+    startCorrect?: number
   ) => void;
   submitAnswer: (answer: string) => void;
   skipQuestion: () => void;
@@ -57,12 +60,13 @@ export function QuizProvider({ children }: { children: ReactNode }) {
       newSessionId: string | null,
       sourceLanguage: string,
       targetLanguage: string,
-      startIndex: number = 0
+      startIndex: number = 0,
+      startCorrect: number = 0
     ) => {
       setQuestions(newQuestions);
       setCurrentIndex(startIndex);
       setPhase("question");
-      setCorrectCount(0);
+      setCorrectCount(startCorrect);
       setSessionId(newSessionId);
       // Re-read fresh (per this specific language pair, not a flat global
       // default) so a change made in Settings takes effect on the next

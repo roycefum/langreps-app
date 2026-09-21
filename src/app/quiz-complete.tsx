@@ -1,8 +1,12 @@
 import { Link, useRouter } from "expo-router";
+import * as Haptics from "expo-haptics";
 import { useEffect, useState } from "react";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
+import { useReducedMotion } from "react-native-reanimated";
 
+import { Confetti } from "@/components/confetti";
 import { InsightCard } from "@/components/insight-card";
+import { PressButton } from "@/components/press-button";
 import { shared } from "@/constants/styles";
 import { apiRequest } from "@/lib/api";
 import { useAuth } from "@/lib/auth-context";
@@ -25,6 +29,26 @@ function cannedFeedbackKey(correct: number, total: number): string {
   return "canned_feedback_struggling";
 }
 
+// Counts 0 → target over ~900ms so the score lands rather than just appears.
+function useCountUp(target: number, durationMs = 900): number {
+  const reduceMotion = useReducedMotion();
+  const [value, setValue] = useState(0);
+  const skip = reduceMotion || target === 0;
+  useEffect(() => {
+    if (skip) return;
+    const start = Date.now();
+    let frame: number;
+    const tick = () => {
+      const p = Math.min(1, (Date.now() - start) / durationMs);
+      setValue(Math.round(target * (1 - Math.pow(1 - p, 3))));
+      if (p < 1) frame = requestAnimationFrame(tick);
+    };
+    frame = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(frame);
+  }, [target, durationMs, skip]);
+  return skip ? target : value;
+}
+
 export default function QuizComplete() {
   const router = useRouter();
   const { t, locale } = useI18n();
@@ -35,6 +59,13 @@ export default function QuizComplete() {
   // Real "typed → correct" answers behind the tailored message — empty for the
   // generic score-based fallback.
   const [examples, setExamples] = useState<string[]>([]);
+  const shownCorrect = useCountUp(correctCount);
+  // A small burst for a strong result only (90%+).
+  const celebrate = questions.length > 0 && correctCount / questions.length >= 0.9;
+
+  useEffect(() => {
+    if (celebrate) Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(() => {});
+  }, [celebrate]);
 
   useEffect(() => {
     let cancelled = false;
@@ -78,9 +109,10 @@ export default function QuizComplete() {
 
   return (
     <View style={[shared.screenCentered, styles.container]}>
+      {celebrate && <Confetti />}
       <Text style={styles.title}>{t("quiz_complete_title")}</Text>
       <Text style={styles.score}>
-        {t("score_correct", { n: correctCount, total: questions.length })}
+        {t("score_correct", { n: shownCorrect, total: questions.length })}
       </Text>
       {feedback ? <InsightCard message={feedback} examples={examples} /> : null}
       {sessionId && (
@@ -88,9 +120,9 @@ export default function QuizComplete() {
           {t("see_full_results")}
         </Link>
       )}
-      <Pressable style={shared.primaryButton} onPress={handleBackToHome}>
+      <PressButton style={shared.primaryButton} onPress={handleBackToHome}>
         <Text style={shared.primaryButtonText}>{t("back_to_home")}</Text>
-      </Pressable>
+      </PressButton>
     </View>
   );
 }

@@ -1,7 +1,8 @@
 import { useState } from "react";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 
 import { Dropdown } from "@/components/dropdown";
+import { PressButton } from "@/components/press-button";
 import { shared } from "@/constants/styles";
 import { apiRequest } from "@/lib/api";
 import { useI18n } from "@/lib/i18n";
@@ -52,7 +53,7 @@ export function TranslateSkippedLines({ lines, onTranslated }: TranslateSkippedL
       </Text>
       <View style={styles.row}>
         <Dropdown value={targetLanguage} onChange={setTargetLanguage} options={LANGUAGES} />
-        <Pressable
+        <PressButton
           style={[shared.secondaryButton, shared.addActionButton, styles.button]}
           onPress={handleTranslate}
           disabled={isTranslating}
@@ -60,7 +61,7 @@ export function TranslateSkippedLines({ lines, onTranslated }: TranslateSkippedL
           <Text style={[shared.secondaryButtonText, shared.accentButtonText]}>
             {isTranslating ? t("translating_ellipsis") : t("translate_button")}
           </Text>
-        </Pressable>
+        </PressButton>
       </View>
       {error && <Text style={shared.errorText}>{error}</Text>}
     </View>

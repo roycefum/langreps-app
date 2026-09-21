@@ -1,10 +1,12 @@
 import { Link, useRouter } from "expo-router";
 import { useMemo, useState, type ReactNode } from "react";
 import { Alert, Pressable, StyleSheet, Text, TextInput, View } from "react-native";
+import Animated, { FadeInDown, LinearTransition, SlideOutLeft } from "react-native-reanimated";
 
 import { Dropdown } from "@/components/dropdown";
 import { LanguagePicker } from "@/components/language-picker";
 import { SpeakButton } from "@/components/speak-button";
+import { PressButton } from "@/components/press-button";
 import { colors, shared } from "@/constants/styles";
 import { apiRequest } from "@/lib/api";
 import { useAuth } from "@/lib/auth-context";
@@ -61,7 +63,16 @@ export function PairsReview({ source, children }: PairsReviewProps) {
   const [sortBy, setSortBy] = useState<"order" | "alpha">("order");
 
   const indexedPairs = useMemo(() => {
-    const withIndex = pairs.map((pair, index) => ({ pair, index }));
+    // Keyed by the words (plus a repeat count for duplicates), not by
+    // position, so removing a card animates that card out instead of
+    // whichever one is last in the list.
+    const seen = new Map<string, number>();
+    const withIndex = pairs.map((pair, index) => {
+      const base = `${pair["target word"]}|${pair["source word"]}`;
+      const n = seen.get(base) ?? 0;
+      seen.set(base, n + 1);
+      return { pair, index, key: `${base}|${n}` };
+    });
     if (sortBy === "alpha") {
       return [...withIndex].sort((a, b) =>
         a.pair["target word"].localeCompare(b.pair["target word"])
@@ -222,7 +233,7 @@ export function PairsReview({ source, children }: PairsReviewProps) {
               onChangeText={setRenameValue}
               autoFocus
             />
-            <Pressable
+            <PressButton
               style={[
                 shared.secondaryButton,
                 shared.saveActionButton,
@@ -235,13 +246,13 @@ export function PairsReview({ source, children }: PairsReviewProps) {
               <Text style={[shared.secondaryButtonText, shared.accentButtonText]}>
                 {isSavingRename ? "…" : t("rename_save_button")}
               </Text>
-            </Pressable>
-            <Pressable
+            </PressButton>
+            <PressButton
               style={[shared.secondaryButton, styles.renameButton]}
               onPress={() => setIsRenaming(false)}
             >
               <Text style={shared.secondaryButtonText}>{t("rename_cancel_button")}</Text>
-            </Pressable>
+            </PressButton>
           </View>
           {renameError && <Text style={shared.errorText}>{renameError}</Text>}
         </View>
@@ -281,7 +292,7 @@ export function PairsReview({ source, children }: PairsReviewProps) {
             value={name}
             onChangeText={setName}
           />
-          <Pressable
+          <PressButton
             style={[
               shared.secondaryButton,
               shared.saveActionButton,
@@ -294,11 +305,11 @@ export function PairsReview({ source, children }: PairsReviewProps) {
             <Text style={[shared.secondaryButtonText, shared.accentButtonText]}>
               {isSaving ? t("saving_ellipsis") : t("save_list")}
             </Text>
-          </Pressable>
+          </PressButton>
         </View>
       )}
       {userId && savedListId && (
-        <Pressable
+        <PressButton
           style={[
             shared.secondaryButton,
             shared.saveActionButton,
@@ -310,12 +321,12 @@ export function PairsReview({ source, children }: PairsReviewProps) {
           <Text style={[shared.secondaryButtonText, shared.accentButtonText]}>
             {isSaving ? t("saving_ellipsis") : t("save_changes_button")}
           </Text>
-        </Pressable>
+        </PressButton>
       )}
       {saveMessage && <Text style={shared.hint}>{saveMessage}</Text>}
       {saveError && <Text style={shared.errorText}>{saveError}</Text>}
 
-      <Pressable
+      <PressButton
         style={[
           shared.primaryButton,
           shared.generateQuizButton,
@@ -329,19 +340,19 @@ export function PairsReview({ source, children }: PairsReviewProps) {
             ? t("add_more_words_to_quiz", { n: 3 - pairs.length })
             : t("generate_quiz_button")}
         </Text>
-      </Pressable>
+      </PressButton>
 
       <LanguagePicker />
 
       {children}
 
       <View style={shared.row}>
-        <Pressable style={[shared.secondaryButton, styles.rowButton]} onPress={undoLast}>
+        <PressButton style={[shared.secondaryButton, styles.rowButton]} onPress={undoLast}>
           <Text style={shared.secondaryButtonText}>{t("undo_last")}</Text>
-        </Pressable>
-        <Pressable style={[shared.secondaryButton, styles.rowButton]} onPress={clearPairs}>
+        </PressButton>
+        <PressButton style={[shared.secondaryButton, styles.rowButton]} onPress={clearPairs}>
           <Text style={shared.secondaryButtonText}>{t("clear_list")}</Text>
-        </Pressable>
+        </PressButton>
       </View>
 
       {/* Deliberately last — with a long list, the actions above (Save,
@@ -397,8 +408,14 @@ export function PairsReview({ source, children }: PairsReviewProps) {
           </View>
 
           <View style={styles.list}>
-            {indexedPairs.map(({ pair, index }) => (
-              <View key={index} style={styles.card}>
+            {indexedPairs.map(({ pair, index, key }, position) => (
+              <Animated.View
+                key={key}
+                style={styles.card}
+                entering={FadeInDown.delay(Math.min(position, 8) * 35).duration(280)}
+                exiting={SlideOutLeft.duration(220)}
+                layout={LinearTransition}
+              >
                 <Pressable
                   style={styles.cardText}
                   onPress={() => selectMode && toggleSelected(index)}
@@ -425,7 +442,7 @@ export function PairsReview({ source, children }: PairsReviewProps) {
                     <Text style={styles.removeIcon}>✕</Text>
                   </Pressable>
                 )}
-              </View>
+              </Animated.View>
             ))}
           </View>
         </>

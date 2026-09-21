@@ -270,4 +270,5 @@ export const en = {
   "require_accents_desc": "Off accepts \"cafe\" for \"café\"",
   "insight_examples_label": "From your last quiz:",
   "feedback_title": "Feedback",
+  "generating_progress": "Writing questions… {done} of {total}",
 };

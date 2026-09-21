@@ -1,7 +1,8 @@
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useState } from "react";
-import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
+import { StyleSheet, Text, TextInput, View } from "react-native";
 
+import { PressButton } from "@/components/press-button";
 import { colors, shared } from "@/constants/styles";
 import { apiRequest } from "@/lib/api";
 import { useI18n } from "@/lib/i18n";
@@ -67,7 +68,7 @@ export default function ResetPassword() {
         autoCorrect={false}
       />
 
-      <Pressable
+      <PressButton
         style={[
           shared.primaryButton,
           (!newPassword || isSubmitting) && shared.primaryButtonDisabled,
@@ -78,7 +79,7 @@ export default function ResetPassword() {
         <Text style={shared.primaryButtonText}>
           {isSubmitting ? t("saving_ellipsis") : t("save_new_password")}
         </Text>
-      </Pressable>
+      </PressButton>
     </View>
   );
 }

@@ -1,12 +1,13 @@
 import * as DocumentPicker from "expo-document-picker";
 import { File } from "expo-file-system";
 import { useState } from "react";
-import { Pressable, ScrollView, StyleSheet, Text } from "react-native";
+import { ScrollView, StyleSheet, Text } from "react-native";
 
 import { BackButton } from "@/components/back-button";
 import { LanguageOrderConfirm } from "@/components/language-order-confirm";
 import { PairsReview } from "@/components/pairs-review";
 import { TranslateSkippedLines } from "@/components/translate-skipped-lines";
+import { PressButton } from "@/components/press-button";
 import { shared } from "@/constants/styles";
 import { apiRequest } from "@/lib/api";
 import { useI18n } from "@/lib/i18n";
@@ -93,7 +94,7 @@ export default function UploadFile() {
 
       <Text style={shared.hint}>{t("upload_file_instructions")}</Text>
 
-      <Pressable
+      <PressButton
         style={[shared.secondaryButton, shared.fileActionButton]}
         onPress={handlePickFile}
         disabled={isParsing}
@@ -101,7 +102,7 @@ export default function UploadFile() {
         <Text style={[shared.secondaryButtonText, shared.accentButtonText]}>
           {isParsing ? t("parsing_ellipsis") : t("choose_file")}
         </Text>
-      </Pressable>
+      </PressButton>
 
       {lastFileName && !error && (
         <Text style={shared.hint}>{t("last_file", { name: lastFileName })}</Text>

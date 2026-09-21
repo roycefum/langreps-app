@@ -1,9 +1,11 @@
 import { Link, useFocusEffect, useRouter } from "expo-router";
 import { useCallback, useMemo, useRef, useState } from "react";
 import { Alert, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import Animated, { FadeInDown, LinearTransition, SlideOutLeft } from "react-native-reanimated";
 
 import { BackButton } from "@/components/back-button";
 import { Dropdown } from "@/components/dropdown";
+import { PressButton } from "@/components/press-button";
 import { colors, shared } from "@/constants/styles";
 import { apiRequest } from "@/lib/api";
 import { useI18n } from "@/lib/i18n";
@@ -307,8 +309,14 @@ export default function MyLists() {
           {lists.length === 0 ? (
             <Text style={shared.hint}>{t("no_saved_lists")}</Text>
           ) : (
-            sortedLists.map((list) => (
-              <View key={list.id} style={styles.row}>
+            sortedLists.map((list, index) => (
+              <Animated.View
+                key={list.id}
+                style={styles.row}
+                entering={FadeInDown.delay(Math.min(index, 8) * 45).duration(300)}
+                exiting={SlideOutLeft.duration(250)}
+                layout={LinearTransition}
+              >
                 <Pressable
                   style={styles.rowMain}
                   onPress={() =>
@@ -345,7 +353,7 @@ export default function MyLists() {
                     </Text>
                   </Pressable>
                 )}
-              </View>
+              </Animated.View>
             ))
           )}
         </View>
@@ -387,7 +395,7 @@ export default function MyLists() {
                         options={PAIR_OPTIONS}
                       />
                     </View>
-                    <Pressable
+                    <PressButton
                       style={[shared.secondaryButton, shared.saveActionButton, styles.addButton]}
                       disabled={addingKey === def.categoryKey}
                       onPress={() => handleAddSample(def.categoryKey)}
@@ -399,7 +407,7 @@ export default function MyLists() {
                             ? t("sample_list_added")
                             : t("sample_list_add")}
                       </Text>
-                    </Pressable>
+                    </PressButton>
                   </View>
                 );
               })}

@@ -1,7 +1,8 @@
 import { useState } from "react";
-import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
+import { StyleSheet, Text, TextInput, View } from "react-native";
 
 import { BackButton } from "@/components/back-button";
+import { PressButton } from "@/components/press-button";
 import { colors, shared } from "@/constants/styles";
 import { apiRequest } from "@/lib/api";
 import { useI18n } from "@/lib/i18n";
@@ -59,7 +60,7 @@ export default function ForgotPassword() {
             keyboardType="email-address"
           />
 
-          <Pressable
+          <PressButton
             style={[
               shared.primaryButton,
               (!email.trim() || isSubmitting) && shared.primaryButtonDisabled,
@@ -70,7 +71,7 @@ export default function ForgotPassword() {
             <Text style={shared.primaryButtonText}>
               {isSubmitting ? t("sending_ellipsis") : t("send_reset_link")}
             </Text>
-          </Pressable>
+          </PressButton>
         </>
       )}
     </View>

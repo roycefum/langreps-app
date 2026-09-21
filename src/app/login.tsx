@@ -3,6 +3,7 @@ import { useState } from "react";
 import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 
 import { BackButton } from "@/components/back-button";
+import { PressButton } from "@/components/press-button";
 import { colors, shared } from "@/constants/styles";
 import { useAuth } from "@/lib/auth-context";
 import { useI18n } from "@/lib/i18n";
@@ -81,7 +82,7 @@ export default function Login() {
         autoCorrect={false}
       />
 
-      <Pressable
+      <PressButton
         style={[
           shared.primaryButton,
           (!email.trim() || !password || isSubmitting) && shared.primaryButtonDisabled,
@@ -92,7 +93,7 @@ export default function Login() {
         <Text style={shared.primaryButtonText}>
           {isSubmitting ? t("please_wait") : mode === "login" ? t("log_in") : t("sign_up")}
         </Text>
-      </Pressable>
+      </PressButton>
 
       {mode === "login" ? (
         <>

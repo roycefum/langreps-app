@@ -1,8 +1,10 @@
 import { useRouter } from "expo-router";
 import { useState, type ComponentType } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
+import Animated, { FadeInLeft, FadeInRight, LinearTransition } from "react-native-reanimated";
 import Svg, { Circle, Line, Polyline, Rect } from "react-native-svg";
 
+import { PressButton } from "@/components/press-button";
 import { colors, shared } from "@/constants/styles";
 import { useI18n } from "@/lib/i18n";
 import { setHasSeenOnboarding } from "@/lib/settings-storage";
@@ -83,6 +85,7 @@ export default function Onboarding() {
   const router = useRouter();
   const { t } = useI18n();
   const [slideIndex, setSlideIndex] = useState(0);
+  const [goingBack, setGoingBack] = useState(false);
   const isLast = slideIndex === SLIDES.length - 1;
   const slide = SLIDES[slideIndex];
 
@@ -95,11 +98,13 @@ export default function Onboarding() {
     if (isLast) {
       finish();
     } else {
+      setGoingBack(false);
       setSlideIndex((i) => i + 1);
     }
   }
 
   function back() {
+    setGoingBack(true);
     setSlideIndex((i) => Math.max(0, i - 1));
   }
 
@@ -109,16 +114,27 @@ export default function Onboarding() {
         <Text style={shared.linkText}>{t("skip")}</Text>
       </Pressable>
 
-      <View style={styles.illustration}>
-        <slide.Illustration />
-      </View>
+      {/* Keyed by slide so each one slides in from the direction of travel. */}
+      <Animated.View
+        key={slideIndex}
+        style={styles.slide}
+        entering={(goingBack ? FadeInLeft : FadeInRight).duration(280)}
+      >
+        <View style={styles.illustration}>
+          <slide.Illustration />
+        </View>
 
-      <Text style={[shared.title, styles.centerText]}>{t(slide.headlineKey)}</Text>
-      <Text style={[shared.hint, styles.centerText, styles.body]}>{t(slide.bodyKey)}</Text>
+        <Text style={[shared.title, styles.centerText]}>{t(slide.headlineKey)}</Text>
+        <Text style={[shared.hint, styles.centerText, styles.body]}>{t(slide.bodyKey)}</Text>
+      </Animated.View>
 
       <View style={styles.dots}>
         {SLIDES.map((_, i) => (
-          <View key={i} style={[styles.dot, i === slideIndex && styles.dotActive]} />
+          <Animated.View
+            key={i}
+            layout={LinearTransition}
+            style={[styles.dot, i === slideIndex && styles.dotActive]}
+          />
         ))}
       </View>
 
@@ -130,12 +146,12 @@ export default function Onboarding() {
         ) : (
           <View style={styles.navSpacer} />
         )}
-        <Pressable
+        <PressButton
           style={[shared.primaryButton, shared.generateQuizButton, styles.nextButton]}
           onPress={next}
         >
           <Text style={shared.primaryButtonText}>{isLast ? t("get_started") : t("next")}</Text>
-        </Pressable>
+        </PressButton>
       </View>
     </View>
   );
@@ -149,6 +165,10 @@ const styles = StyleSheet.create({
     position: "absolute",
     top: 16,
     right: 24,
+  },
+  slide: {
+    alignItems: "center",
+    gap: 16,
   },
   illustration: {
     alignItems: "center",
@@ -173,6 +193,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.secondaryShadow,
   },
   dotActive: {
+    width: 24,
     backgroundColor: colors.primary,
   },
   navRow: {

@@ -1,8 +1,9 @@
 import { useRouter } from "expo-router";
 import { useState } from "react";
-import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { ScrollView, StyleSheet, Text, View } from "react-native";
 
 import { BackButton } from "@/components/back-button";
+import { PressButton } from "@/components/press-button";
 import { colors, shared } from "@/constants/styles";
 import { apiRequest } from "@/lib/api";
 import { usePairs, type SavedList } from "@/lib/pairs-context";
@@ -250,7 +251,7 @@ export default function TestData() {
 
       <Text style={styles.sectionTitle}>Scenarios</Text>
       {SCENARIOS.map((scenario) => (
-        <Pressable
+        <PressButton
           key={scenario.key}
           style={[shared.secondaryButton, busy && shared.primaryButtonDisabled]}
           disabled={busy}
@@ -258,26 +259,26 @@ export default function TestData() {
         >
           <Text style={shared.secondaryButtonText}>{scenario.label}</Text>
           <Text style={styles.buttonHint}>{scenario.hint}</Text>
-        </Pressable>
+        </PressButton>
       ))}
 
       <Text style={styles.sectionTitle}>Then</Text>
-      <Pressable
+      <PressButton
         style={[shared.primaryButton, shared.generateQuizButton, busy && shared.primaryButtonDisabled]}
         disabled={busy}
         onPress={() => run(openGenerateQuiz)}
       >
         <Text style={shared.primaryButtonText}>Open Generate Quiz</Text>
-      </Pressable>
+      </PressButton>
 
       <Text style={styles.sectionTitle}>Cleanup</Text>
-      <Pressable
+      <PressButton
         style={[shared.secondaryButton, busy && shared.primaryButtonDisabled]}
         disabled={busy}
         onPress={() => run(deleteTestData)}
       >
         <Text style={[shared.secondaryButtonText, styles.deleteText]}>Delete test data</Text>
-      </Pressable>
+      </PressButton>
 
       <View>
         {busy && <Text style={shared.hint}>Working…</Text>}
