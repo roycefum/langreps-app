@@ -1,6 +1,5 @@
 // Auto-generated from localization/ui_strings.csv — do not hand-edit.
-// Regenerate via the same script used to build this file whenever the
-// spreadsheet changes.
+// Regenerate with: python3 localization/generate_translations.py
 export const en = {
   "app_name": "LangReps",
   "home_subtitle": "Build a vocab list, then let AI generate an adaptive quiz for it.",
@@ -269,4 +268,5 @@ export const en = {
   "remove_language_confirm_title": "Remove language?",
   "remove_language_confirm_message": "This removes {source} → {target} from your languages. Your saved lists aren't affected.",
   "require_accents_desc": "Off accepts \"cafe\" for \"café\"",
+  "insight_examples_label": "From your last quiz:",
 };

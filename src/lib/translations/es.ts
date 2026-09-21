@@ -1,6 +1,5 @@
 // Auto-generated from localization/ui_strings.csv — do not hand-edit.
-// Regenerate via the same script used to build this file whenever the
-// spreadsheet changes.
+// Regenerate with: python3 localization/generate_translations.py
 export const es = {
   "app_name": "LangReps",
   "home_subtitle": "Crea una lista de vocabulario y deja que la IA genere un cuestionario adaptativo para ti.",
@@ -269,4 +268,5 @@ export const es = {
   "remove_language_confirm_title": "¿Eliminar idioma?",
   "remove_language_confirm_message": "Esto elimina {source} → {target} de tus idiomas. Tus listas guardadas no se ven afectadas.",
   "require_accents_desc": "Desactivado acepta \"cafe\" en lugar de \"café\"",
+  "insight_examples_label": "De tu último cuestionario:",
 };

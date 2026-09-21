@@ -32,6 +32,13 @@ const DEFAULT_QUIZ_LENGTH = 15;
 
 type QuizInsight = {
   message: string | null;
+  // Real "typed → correct" answers from the last quiz that the message is
+  // based on, built server-side (not quoted by the AI).
+  examples: string[];
+  // One sentence telling the question writer what skill to exercise — sent
+  // only with a "Target My Mistakes" quiz. Null when the AI sees no clear
+  // pattern.
+  focus: string | null;
   targetedPairIds: string[];
 };
 
@@ -70,13 +77,12 @@ export default function GenerateQuiz() {
     );
   }, [sourceLanguage, targetLanguage]);
 
-  // Fetched once per list, using the default quiz length — not tied to
-  // later edits to countText, so typing in the count field doesn't fire
-  // repeat Gemini calls. Only runs at all when adaptive quizzes are
-  // enabled in Settings, and only shows anything once the backend confirms
-  // there's enough wrong-answer history for a real pattern (see
-  // MIN_WRONG_ATTEMPTS_FOR_INSIGHT/MIN_DISTINCT_MISSED_WORDS_FOR_INSIGHT
-  // in api/main.py).
+  // Fetched fresh each time this screen opens, using the default quiz length
+  // — not tied to later edits to countText, so typing in the count field
+  // doesn't fire repeat Gemini calls. Only runs at all when adaptive
+  // quizzes are enabled in Settings, and only shows anything once the
+  // backend confirms the list's last completed quiz had enough wrong
+  // answers to analyze (see MIN_WRONG_ANSWERS_FOR_INSIGHT in api/main.py).
   useEffect(() => {
     if (!userId || !savedListId) return;
     let cancelled = false;
@@ -88,10 +94,17 @@ export default function GenerateQuiz() {
         const result = await apiRequest<{
           available: boolean;
           message: string | null;
+          examples: string[];
+          focus: string | null;
           targeted_pair_ids: string[];
         }>(`/lists/${savedListId}/quiz-insight?count=${initialCount}`);
         if (!cancelled && result.available) {
-          setInsight({ message: result.message, targetedPairIds: result.targeted_pair_ids });
+          setInsight({
+            message: result.message,
+            examples: result.examples,
+            focus: result.focus,
+            targetedPairIds: result.targeted_pair_ids,
+          });
         }
       } catch {
         // best-effort — insight is a nice-to-have, never blocks quiz generation
@@ -129,10 +142,10 @@ export default function GenerateQuiz() {
           ];
         }
       } else if (userId && savedListId) {
-        // Weighted toward previously-wrong pairs — see
-        // select_quiz_pairs_for_list()'s docstring for the formula. This is
-        // what makes requizzing the same list "get smarter" over time even
-        // without picking "Target My Mistakes" specifically.
+        // A plain random spread — deliberately no weighting toward past
+        // mistakes; only Target My Mistakes does that. Fetched from the
+        // server (not sampled here) so the pairs carry their database ids,
+        // which quiz attempts are recorded against.
         const result = await apiRequest<{
           pairs: { id: string; source_term: string; target_term: string }[];
         }>(`/lists/${savedListId}/quiz-pairs?count=${requestedCount}`);
@@ -142,7 +155,7 @@ export default function GenerateQuiz() {
           "target word": p.target_term,
         }));
       } else {
-        // Unsaved/ad-hoc list — no attempt history to weight by.
+        // Unsaved/ad-hoc list — same plain random spread, sampled locally.
         selectedPairs = sample(dedupePairs(pairs), requestedCount);
       }
 
@@ -159,6 +172,9 @@ export default function GenerateQuiz() {
             level: cefrLevel,
             verb_tense: listType === "Verb" ? verbTense : null,
             flip: listType === "Vocab" && flip,
+            // Only Target My Mistakes writes questions around the pattern —
+            // ordinary quizzes are a plain random spread.
+            focus: mode === "targeted" ? insight?.focus ?? null : null,
           },
         });
         allQuestions.push(...result);
@@ -257,9 +273,16 @@ export default function GenerateQuiz() {
       {error && <Text style={[shared.errorText, styles.centerText]}>{error}</Text>}
 
       {insight?.message && !isGenerating && (
-        <Text style={[shared.hint, styles.centerText, styles.insightMessage]}>
-          {insight.message}
-        </Text>
+        <>
+          <Text style={[shared.hint, styles.centerText, styles.insightMessage]}>
+            {insight.message}
+          </Text>
+          {insight.examples.length > 0 && (
+            <Text style={[shared.hint, styles.centerText]}>
+              {t("insight_examples_label")} {insight.examples.join("  ·  ")}
+            </Text>
+          )}
+        </>
       )}
 
       {isGenerating ? (

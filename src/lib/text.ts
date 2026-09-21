@@ -58,8 +58,8 @@ export function dedupePairs<T extends { "target word": string }>(items: T[]): T[
 }
 
 // Plain (unweighted) random sample without replacement, for ad-hoc/unsaved
-// lists — there's no attempt history to weight by, unlike the backend's
-// select_quiz_pairs_for_list() used for saved lists.
+// lists. Saved lists get the same plain spread from the backend's
+// select_quiz_pairs_for_list().
 export function sample<T>(items: T[], count: number): T[] {
   if (count >= items.length) return items;
   const shuffled = [...items];

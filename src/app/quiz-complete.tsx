@@ -9,9 +9,9 @@ import { useI18n } from "@/lib/i18n";
 import { usePairs } from "@/lib/pairs-context";
 import { useQuiz } from "@/lib/quiz-context";
 
-// Shown when there's not yet enough missed-word history for a real AI
-// pattern (see MIN_WRONG_ATTEMPTS_FOR_INSIGHT/MIN_DISTINCT_MISSED_WORDS_FOR_INSIGHT
-// in api/main.py) — a quiz should never end with no feedback at all, so
+// Shown when the quiz that just finished doesn't have enough wrong answers
+// for a real AI pattern (see MIN_WRONG_ANSWERS_FOR_INSIGHT in
+// api/main.py) — a quiz should never end with no feedback at all, so
 // this fills in with a substantive score-based message instead of a bare
 // one-liner, including a concrete next-step suggestion. Returns a
 // translation key, not display text — pass it through t() before showing.
