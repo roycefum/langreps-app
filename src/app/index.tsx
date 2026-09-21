@@ -15,8 +15,6 @@ export default function Home() {
   const { userId, email, isLoading, logout, deleteAccount } = useAuth();
   const { clearPairs } = usePairs();
   const [deleteError, setDeleteError] = useState<string | null>(null);
-  // Set by the server (from its ADMIN_EMAILS), never decided client-side.
-  const [isAdmin, setIsAdmin] = useState(false);
 
   // pairs-context is one shared "list currently being built," so it
   // persists across navigation by design (that's what lets My Lists'
@@ -41,17 +39,11 @@ export default function Home() {
   // gotten to it the first time. Anonymous users have no server-side
   // profile at all, so this only runs once actually logged in.
   useEffect(() => {
-    if (isLoading) return;
-    if (!userId) {
-      setIsAdmin(false);
-      return;
-    }
+    if (isLoading || !userId) return;
     let cancelled = false;
-    apiRequest<{ learning_target_language: string | null; is_admin: boolean }>("/me/profile")
+    apiRequest<{ learning_target_language: string | null }>("/me/profile")
       .then((profile) => {
-        if (cancelled) return;
-        setIsAdmin(profile.is_admin);
-        if (!profile.learning_target_language) {
+        if (!cancelled && !profile.learning_target_language) {
           router.replace("/settings");
         }
       })
@@ -110,11 +102,6 @@ export default function Home() {
                 <Text style={styles.deleteLink}>{t("delete_account")}</Text>
               </Pressable>
               {deleteError && <Text style={shared.errorText}>{deleteError}</Text>}
-              {isAdmin && (
-                <Link href="/debug" style={styles.authLink}>
-                  Admin tools
-                </Link>
-              )}
             </>
           ) : (
             <>
