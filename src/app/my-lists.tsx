@@ -124,9 +124,18 @@ export default function MyLists() {
       const list = await apiRequest<SavedList>(`/lists/${listId}`);
       loadList(list);
       router.push("/list-details");
+      // Deliberately NOT reset immediately here — router.push() returns
+      // before the screen actually finishes transitioning away (expo-router
+      // keeps this screen mounted underneath), so an impatient second tap
+      // right after the first resolves could push the same list onto the
+      // stack twice. Give the transition a moment to actually happen
+      // instead of leaving this screen permanently locked once the user
+      // comes back to it.
+      setTimeout(() => {
+        isBusyRef.current = false;
+      }, 600);
     } catch (e) {
       setError(e instanceof Error ? e.message : t("error_loading_list"));
-    } finally {
       isBusyRef.current = false;
     }
   }

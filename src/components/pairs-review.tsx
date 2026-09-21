@@ -9,7 +9,7 @@ import { colors, shared } from "@/constants/styles";
 import { apiRequest } from "@/lib/api";
 import { useAuth } from "@/lib/auth-context";
 import { useI18n } from "@/lib/i18n";
-import { usePairs, type SavedList } from "@/lib/pairs-context";
+import { usePairs } from "@/lib/pairs-context";
 import { displayListName } from "@/lib/text";
 import { LIST_TYPES } from "@/lib/types";
 
@@ -114,29 +114,6 @@ export function PairsReview({ source, children }: PairsReviewProps) {
     );
   }
 
-  // The save endpoints only return {list_id}/{status}, not the parts of
-  // speech Gemini just classified server-side (see insert_vocab_pairs on
-  // the backend) — refetch and swap in the authoritative saved pairs
-  // (now carrying real ids and part_of_speech tags) so both appear
-  // immediately instead of only after the list is next loaded. Best-effort:
-  // a failure here just means tags/ids show up next time, never blocks
-  // saving itself, which has already succeeded by the time this runs.
-  async function refreshPartsOfSpeech(listId: string) {
-    try {
-      const list = await apiRequest<SavedList>(`/lists/${listId}`);
-      setPairs(
-        list.pairs.map((p) => ({
-          id: p.id,
-          "source word": p.source_term,
-          "target word": p.target_term,
-          partOfSpeech: p.part_of_speech,
-        }))
-      );
-    } catch {
-      // best-effort
-    }
-  }
-
   function showListTypeExplanation(isLocked: boolean) {
     Alert.alert(
       t("list_type_info_alert_title"),
@@ -167,7 +144,6 @@ export function PairsReview({ source, children }: PairsReviewProps) {
       });
       setSavedList(result.list_id, name.trim());
       setSaveMessage(t("saved_message"));
-      await refreshPartsOfSpeech(result.list_id);
     } catch (e) {
       setSaveError(e instanceof Error ? e.message : t("error_saving"));
     } finally {
@@ -195,7 +171,6 @@ export function PairsReview({ source, children }: PairsReviewProps) {
         },
       });
       setSaveMessage(t("saved_message"));
-      await refreshPartsOfSpeech(savedListId);
     } catch (e) {
       setSaveError(e instanceof Error ? e.message : t("error_saving"));
     } finally {
@@ -433,11 +408,7 @@ export function PairsReview({ source, children }: PairsReviewProps) {
                     <Text style={styles.cardTargetWord}>{pair["target word"]}</Text>
                     <SpeakButton text={pair["target word"]} language={targetLanguage} />
                   </View>
-                  <Text style={styles.cardSubtitle}>
-                    {pair.partOfSpeech
-                      ? `${pair.partOfSpeech} ${pair["source word"]}`
-                      : pair["source word"]}
-                  </Text>
+                  <Text style={styles.cardSubtitle}>{pair["source word"]}</Text>
                 </Pressable>
                 {selectMode ? (
                   <Pressable
