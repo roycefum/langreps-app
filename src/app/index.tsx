@@ -133,12 +133,12 @@ export default function Home() {
         {userId && (
           <>
             <Link href="/my-lists" asChild>
-              <PressButton style={[shared.primaryButton, shared.generateQuizButton]}>
+              <PressButton style={libraryButtonStyle}>
                 <Text style={shared.primaryButtonText}>{t("my_lists")}</Text>
               </PressButton>
             </Link>
             <Link href="/my-quizzes" asChild>
-              <PressButton style={[shared.primaryButton, shared.generateQuizButton]}>
+              <PressButton style={libraryButtonStyle}>
                 <Text style={shared.primaryButtonText}>{t("my_quizzes")}</Text>
               </PressButton>
             </Link>
@@ -148,6 +148,9 @@ export default function Home() {
     </View>
   );
 }
+
+// Flattened because Link asChild's Slot rejects an array of styles on its child.
+const libraryButtonStyle = StyleSheet.flatten([shared.primaryButton, shared.generateQuizButton]);
 
 const styles = StyleSheet.create({
   container: {
