@@ -132,11 +132,15 @@ export default function Home() {
         </PressButton>
         {userId && (
           <>
-            <Link href="/my-lists" style={[shared.primaryButton, shared.generateQuizButton]}>
-              <Text style={shared.primaryButtonText}>{t("my_lists")}</Text>
+            <Link href="/my-lists" asChild>
+              <PressButton style={[shared.primaryButton, shared.generateQuizButton]}>
+                <Text style={shared.primaryButtonText}>{t("my_lists")}</Text>
+              </PressButton>
             </Link>
-            <Link href="/my-quizzes" style={[shared.primaryButton, shared.generateQuizButton]}>
-              <Text style={shared.primaryButtonText}>{t("my_quizzes")}</Text>
+            <Link href="/my-quizzes" asChild>
+              <PressButton style={[shared.primaryButton, shared.generateQuizButton]}>
+                <Text style={shared.primaryButtonText}>{t("my_quizzes")}</Text>
+              </PressButton>
             </Link>
           </>
         )}
