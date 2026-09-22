@@ -111,8 +111,12 @@ export default function Home() {
             </>
           ) : (
             <>
-              <Link href="/login" style={[styles.authLink, shared.linkText]}>
-                {t("log_in_sign_up")}
+              <Link href="/login" asChild>
+                <PressButton style={loginButtonStyle}>
+                  <Text style={[shared.secondaryButtonText, shared.accentButtonText]}>
+                    {t("log_in_sign_up")}
+                  </Text>
+                </PressButton>
               </Link>
               <Text style={[shared.hint, styles.centerText]}>{t("signup_incentive_hint")}</Text>
             </>
@@ -151,6 +155,10 @@ export default function Home() {
 
 // Flattened because Link asChild's Slot rejects an array of styles on its child.
 const libraryButtonStyle = StyleSheet.flatten([shared.primaryButton, shared.generateQuizButton]);
+const loginButtonStyle = StyleSheet.flatten([
+  shared.secondaryButton,
+  { backgroundColor: colors.accent, borderBottomColor: colors.accentShadow, alignSelf: "stretch" as const },
+]);
 
 const styles = StyleSheet.create({
   container: {
@@ -169,6 +177,7 @@ const styles = StyleSheet.create({
   authRow: {
     alignItems: "center",
     gap: 4,
+    alignSelf: "stretch",
   },
   centerText: {
     textAlign: "center",
