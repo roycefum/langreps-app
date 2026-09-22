@@ -94,6 +94,19 @@ export async function getLanguagePairs(): Promise<LanguagePairSettings[]> {
   return readLanguagePairs();
 }
 
+// Called specifically when a NEW account is created (see auth-context.tsx's
+// signup()) — language pairs are device-local, not account-bound, by
+// design (see the comment above), which means they otherwise leak across
+// accounts on the same device: creating a brand-new account would
+// immediately show whatever pairs an earlier account, or anonymous use,
+// left behind. Deliberately NOT called on logout/login — that would wipe
+// a real user's own preferences every time they're logged out (e.g. by a
+// 401) and back in as themselves, which is the common case this must not
+// break.
+export async function clearLanguagePairs(): Promise<void> {
+  await writeLanguagePairs([]);
+}
+
 export async function addLanguagePair(sourceLanguage: string, targetLanguage: string): Promise<void> {
   const pairs = await readLanguagePairs();
   if (pairs.some((p) => p.sourceLanguage === sourceLanguage && p.targetLanguage === targetLanguage)) {

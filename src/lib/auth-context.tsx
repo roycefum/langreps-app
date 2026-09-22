@@ -1,6 +1,7 @@
 import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from "react";
 
 import { apiRequest, setAuthToken, setUnauthorizedHandler } from "./api";
+import { clearLanguagePairs } from "./settings-storage";
 import { clearSession, getStoredSession, saveSession } from "./auth-storage";
 
 type LoginResponse = { access_token: string; refresh_token: string; user_id: string; email: string };
@@ -77,6 +78,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       method: "POST",
       body: { email: signupEmail, password },
     });
+    // A brand-new account should start with no language pairs of its own —
+    // without this, whatever pairs an earlier account (or anonymous use)
+    // left in device-local storage would show up as "already saved" here.
+    // See settings-storage.ts's clearLanguagePairs() for why this isn't
+    // also done on logout/login.
+    await clearLanguagePairs();
     return { confirmationRequired: result.confirmation_required };
   }, []);
 

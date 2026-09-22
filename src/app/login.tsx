@@ -1,6 +1,15 @@
 import { Link, useRouter } from "expo-router";
 import { useState } from "react";
-import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
+import {
+  Keyboard,
+  KeyboardAvoidingView,
+  Platform,
+  Pressable,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableWithoutFeedback,
+} from "react-native";
 
 import { BackButton } from "@/components/back-button";
 import { PressButton } from "@/components/press-button";
@@ -52,7 +61,11 @@ export default function Login() {
   }
 
   return (
-    <View style={shared.screenCentered}>
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+    <KeyboardAvoidingView
+      style={shared.screenCentered}
+      behavior={Platform.OS === "ios" ? "padding" : undefined}
+    >
       <BackButton href="/" />
       <Text style={[shared.title, styles.centerText]}>
         {mode === "login" ? t("log_in") : t("sign_up")}
@@ -80,6 +93,8 @@ export default function Login() {
         secureTextEntry
         autoCapitalize="none"
         autoCorrect={false}
+        returnKeyType="done"
+        onSubmitEditing={handleSubmit}
       />
 
       <PressButton
@@ -109,7 +124,8 @@ export default function Login() {
           <Text>{t("switch_to_login")}</Text>
         </Pressable>
       )}
-    </View>
+    </KeyboardAvoidingView>
+    </TouchableWithoutFeedback>
   );
 }
 

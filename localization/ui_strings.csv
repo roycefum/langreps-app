@@ -270,3 +270,4 @@
 269,generate-quiz.tsx,insight_examples_label,From your last quiz:,De tu último cuestionario:,De ton dernier quiz :,Precedes the real 'typed → correct' examples shown under the tailored insight message
 270,generate-quiz.tsx,feedback_title,Feedback,Comentarios,Commentaires,Screen title used instead of Generate Quiz when the tailored feedback card is showing
 271,generate-quiz.tsx,generating_progress,Writing questions… {done} of {total},Escribiendo preguntas… {done} de {total},Rédaction des questions… {done} sur {total},
+272,settings.tsx,account_section_title,Account,Cuenta,Compte,"Heading above Delete Account, moved here from Home"

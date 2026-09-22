@@ -1,6 +1,6 @@
 import { Link, useRouter } from "expo-router";
-import { useEffect, useState } from "react";
-import { Alert, Pressable, StyleSheet, Text, View } from "react-native";
+import { useEffect } from "react";
+import { Pressable, StyleSheet, Text, View } from "react-native";
 
 import { PressButton } from "@/components/press-button";
 import { colors, shared } from "@/constants/styles";
@@ -13,9 +13,8 @@ import { getHasSeenOnboarding } from "@/lib/settings-storage";
 export default function Home() {
   const router = useRouter();
   const { t } = useI18n();
-  const { userId, email, isLoading, logout, deleteAccount } = useAuth();
+  const { userId, email, isLoading, logout } = useAuth();
   const { clearPairs } = usePairs();
-  const [deleteError, setDeleteError] = useState<string | null>(null);
 
   // pairs-context is one shared "list currently being built," so it
   // persists across navigation by design (that's what lets My Lists'
@@ -56,53 +55,35 @@ export default function Home() {
     };
   }, [userId, isLoading, router]);
 
-  function confirmDeleteAccount() {
-    Alert.alert(
-      t("delete_account"),
-      t("delete_account_confirm"),
-      [
-        { text: t("cancel"), style: "cancel" },
-        {
-          text: t("delete"),
-          style: "destructive",
-          onPress: async () => {
-            setDeleteError(null);
-            try {
-              await deleteAccount();
-            } catch (e) {
-              setDeleteError(e instanceof Error ? e.message : t("error_generic"));
-            }
-          },
-        },
-      ]
-    );
-  }
-
   return (
     <View style={[shared.screenCentered, styles.container]}>
+      {/* Always visible regardless of auth state — settings are
+          device-local, not account-bound. Pulled out of the auth block
+          into its own corner so it reads as a real navigation control,
+          not just another line of small text. */}
+      <Link href="/settings" style={styles.settingsButton}>
+        <Text style={styles.settingsIcon}>⚙</Text>
+      </Link>
+
       <Text style={styles.title}>{t("app_name")}</Text>
       <Text style={styles.subtitle}>{t("home_subtitle")}</Text>
-
-      {/* Device-local, not account-bound, so shown regardless of auth state. */}
-      <Link href="/settings" style={styles.authLink}>
-        {t("settings_link")}
-      </Link>
 
       {!isLoading && (
         <View style={styles.authRow}>
           {userId ? (
             <>
-              <Text style={shared.hint}>
-                {t("signed_in_as", { email: "" })}
-                <Text style={styles.emailBold}>{email}</Text>
-              </Text>
-              <Pressable onPress={logout}>
-                <Text style={styles.authLink}>{t("log_out")}</Text>
-              </Pressable>
-              <Pressable onPress={confirmDeleteAccount}>
-                <Text style={styles.deleteLink}>{t("delete_account")}</Text>
-              </Pressable>
-              {deleteError && <Text style={shared.errorText}>{deleteError}</Text>}
+              {/* Signed-in status and its one directly related action (log
+                  out) share a row, first — everything else here is
+                  secondary to "who am I and how do I leave." */}
+              <View style={styles.signedInRow}>
+                <Text style={shared.hint}>
+                  {t("signed_in_as", { email: "" })}
+                  <Text style={styles.emailBold}>{email}</Text>
+                </Text>
+                <Pressable onPress={logout} hitSlop={8}>
+                  <Text style={styles.authLink}>{t("log_out")}</Text>
+                </Pressable>
+              </View>
               {__DEV__ && (
                 <Link href="/test-data" style={styles.authLink}>
                   Test data
@@ -165,8 +146,18 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: 24,
   },
+  settingsButton: {
+    position: "absolute",
+    top: 8,
+    right: 8,
+    padding: 6,
+  },
+  settingsIcon: {
+    fontSize: 28,
+    color: colors.tertiary,
+  },
   title: {
-    fontSize: 32,
+    fontSize: 44,
     fontWeight: "700",
   },
   subtitle: {
@@ -176,8 +167,13 @@ const styles = StyleSheet.create({
   },
   authRow: {
     alignItems: "center",
-    gap: 4,
+    gap: 6,
     alignSelf: "stretch",
+  },
+  signedInRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
   },
   centerText: {
     textAlign: "center",
@@ -189,10 +185,6 @@ const styles = StyleSheet.create({
   emailBold: {
     fontWeight: "700",
     color: colors.text,
-  },
-  deleteLink: {
-    color: colors.error,
-    fontWeight: "600",
   },
   buttonGroup: {
     width: "100%",

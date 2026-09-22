@@ -1,4 +1,4 @@
-import { Link, Stack } from "expo-router";
+import { Link, Stack, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { Alert, Pressable, StyleSheet, Switch, Text, View } from "react-native";
 
@@ -25,7 +25,9 @@ import { DEFAULT_SOURCE_LANGUAGE, DEFAULT_TARGET_LANGUAGE, LANGUAGES, type CefrL
 
 export default function Settings() {
   const { t } = useI18n();
-  const { userId } = useAuth();
+  const router = useRouter();
+  const { userId, deleteAccount } = useAuth();
+  const [deleteError, setDeleteError] = useState<string | null>(null);
   const [autoDelete, setAutoDelete] = useState(false);
   const [adaptiveQuizzes, setAdaptiveQuizzes] = useState(true);
   const [languagePairs, setLanguagePairsState] = useState<LanguagePairSettings[]>([]);
@@ -136,6 +138,32 @@ export default function Settings() {
     await setAdaptiveQuizzesEnabled(enabled);
   }
 
+  // Moved here from Home — a rare, destructive, irreversible action
+  // belongs in account management, not the screen you land on every
+  // session. Log out stayed on Home since it's low-risk and reversible.
+  function confirmDeleteAccount() {
+    Alert.alert(
+      t("delete_account"),
+      t("delete_account_confirm"),
+      [
+        { text: t("cancel"), style: "cancel" },
+        {
+          text: t("delete"),
+          style: "destructive",
+          onPress: async () => {
+            setDeleteError(null);
+            try {
+              await deleteAccount();
+              router.replace("/");
+            } catch (e) {
+              setDeleteError(e instanceof Error ? e.message : t("error_generic"));
+            }
+          },
+        },
+      ]
+    );
+  }
+
   return (
     <View style={shared.screen}>
       {/* Blocks the native edge-swipe-back gesture too, not just the
@@ -229,6 +257,16 @@ export default function Settings() {
         <Switch value={autoDelete} onValueChange={handleAutoDeleteChange} />
       </View>
 
+      {userId && (
+        <View style={styles.settingBlock}>
+          <Text style={styles.settingTitle}>{t("account_section_title")}</Text>
+          <Pressable onPress={confirmDeleteAccount} hitSlop={8}>
+            <Text style={styles.deleteLink}>{t("delete_account")}</Text>
+          </Pressable>
+          {deleteError && <Text style={shared.errorText}>{deleteError}</Text>}
+        </View>
+      )}
+
       <Link href="/onboarding" style={[shared.backLink, shared.linkText]}>
         {t("about_langreps_link")}
       </Link>
@@ -291,5 +329,9 @@ const styles = StyleSheet.create({
   },
   addLanguageButton: {
     paddingHorizontal: 16,
+  },
+  deleteLink: {
+    color: colors.error,
+    fontWeight: "600",
   },
 });
