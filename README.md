@@ -1,56 +1,103 @@
-# Welcome to your Expo app 👋
+# LangReps
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+A mobile app for serious language learners. Build a vocab list — typed, pasted, uploaded from a file, or read from a photo — then take AI-generated quizzes on it. After a quiz, the app reads your actual mistakes and gives tailored feedback, and can generate a follow-up quiz that targets them.
 
-## Get started
+Built with **React Native + Expo (SDK 57)**, TypeScript, and [expo-router](https://docs.expo.dev/router/introduction). The backend is a separate repo: [language-tutor-api](https://github.com/roycefum/language-tutor-api) (FastAPI + Supabase + Gemini).
 
-1. Install dependencies
+## Getting started
 
-   ```bash
-   npm install
-   ```
-
-2. Start the app
-
-   ```bash
-   npx expo start
-   ```
-
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
+Requires Node 20+ (developed on Node 23).
 
 ```bash
-npm run reset-project
+npm install
+cp .env.example .env
+npx expo start
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+### Pointing at the backend
 
-### Other setup steps
+`.env` needs one variable:
 
-- To set up ESLint for linting, run `npx expo lint`, or follow our guide on ["Using ESLint and Prettier"](https://docs.expo.dev/guides/using-eslint/)
-- If you'd like to set up unit testing, follow our guide on ["Unit Testing with Jest"](https://docs.expo.dev/develop/unit-testing/)
-- Learn more about the TypeScript setup in this template in our guide on ["Using TypeScript"](https://docs.expo.dev/guides/typescript/)
+```
+EXPO_PUBLIC_API_BASE_URL=https://web-production-662f9b.up.railway.app
+```
 
-## Learn more
+- **Deployed backend:** the URL above (the default in `.env.example`).
+- **Backend on your machine:** use your computer's LAN IP, not `localhost`, so a physical device can reach it — e.g. `http://192.168.1.80:8000`. Find it with `ipconfig getifaddr en0`. The iOS simulator can use `localhost`.
 
-To learn more about developing your project with Expo, look at the following resources:
+### Running on a device or simulator
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+The app uses native modules (audio, speech, secure storage, haptics), so use a development build rather than relying on Expo Go:
 
-## Join the community
+```bash
+npx expo run:ios
+```
 
-Join our community of developers creating universal apps.
+Notes from experience:
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+- `ios/` is generated and gitignored; it's recreated by `expo run:ios` / `expo prebuild`.
+- A Debug build loads its JavaScript from Metro over your network. If it launches to "No script URL provided", Metro isn't reachable — start `npx expo start` first and make sure the device is on the same network.
+- If signing fails with "No profiles for com.roycefum.langreps", run the build with `xcodebuild -allowProvisioningUpdates` once.
+- Physical devices must trust the developer certificate (Settings → General → VPN & Device Management).
+
+### Scripts
+
+| Command | What it does |
+|---|---|
+| `npm start` | Start Metro |
+| `npm run ios` / `npm run android` | Build and run a dev build |
+| `npm run lint` | Lint (`expo lint`; it will offer to install ESLint on first run) |
+| `npx tsc --noEmit` | Typecheck |
+
+## Project layout
+
+```
+src/
+  app/          Screens (file-based routes)
+  components/   Shared UI: buttons, dropdown, progress bar, confetti, cards
+  constants/    styles.ts — colors and shared style blocks
+  lib/          API client, auth, quiz + list state, i18n, settings storage
+    translations/   en.ts, es.ts, fr.ts (generated — see below)
+localization/   UI strings source of truth + generator
+sample-vocab-lists/   Example files for the upload flow
+```
+
+Main screens: Home, List Details / Paste Text / Upload File / Upload Picture (list builders), My Lists, Generate Quiz, Quiz, Quiz Complete, My Quizzes, Quiz Results, Settings, Onboarding, and login / password reset.
+
+## How it works
+
+- **Auth:** email and password against the backend; the session is kept in `expo-secure-store`. Anonymous use of the list builders and quizzes works without an account, but saved lists, quiz history, and feedback need one.
+- **Languages:** each user picks the language pairs they study. Per-pair settings (CEFR level, whether accents are required) are stored on the device.
+- **Quizzes:** questions are generated by the backend in batches of 5, with a progress bar. Answers are graded on the device — accents are ignored unless the language pair requires them.
+- **Feedback:** the last completed quiz on a list is analysed for what the mistakes have in common. "Target My Mistakes" generates a quiz around that pattern.
+- **Pronunciation:** `expo-speech` reads target-language words aloud.
+
+## Localization
+
+The UI supports English, Spanish, and French, following the device language (no in-app picker).
+
+`localization/ui_strings.csv` is the **source of truth** for every UI string. The files in `src/lib/translations/` are generated — never edit them by hand.
+
+After changing the CSV:
+
+```bash
+python3 localization/generate_translations.py
+```
+
+`localization/ui_strings.xlsx` is a spreadsheet copy for translators; keep it in step with the CSV when adding strings. Add rows with a CSV library rather than by hand — the text contains commas and quotes.
+
+## Animations
+
+Screen and component animations use `react-native-reanimated`. The React Compiler is enabled, so shared values are read and written with `.get()` / `.set()`. Reduced-motion settings are respected.
+
+## Building for release
+
+Builds go through [EAS](https://docs.expo.dev/build/introduction/) (`eas.json`); both the `preview` and `production` profiles point at the deployed backend.
+
+```bash
+npx eas-cli build --platform ios --profile production
+```
+
+## Developer tools
+
+In development builds (`__DEV__`) only, Home shows a **Test data** link. It seeds a finished quiz with realistic mistakes on a throwaway "[TEST] Spanish verbs" list, so the tailored-feedback flow can be tried without taking a quiz and failing it on purpose. It never appears in release builds.
