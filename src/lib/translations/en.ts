@@ -271,4 +271,5 @@ export const en = {
   "insight_examples_label": "From your last quiz:",
   "feedback_title": "Feedback",
   "generating_progress": "Writing questions… {done} of {total}",
+  "account_section_title": "Account",
 };
