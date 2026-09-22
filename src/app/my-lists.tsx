@@ -3,6 +3,8 @@ import { useCallback, useMemo, useRef, useState } from "react";
 import { Alert, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import Animated, { FadeInDown, LinearTransition, SlideOutLeft } from "react-native-reanimated";
 
+type Tab = "lists" | "samples";
+
 import { BackButton } from "@/components/back-button";
 import { Dropdown } from "@/components/dropdown";
 import { PressButton } from "@/components/press-button";
@@ -65,7 +67,7 @@ export default function MyLists() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [addingKey, setAddingKey] = useState<string | null>(null);
-  const [showSampleLists, setShowSampleLists] = useState(false);
+  const [activeTab, setActiveTab] = useState<Tab>("lists");
   const [sortBy, setSortBy] = useState<SortBy>("date");
   const [selectMode, setSelectMode] = useState(false);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
@@ -253,10 +255,22 @@ export default function MyLists() {
       {error && <Text style={shared.errorText}>{error}</Text>}
       {isLoading && <Text style={shared.hint}>{t("loading_ellipsis")}</Text>}
 
-      {!isLoading && (
+      <View style={styles.tabRow}>
+        <Pressable style={[styles.tab, activeTab === "lists" && styles.tabActive]} onPress={() => setActiveTab("lists")}>
+          <Text style={[styles.tabText, activeTab === "lists" && styles.tabTextActive]}>
+            {t("your_lists_section_title")}
+          </Text>
+        </Pressable>
+        <Pressable style={[styles.tab, activeTab === "samples" && styles.tabActive]} onPress={() => setActiveTab("samples")}>
+          <Text style={[styles.tabText, activeTab === "samples" && styles.tabTextActive]}>
+            {t("sample_lists_title")}
+          </Text>
+        </Pressable>
+      </View>
+
+      {!isLoading && activeTab === "lists" && (
         <View style={styles.section}>
           <View style={styles.sectionHeaderRow}>
-            <Text style={styles.sectionTitle}>{t("your_lists_section_title")}</Text>
             {lists.length > 0 &&
               (selectMode ? (
                 <View style={styles.headerActions}>
@@ -359,19 +373,9 @@ export default function MyLists() {
         </View>
       )}
 
-      {!isLoading && (
+      {!isLoading && activeTab === "samples" && (
         <View style={styles.section}>
-          <Pressable
-            style={styles.sectionToggle}
-            onPress={() => setShowSampleLists((v) => !v)}
-          >
-            <Text style={styles.sectionTitle}>
-              {showSampleLists ? "▾" : "▸"} {t("sample_lists_title")}
-            </Text>
-          </Pressable>
-          {showSampleLists && (
-            <>
-              <Text style={shared.hint}>{t("sample_lists_hint")}</Text>
+          <Text style={shared.hint}>{t("sample_lists_hint")}</Text>
               {SAMPLE_CATEGORY_DEFS.map((def) => {
                 const pairIndex = pairIndexByCategory[def.categoryKey] ?? 0;
                 const [sourceLanguage, targetLanguage] = LANGUAGE_PAIRS[pairIndex];
@@ -411,8 +415,6 @@ export default function MyLists() {
                   </View>
                 );
               })}
-            </>
-          )}
         </View>
       )}
     </ScrollView>
@@ -436,8 +438,28 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
   },
-  sectionToggle: {
-    paddingVertical: 4,
+  tabRow: {
+    flexDirection: "row",
+    gap: 8,
+    marginBottom: 4,
+  },
+  tab: {
+    flex: 1,
+    paddingVertical: 10,
+    borderRadius: 10,
+    alignItems: "center",
+    backgroundColor: colors.secondaryBackground,
+  },
+  tabActive: {
+    backgroundColor: colors.tertiary,
+  },
+  tabText: {
+    fontSize: 14,
+    fontWeight: "700",
+    color: colors.text,
+  },
+  tabTextActive: {
+    color: "white",
   },
   addButton: {
     paddingHorizontal: 20,
