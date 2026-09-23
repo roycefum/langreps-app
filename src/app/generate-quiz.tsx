@@ -28,7 +28,7 @@ import { LOCALE_NAMES, useI18n } from "@/lib/i18n";
 import { usePairs, type VocabPair } from "@/lib/pairs-context";
 import { useQuiz } from "@/lib/quiz-context";
 import { getAdaptiveQuizzesEnabled, getLanguagePairSettings } from "@/lib/settings-storage";
-import { chunk, dedupePairs, displayListName, sample } from "@/lib/text";
+import { chunk, dedupePairs, sample } from "@/lib/text";
 import { DEFAULT_CEFR_LEVEL, TENSES_BY_LANGUAGE, type CefrLevel, type Question } from "@/lib/types";
 
 const BATCH_SIZE = 5;
@@ -216,7 +216,7 @@ export default function GenerateQuiz() {
         sessionId = session.session_id;
       }
 
-      startQuiz(allQuestions, sessionId, sourceLanguage, targetLanguage);
+      startQuiz({ questions: allQuestions, sessionId, sourceLanguage, targetLanguage });
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(() => {
         // No-op on platforms/devices without haptic support (e.g. web).
       });
@@ -258,7 +258,7 @@ export default function GenerateQuiz() {
         {insight?.message ? t("feedback_title") : t("generate_quiz_title")}
       </Text>
       <Text style={[styles.centerText, styles.listNameHeading]}>
-        {listName ? displayListName(listName) : t("unsaved_list")}
+        {listName ? listName : t("unsaved_list")}
       </Text>
 
       {pairs.length < 3 ? (

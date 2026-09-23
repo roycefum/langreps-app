@@ -60,7 +60,7 @@
 59,generate-quiz.tsx,error_generating_quiz,Something went wrong generating your quiz.,Algo salió mal al generar tu cuestionario.,Une erreur s'est produite lors de la génération de ton quiz.,
 60,my-lists.tsx,my_lists_title,My Lists,Mis listas,Mes listes,
 61,my-lists.tsx,no_saved_lists,No saved lists yet.,Aún no tienes listas guardadas.,Aucune liste enregistrée pour l'instant.,
-62,my-lists.tsx,progress_link,Progress,Progreso,Progrès,Row action label
+62,my-lists.tsx,progress_link,Quiz History,Historial de cuestionarios,Historique des quiz,Row action label
 63,my-lists.tsx,delete_list_alert_title,Delete List,Eliminar lista,Supprimer la liste,
 64,my-lists.tsx,delete_list_confirm,"Delete ""{name}""? This can't be undone.","¿Eliminar ""{name}""? Esta acción no se puede deshacer.",Supprimer « {name} » ? Cette action est irréversible.,Template
 65,my-lists.tsx,error_loading_lists,Something went wrong loading your lists.,Algo salió mal al cargar tus listas.,Une erreur s'est produite lors du chargement de tes listes.,

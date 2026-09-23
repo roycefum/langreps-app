@@ -7,6 +7,18 @@ import { DEFAULT_LIST_TYPE, DEFAULT_SOURCE_LANGUAGE, DEFAULT_TARGET_LANGUAGE, ty
 // absent for freshly-typed/pasted/ad-hoc pairs that were never saved.
 export type VocabPair = { id?: string; "source word": string; "target word": string };
 
+// The metadata cluster save-list/save-changes both send — everything about
+// a list except its name, which only the create case needs (PairsReview's
+// handleSave and handleSaveChanges used to each build this same object
+// independently; bundling it means they can't quietly drift apart).
+export type VocabListPayload = {
+  source: string;
+  source_language: string;
+  target_language: string;
+  pairs: VocabPair[];
+  list_type: string;
+};
+
 // Matches GET /lists/{id}'s response shape — pairs come back keyed
 // source_term/target_term (the vocab_pairs table's own column names),
 // unlike the app's internal "source word"/"target word" convention.

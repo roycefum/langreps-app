@@ -62,7 +62,7 @@ export const fr = {
   "error_generating_quiz": "Une erreur s'est produite lors de la génération de ton quiz.",
   "my_lists_title": "Mes listes",
   "no_saved_lists": "Aucune liste enregistrée pour l'instant.",
-  "progress_link": "Progrès",
+  "progress_link": "Historique des quiz",
   "delete_list_alert_title": "Supprimer la liste",
   "delete_list_confirm": "Supprimer « {name} » ? Cette action est irréversible.",
   "error_loading_lists": "Une erreur s'est produite lors du chargement de tes listes.",

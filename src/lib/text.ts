@@ -6,19 +6,6 @@ export function removeAccents(text: string): string {
   return text.normalize("NFD").replace(COMBINING_DIACRITICS, "");
 }
 
-// Sample lists are saved with a "(Source → Target)" language-pair suffix
-// baked into the underlying name (see my-lists.tsx's sampleLists) so two
-// entries with the same category but a different language pair can't
-// collide via save-list's update-by-name semantics. That suffix is
-// redundant anywhere the language pair is already shown separately —
-// strip it for display only; the raw name (with suffix) is still what's
-// sent to/from the API. Scoped specifically to a "(Word → Word)" shape
-// (not any trailing parenthetical) so a user's own custom list name
-// containing parentheses is never mangled.
-export function displayListName(name: string): string {
-  return name.replace(/ \([A-Za-zÀ-ÿ]+ → [A-Za-zÀ-ÿ]+\)$/, "");
-}
-
 // Flips which side of each pair is "known" vs "learning" — used when a
 // user tells LanguageOrderConfirm the app's initial column-order guess was
 // backwards (e.g. a textbook list puts the foreign/learning word first).

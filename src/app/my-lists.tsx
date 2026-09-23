@@ -12,7 +12,6 @@ import { colors, shared } from "@/constants/styles";
 import { apiRequest } from "@/lib/api";
 import { useI18n } from "@/lib/i18n";
 import { usePairs, type SavedList } from "@/lib/pairs-context";
-import { displayListName } from "@/lib/text";
 
 type ListSummary = {
   id: string;
@@ -145,7 +144,7 @@ export default function MyLists() {
   }
 
   function confirmDelete(list: ListSummary) {
-    Alert.alert(t("delete_list_alert_title"), t("delete_list_confirm", { name: displayListName(list.name) }), [
+    Alert.alert(t("delete_list_alert_title"), t("delete_list_confirm", { name: list.name }), [
       { text: t("cancel"), style: "cancel" },
       {
         text: t("delete"),
@@ -337,7 +336,7 @@ export default function MyLists() {
                     selectMode ? toggleSelected(list.id) : openList(list.id)
                   }
                 >
-                  <Text style={styles.rowTitle}>{displayListName(list.name)}</Text>
+                  <Text style={styles.rowTitle}>{list.name}</Text>
                   <Text style={shared.hint}>
                     {list.source_language} → {list.target_language}
                   </Text>
@@ -348,7 +347,7 @@ export default function MyLists() {
                 <Link
                   href={{
                     pathname: "/list-history",
-                    params: { listId: list.id, listName: displayListName(list.name) },
+                    params: { listId: list.id, listName: list.name },
                   }}
                 >
                   <Text style={styles.historyText}>{t("progress_link")}</Text>
@@ -379,8 +378,18 @@ export default function MyLists() {
               {SAMPLE_CATEGORY_DEFS.map((def) => {
                 const pairIndex = pairIndexByCategory[def.categoryKey] ?? 0;
                 const [sourceLanguage, targetLanguage] = LANGUAGE_PAIRS[pairIndex];
-                const expectedName = `${ENGLISH_CATEGORY_LABELS[def.categoryKey]} (${sourceLanguage} → ${targetLanguage})`;
-                const alreadyAdded = lists.some((l) => l.name === expectedName);
+                // The backend saves a sample list under its plain English
+                // label with no suffix (find_list/save_list disambiguate by
+                // name + language pair together, not a suffixed name), so
+                // matching just checks those three fields directly instead
+                // of reconstructing a suffixed string to compare against.
+                const expectedLabel = ENGLISH_CATEGORY_LABELS[def.categoryKey];
+                const alreadyAdded = lists.some(
+                  (l) =>
+                    l.name === expectedLabel &&
+                    l.source_language === sourceLanguage &&
+                    l.target_language === targetLanguage
+                );
                 return (
                   <View key={def.categoryKey} style={styles.row}>
                     <View style={styles.rowMain}>

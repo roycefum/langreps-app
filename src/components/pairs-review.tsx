@@ -11,8 +11,7 @@ import { colors, shared } from "@/constants/styles";
 import { apiRequest } from "@/lib/api";
 import { useAuth } from "@/lib/auth-context";
 import { useI18n } from "@/lib/i18n";
-import { usePairs } from "@/lib/pairs-context";
-import { displayListName } from "@/lib/text";
+import { usePairs, type VocabListPayload } from "@/lib/pairs-context";
 import { LIST_TYPES } from "@/lib/types";
 
 type PairsReviewProps = {
@@ -136,6 +135,16 @@ export function PairsReview({ source, children }: PairsReviewProps) {
   // Creates a brand-new list — only reachable when there's no savedListId
   // yet, since an already-saved list is updated by id (see
   // handleSaveChanges) rather than re-upserted by name.
+  function buildListPayload(): VocabListPayload {
+    return {
+      source,
+      source_language: sourceLanguage,
+      target_language: targetLanguage,
+      pairs,
+      list_type: listType.toLowerCase(),
+    };
+  }
+
   async function handleSave() {
     if (!name.trim()) return;
     setIsSaving(true);
@@ -144,14 +153,7 @@ export function PairsReview({ source, children }: PairsReviewProps) {
     try {
       const result = await apiRequest<{ list_id: string }>("/save-list", {
         method: "POST",
-        body: {
-          name: name.trim(),
-          source,
-          source_language: sourceLanguage,
-          target_language: targetLanguage,
-          pairs,
-          list_type: listType.toLowerCase(),
-        },
+        body: { name: name.trim(), ...buildListPayload() },
       });
       setSavedList(result.list_id, name.trim());
       setSaveMessage(t("saved_message"));
@@ -173,13 +175,7 @@ export function PairsReview({ source, children }: PairsReviewProps) {
     try {
       await apiRequest(`/lists/${savedListId}`, {
         method: "PUT",
-        body: {
-          source,
-          source_language: sourceLanguage,
-          target_language: targetLanguage,
-          pairs,
-          list_type: listType.toLowerCase(),
-        },
+        body: buildListPayload(),
       });
       setSaveMessage(t("saved_message"));
     } catch (e) {
@@ -199,12 +195,13 @@ export function PairsReview({ source, children }: PairsReviewProps) {
     if (!savedListId || !renameValue.trim()) return;
     setIsSavingRename(true);
     setRenameError(null);
+    const newName = renameValue.trim();
     try {
       await apiRequest(`/lists/${savedListId}`, {
         method: "PATCH",
-        body: { name: renameValue.trim() },
+        body: { name: newName },
       });
-      setSavedList(savedListId, renameValue.trim());
+      setSavedList(savedListId, newName);
       setIsRenaming(false);
     } catch (e) {
       setRenameError(e instanceof Error ? e.message : t("error_renaming"));
@@ -217,7 +214,7 @@ export function PairsReview({ source, children }: PairsReviewProps) {
     <View style={styles.container}>
       {savedListId && listName && !isRenaming && (
         <View style={styles.headingRow}>
-          <Text style={styles.savedListHeading}>{displayListName(listName)}</Text>
+          <Text style={styles.savedListHeading}>{listName}</Text>
           <Pressable onPress={startRenaming} hitSlop={8}>
             <Text style={styles.renameLink}>{t("rename_link")}</Text>
           </Pressable>

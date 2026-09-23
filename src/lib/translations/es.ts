@@ -62,7 +62,7 @@ export const es = {
   "error_generating_quiz": "Algo salió mal al generar tu cuestionario.",
   "my_lists_title": "Mis listas",
   "no_saved_lists": "Aún no tienes listas guardadas.",
-  "progress_link": "Progreso",
+  "progress_link": "Historial de cuestionarios",
   "delete_list_alert_title": "Eliminar lista",
   "delete_list_confirm": "¿Eliminar \"{name}\"? Esta acción no se puede deshacer.",
   "error_loading_lists": "Algo salió mal al cargar tus listas.",

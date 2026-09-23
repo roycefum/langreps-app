@@ -10,7 +10,6 @@ import { colors, shared } from "@/constants/styles";
 import { apiRequest } from "@/lib/api";
 import { useI18n } from "@/lib/i18n";
 import { useQuiz } from "@/lib/quiz-context";
-import { displayListName } from "@/lib/text";
 import { TENSES_BY_LANGUAGE, type Question } from "@/lib/types";
 
 type ListSummary = {
@@ -120,14 +119,14 @@ export default function MyQuizzes() {
     } catch {
       // fall back to counting from zero rather than blocking the resume
     }
-    startQuiz(
-      session.questions,
-      session.id,
-      list?.source_language ?? "English",
-      list?.target_language ?? "English",
-      session.current_index,
-      alreadyCorrect
-    );
+    startQuiz({
+      questions: session.questions,
+      sessionId: session.id,
+      sourceLanguage: list?.source_language ?? "English",
+      targetLanguage: list?.target_language ?? "English",
+      startIndex: session.current_index,
+      startCorrect: alreadyCorrect,
+    });
     router.push("/quiz");
   }
 
@@ -135,7 +134,7 @@ export default function MyQuizzes() {
     const list = lists.find((l) => l.id === session.list_id);
     Alert.alert(
       t("delete_quiz_alert_title"),
-      list ? t("delete_quiz_confirm", { name: displayListName(list.name) }) : t("delete_quiz_alert_title"),
+      list ? t("delete_quiz_confirm", { name: list.name }) : t("delete_quiz_alert_title"),
       [
         { text: t("cancel"), style: "cancel" },
         {
@@ -162,7 +161,7 @@ export default function MyQuizzes() {
     const list = lists.find((l) => l.id === session.list_id);
     Alert.alert(
       t("delete_quiz_alert_title"),
-      list ? t("delete_quiz_confirm", { name: displayListName(list.name) }) : t("delete_quiz_alert_title"),
+      list ? t("delete_quiz_confirm", { name: list.name }) : t("delete_quiz_alert_title"),
       [
         { text: t("cancel"), style: "cancel" },
         {
@@ -409,7 +408,7 @@ export default function MyQuizzes() {
                     }
                   >
                     <Text style={styles.rowTitle}>
-                      {list ? displayListName(list.name) : t("quiz_in_progress_fallback")}
+                      {list ? list.name : t("quiz_in_progress_fallback")}
                     </Text>
                     {typeLine && <Text style={styles.typeLine}>{typeLine}</Text>}
                     <Text style={shared.hint}>
@@ -504,7 +503,7 @@ export default function MyQuizzes() {
                     }
                   >
                     <Text style={styles.rowTitle}>
-                      {list ? displayListName(list.name) : t("deleted_list_fallback")}
+                      {list ? list.name : t("deleted_list_fallback")}
                     </Text>
                     <Text style={shared.hint}>
                       {t("past_quiz_score_template", { correct: session.correct, total: session.total, pct })}

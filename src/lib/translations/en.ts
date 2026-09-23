@@ -62,7 +62,7 @@ export const en = {
   "error_generating_quiz": "Something went wrong generating your quiz.",
   "my_lists_title": "My Lists",
   "no_saved_lists": "No saved lists yet.",
-  "progress_link": "Progress",
+  "progress_link": "Quiz History",
   "delete_list_alert_title": "Delete List",
   "delete_list_confirm": "Delete \"{name}\"? This can't be undone.",
   "error_loading_lists": "Something went wrong loading your lists.",
