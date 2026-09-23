@@ -181,7 +181,7 @@ export default function TestData() {
       method: "POST",
       body: {
         list_id: listId,
-        verb_tense: "present",
+        verb_tenses: ["present"],
         questions: scenario.items.map((it) => ({
           question_text: it.question,
           correct_answer: it.correct,

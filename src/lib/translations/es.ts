@@ -275,4 +275,5 @@ export const es = {
   "no_quizzes_yet_title": "Aún no hay cuestionarios",
   "no_quizzes_yet_hint": "Crea una lista y genera un cuestionario a partir de ella; aparecerá aquí.",
   "browse_lists_button": "Ver tus listas",
+  "select_tenses_placeholder": "Selecciona los tiempos verbales",
 };

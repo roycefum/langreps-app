@@ -384,13 +384,20 @@ export default function MyQuizzes() {
 
             {sortedSessions.map((session, index) => {
               const list = lists.find((l) => l.id === session.list_id);
+              // verb_tense is stored as a comma-joined string (e.g.
+              // "preterite,imperfect") since a quiz can cover more than
+              // one tense — split it back apart to look up each label.
+              // Empty/null means an old "Mixed" session from before tenses
+              // were explicitly chosen.
+              const sessionTenseLabels = (session.verb_tense ?? "")
+                .split(",")
+                .map((value) => TENSES_BY_LANGUAGE[list?.target_language ?? ""]?.find((t) => t.value === value)?.label)
+                .filter((label): label is string => !!label);
               const typeLine = !list
                 ? null
                 : list.list_type === "verb"
                   ? `${t("quiz_type_badge_verb")} — ${
-                      TENSES_BY_LANGUAGE[list.target_language]?.find(
-                        (t) => t.value === session.verb_tense
-                      )?.label ?? t("mixed_tense")
+                      sessionTenseLabels.length > 0 ? sessionTenseLabels.join(", ") : t("mixed_tense")
                     }`
                   : t("quiz_type_badge_vocab");
               return (

@@ -16,9 +16,9 @@ import Animated, { LinearTransition } from "react-native-reanimated";
 
 import { BackButton } from "@/components/back-button";
 import { CefrLevelPicker } from "@/components/cefr-level-picker";
-import { Dropdown } from "@/components/dropdown";
 import { InsightCard, InsightSkeleton } from "@/components/insight-card";
 import { LanguageSummary } from "@/components/language-picker";
+import { MultiSelectDropdown } from "@/components/multi-select-dropdown";
 import { ProgressBar } from "@/components/progress-bar";
 import { PressButton } from "@/components/press-button";
 import { colors, shared } from "@/constants/styles";
@@ -57,12 +57,16 @@ export default function GenerateQuiz() {
   // changing it here only affects this one quiz — it's never written back
   // to the stored default.
   const [cefrLevel, setCefrLevel] = useState<CefrLevel>(DEFAULT_CEFR_LEVEL);
-  // Only meaningful for a "Verb" list — defaults to that language's present
-  // tense (the first entry in TENSES_BY_LANGUAGE) rather than "Mixed", since
-  // present tense is the most useful starting point for most learners.
-  const [verbTense, setVerbTense] = useState<string | null>(
-    () => TENSES_BY_LANGUAGE[targetLanguage]?.[0]?.value ?? null
-  );
+  // Only meaningful for a "Verb" list — defaults to just that language's
+  // present tense (the first entry in TENSES_BY_LANGUAGE), since present
+  // tense is the most useful starting point for most learners. More than
+  // one can be picked (see the MultiSelectDropdown below), spreading the
+  // quiz's questions across the selected tenses instead of always
+  // conjugating in just one.
+  const [verbTenses, setVerbTenses] = useState<string[]>(() => {
+    const first = TENSES_BY_LANGUAGE[targetLanguage]?.[0]?.value;
+    return first ? [first] : [];
+  });
   // Vocab-only reversed-direction mode — shows the target word and asks for
   // its source-language translation. Not offered for verb lists.
   const [flip, setFlip] = useState(false);
@@ -75,9 +79,13 @@ export default function GenerateQuiz() {
   const [progress, setProgress] = useState({ done: 0, total: 0 });
 
   const tenseOptions = TENSES_BY_LANGUAGE[targetLanguage] ?? [];
-  const tenseLabels = [t("mixed_tense"), ...tenseOptions.map((tense) => tense.label)];
-  const selectedTenseLabel =
-    tenseOptions.find((tense) => tense.value === verbTense)?.label ?? t("mixed_tense");
+  // What the collapsed tense field shows — the selected labels joined, in
+  // the language's own tense order rather than selection order, or a
+  // placeholder if somehow nothing's selected.
+  const tenseDisplayValue = tenseOptions
+    .filter((tense) => verbTenses.includes(tense.value))
+    .map((tense) => tense.label)
+    .join(", ") || t("select_tenses_placeholder");
 
   useEffect(() => {
     getLanguagePairSettings(sourceLanguage, targetLanguage).then((settings) =>
@@ -129,6 +137,7 @@ export default function GenerateQuiz() {
   }, [userId, savedListId, pairs.length]);
 
   const requestedCount = Math.max(1, Math.min(parseInt(countText, 10) || 1, pairs.length));
+  const cannotGenerate = pairs.length < 3 || (listType === "Verb" && verbTenses.length === 0);
 
   async function handleGenerate(mode: "similar" | "targeted" = "similar") {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium).catch(() => {
@@ -184,12 +193,12 @@ export default function GenerateQuiz() {
             target_language: targetLanguage,
             batch_size: c.length,
             level: cefrLevel,
-            verb_tense: listType === "Verb" ? verbTense : null,
+            verb_tenses: listType === "Verb" ? verbTenses : [],
             flip: listType === "Vocab" && flip,
             // Distinguishes "verb-shaped pair, tested as an ordinary word"
             // (a Vocab list) from "verb-shaped pair, conjugate it" (a Verb
-            // list) — verb_tense alone can't tell these apart, since it's
-            // null for both a Vocab list and a Verb list set to "Mixed".
+            // list) — verb_tenses alone can't tell these apart, since a
+            // Vocab list never sends any tenses at all.
             list_type: listType.toLowerCase(),
             // Only Target My Mistakes writes questions around the pattern —
             // ordinary quizzes are a plain random spread.
@@ -210,7 +219,7 @@ export default function GenerateQuiz() {
           body: {
             list_id: savedListId,
             questions: allQuestions,
-            verb_tense: listType === "Verb" ? verbTense : null,
+            verb_tenses: listType === "Verb" ? verbTenses : [],
           },
         });
         sessionId = session.session_id;
@@ -287,17 +296,11 @@ export default function GenerateQuiz() {
           {listType === "Verb" && tenseOptions.length > 0 && (
             <View style={styles.tenseField}>
               <Text style={shared.fieldLabel}>{t("tense_label")}</Text>
-              <Dropdown
-                value={selectedTenseLabel}
-                onChange={(label) => {
-                  if (label === t("mixed_tense")) {
-                    setVerbTense(null);
-                    return;
-                  }
-                  const match = tenseOptions.find((t) => t.label === label);
-                  setVerbTense(match ? match.value : null);
-                }}
-                options={tenseLabels}
+              <MultiSelectDropdown
+                displayValue={tenseDisplayValue}
+                selectedValues={verbTenses}
+                onChange={setVerbTenses}
+                options={tenseOptions}
               />
             </View>
           )}
@@ -337,16 +340,16 @@ export default function GenerateQuiz() {
             style={[
               shared.primaryButton,
               shared.generateQuizButton,
-              pairs.length < 3 && shared.primaryButtonDisabled,
+              cannotGenerate && shared.primaryButtonDisabled,
             ]}
-            disabled={pairs.length < 3}
+            disabled={cannotGenerate}
             onPress={() => handleGenerate("targeted")}
           >
             <Text style={shared.primaryButtonText}>{t("target_my_mistakes")}</Text>
           </PressButton>
           <PressButton
-            style={[shared.secondaryButton, pairs.length < 3 && shared.primaryButtonDisabled]}
-            disabled={pairs.length < 3}
+            style={[shared.secondaryButton, cannotGenerate && shared.primaryButtonDisabled]}
+            disabled={cannotGenerate}
             onPress={() => handleGenerate("similar")}
           >
             <Text style={shared.secondaryButtonText}>{t("generate_similar_quiz")}</Text>
@@ -357,9 +360,9 @@ export default function GenerateQuiz() {
           style={[
             shared.primaryButton,
             shared.generateQuizButton,
-            pairs.length < 3 && shared.primaryButtonDisabled,
+            cannotGenerate && shared.primaryButtonDisabled,
           ]}
-          disabled={pairs.length < 3}
+          disabled={cannotGenerate}
           onPress={() => handleGenerate("similar")}
         >
           <Text style={shared.primaryButtonText}>{t("generate_quiz_title")}</Text>

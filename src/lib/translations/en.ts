@@ -275,4 +275,5 @@ export const en = {
   "no_quizzes_yet_title": "No quizzes yet",
   "no_quizzes_yet_hint": "Build a list, then generate a quiz from it — it'll show up here.",
   "browse_lists_button": "Browse Your Lists",
+  "select_tenses_placeholder": "Select tenses",
 };
