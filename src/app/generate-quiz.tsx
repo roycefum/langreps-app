@@ -186,6 +186,11 @@ export default function GenerateQuiz() {
             level: cefrLevel,
             verb_tense: listType === "Verb" ? verbTense : null,
             flip: listType === "Vocab" && flip,
+            // Distinguishes "verb-shaped pair, tested as an ordinary word"
+            // (a Vocab list) from "verb-shaped pair, conjugate it" (a Verb
+            // list) — verb_tense alone can't tell these apart, since it's
+            // null for both a Vocab list and a Verb list set to "Mixed".
+            list_type: listType.toLowerCase(),
             // Only Target My Mistakes writes questions around the pattern —
             // ordinary quizzes are a plain random spread.
             focus: mode === "targeted" ? insight?.focus ?? null : null,

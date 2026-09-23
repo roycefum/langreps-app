@@ -27,29 +27,45 @@ export default function Home() {
     router.push(route);
   }
 
+  // Onboarding must always win for a first-time user, and the Settings
+  // redirect below must never fire before it. These used to be two
+  // independent effects — one reading local device storage, the other
+  // hitting the network — and whichever resolved LAST called
+  // router.replace on top of the other, so the outcome was a coin flip.
+  // The network check had a cancellation guard for this exact race but
+  // the onboarding check didn't, so a fast /me/profile response could
+  // silently skip onboarding entirely (more likely on Android, where a
+  // first-time secure-storage read can be slower than the network).
+  // Running them in one sequence, gated on the onboarding check
+  // finishing first, makes the order deterministic instead of racy.
   useEffect(() => {
-    getHasSeenOnboarding().then((seen) => {
-      if (!seen) router.replace("/onboarding");
-    });
-  }, [router]);
-
-  // Forces a first-ever-logged-in user (or one who closed the app before
-  // finishing) straight to Settings to pick a learning pair — checked on
-  // every login, not just right after signup, since they might not have
-  // gotten to it the first time. Anonymous users have no server-side
-  // profile at all, so this only runs once actually logged in.
-  useEffect(() => {
-    if (isLoading || !userId) return;
     let cancelled = false;
-    apiRequest<{ learning_target_language: string | null }>("/me/profile")
-      .then((profile) => {
+    (async () => {
+      const seenOnboarding = await getHasSeenOnboarding();
+      if (cancelled) return;
+      if (!seenOnboarding) {
+        router.replace("/onboarding");
+        return;
+      }
+
+      // Forces a first-ever-logged-in user (or one who closed the app
+      // before finishing) straight to Settings to pick a learning pair —
+      // checked on every login, not just right after signup, since they
+      // might not have gotten to it the first time. Anonymous users have
+      // no server-side profile at all, so this only runs once actually
+      // logged in.
+      if (isLoading || !userId) return;
+      try {
+        const profile = await apiRequest<{ learning_target_language: string | null }>(
+          "/me/profile"
+        );
         if (!cancelled && !profile.learning_target_language) {
           router.replace("/settings");
         }
-      })
-      .catch(() => {
+      } catch {
         // best-effort — a failed check just means no redirect this time
-      });
+      }
+    })();
     return () => {
       cancelled = true;
     };

@@ -1,6 +1,17 @@
 import { useRouter } from "expo-router";
-import { useEffect, useMemo, useState } from "react";
-import { Keyboard, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
+import { useEffect, useMemo, useRef, useState } from "react";
+import {
+  Keyboard,
+  KeyboardAvoidingView,
+  Platform,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableWithoutFeedback,
+  View,
+} from "react-native";
 
 import Animated, { FadeIn, FadeInRight } from "react-native-reanimated";
 
@@ -22,6 +33,7 @@ export default function Quiz() {
     useQuiz();
   const [answer, setAnswer] = useState("");
   const [showWordList, setShowWordList] = useState(false);
+  const answerInputRef = useRef<TextInput>(null);
 
   // Every possible answer in this quiz, for the optional "stuck?" reveal —
   // an occasionally-ambiguous question can still be figured out by
@@ -56,9 +68,15 @@ export default function Quiz() {
   }
 
   return (
-    // Padding-mode avoidance lifts the whole screen above the keyboard so
-    // Submit is never covered; the question sits near the top for the same
-    // reason (see styles.body).
+    // Tap-anywhere-to-dismiss, same pattern as login.tsx and
+    // generate-quiz.tsx — Keyboard.dismiss() alone hides the keyboard view
+    // but doesn't reliably blur the focused TextInput on every device, so
+    // it could pop back. Wrapping the whole screen catches that generally,
+    // and the "stuck?" button also blurs the input directly (see below).
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+    {/* Padding-mode avoidance lifts the whole screen above the keyboard so
+        Submit is never covered; the question sits near the top for the same
+        reason (see styles.body). */}
     <KeyboardAvoidingView style={shared.screen} behavior={Platform.OS === "ios" ? "padding" : undefined}>
       <BackButton href="/" />
 
@@ -75,6 +93,7 @@ export default function Quiz() {
         {phase === "question" ? (
           <>
             <TextInput
+              ref={answerInputRef}
               style={[shared.input, styles.answerInput]}
               placeholder={t("your_answer_placeholder")}
               placeholderTextColor={colors.placeholder}
@@ -93,7 +112,13 @@ export default function Quiz() {
             </Pressable>
             <Pressable style={shared.backLink} onPress={() => {
                 // Drop the keyboard so the list isn't hidden behind it.
-                if (!showWordList) Keyboard.dismiss();
+                // Keyboard.dismiss() alone hides the keyboard view but
+                // doesn't reliably blur the input on every device/OS —
+                // blur it directly too so it can't silently pop back.
+                if (!showWordList) {
+                  answerInputRef.current?.blur();
+                  Keyboard.dismiss();
+                }
                 setShowWordList((v) => !v);
               }}>
               <Text style={styles.skipButtonText}>
@@ -134,6 +159,7 @@ export default function Quiz() {
         )}
       </Animated.View>
     </KeyboardAvoidingView>
+    </TouchableWithoutFeedback>
   );
 }
 
