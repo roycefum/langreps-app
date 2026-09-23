@@ -1,6 +1,8 @@
-import { useFocusEffect, useRouter } from "expo-router";
+import { Link, useFocusEffect, useRouter } from "expo-router";
 import { useCallback, useMemo, useRef, useState } from "react";
 import { Alert, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+
+import { PressButton } from "@/components/press-button";
 import Animated, { FadeInDown, LinearTransition, SlideOutLeft } from "react-native-reanimated";
 
 import { BackButton } from "@/components/back-button";
@@ -311,7 +313,24 @@ export default function MyQuizzes() {
       {error && <Text style={shared.errorText}>{error}</Text>}
       {isLoading && <Text style={shared.hint}>{t("loading_ellipsis")}</Text>}
 
-      {!isLoading &&
+      {/* Nothing at all yet — a bare "no quizzes" sentence in each section
+          left a first-time visitor with no idea what to do next. Shown
+          only when BOTH sections are empty; either one alone still gets
+          its own plain sentence below, since that's a normal state for an
+          active user (e.g. no quiz currently in progress). */}
+      {!isLoading && sessions.length === 0 && completedSessions.length === 0 && (
+        <View style={styles.emptyState}>
+          <Text style={styles.emptyTitle}>{t("no_quizzes_yet_title")}</Text>
+          <Text style={shared.hint}>{t("no_quizzes_yet_hint")}</Text>
+          <Link href="/my-lists" asChild>
+            <PressButton style={[shared.primaryButton, shared.generateQuizButton, styles.emptyButton]}>
+              <Text style={shared.primaryButtonText}>{t("browse_lists_button")}</Text>
+            </PressButton>
+          </Link>
+        </View>
+      )}
+
+      {!isLoading && !(sessions.length === 0 && completedSessions.length === 0) &&
         (sessions.length === 0 ? (
           <Text style={shared.hint}>{t("no_quizzes_in_progress")}</Text>
         ) : (
@@ -420,7 +439,7 @@ export default function MyQuizzes() {
           </View>
         ))}
 
-      {!isLoading && (
+      {!isLoading && !(sessions.length === 0 && completedSessions.length === 0) && (
         <View style={styles.section}>
           <View style={styles.sectionHeaderRow}>
             <Text style={styles.sectionTitle}>{t("past_quizzes_section_title")}</Text>
@@ -525,6 +544,20 @@ const styles = StyleSheet.create({
   },
   section: {
     gap: 8,
+  },
+  emptyState: {
+    alignItems: "center",
+    gap: 12,
+    paddingVertical: 24,
+  },
+  emptyTitle: {
+    fontSize: 17,
+    fontWeight: "700",
+    textAlign: "center",
+  },
+  emptyButton: {
+    marginTop: 4,
+    alignSelf: "stretch",
   },
   sectionTitle: {
     fontSize: 16,

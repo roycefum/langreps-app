@@ -115,14 +115,18 @@ export default function QuizComplete() {
         {t("score_correct", { n: shownCorrect, total: questions.length })}
       </Text>
       {feedback ? <InsightCard message={feedback} examples={examples} /> : null}
-      {sessionId && (
-        <Link href={{ pathname: "/quiz-results", params: { sessionId } }} style={shared.linkText}>
-          {t("see_full_results")}
-        </Link>
-      )}
-      <PressButton style={shared.primaryButton} onPress={handleBackToHome}>
-        <Text style={shared.primaryButtonText}>{t("back_to_home")}</Text>
-      </PressButton>
+      <View style={styles.buttonGroup}>
+        {sessionId && (
+          <Link href={{ pathname: "/quiz-results", params: { sessionId } }} asChild>
+            <PressButton style={shared.primaryButton}>
+              <Text style={shared.primaryButtonText}>{t("see_full_results")}</Text>
+            </PressButton>
+          </Link>
+        )}
+        <PressButton style={shared.primaryButton} onPress={handleBackToHome}>
+          <Text style={shared.primaryButtonText}>{t("back_to_home")}</Text>
+        </PressButton>
+      </View>
     </View>
   );
 }
@@ -130,6 +134,10 @@ export default function QuizComplete() {
 const styles = StyleSheet.create({
   container: {
     alignItems: "center",
+  },
+  buttonGroup: {
+    width: "100%",
+    gap: 12,
   },
   title: {
     fontSize: 28,

@@ -11,7 +11,7 @@
 10,index.tsx,upload_a_file,Upload a File,Subir un archivo,Importer un fichier,
 11,index.tsx,share_a_picture,Upload a Photo,Subir una foto,Importer une photo,
 12,index.tsx,my_lists,My Lists,Mis listas,Mes listes,
-13,index.tsx,my_quizzes,My Quizzes,Mis cuestionarios,Mes quiz,
+13,index.tsx,my_quizzes,Saved Quizzes,Cuestionarios guardados,Quiz enregistrés,
 14,index.tsx,delete_account_confirm,This permanently deletes your account and all your saved lists. This can't be undone.,Esto elimina permanentemente tu cuenta y todas tus listas guardadas. Esta acción no se puede deshacer.,Cela supprime définitivement ton compte et toutes tes listes enregistrées. Cette action est irréversible.,Alert body
 15,index.tsx,cancel,Cancel,Cancelar,Annuler,Alert button — reused across screens
 16,index.tsx,delete,Delete,Eliminar,Supprimer,Alert button — reused across screens
@@ -66,7 +66,7 @@
 65,my-lists.tsx,error_loading_lists,Something went wrong loading your lists.,Algo salió mal al cargar tus listas.,Une erreur s'est produite lors du chargement de tes listes.,
 66,my-lists.tsx,error_loading_list,Something went wrong loading that list.,Algo salió mal al cargar esa lista.,Une erreur s'est produite lors du chargement de cette liste.,
 67,my-lists.tsx,error_deleting_list,Something went wrong deleting that list.,Algo salió mal al eliminar esa lista.,Une erreur s'est produite lors de la suppression de cette liste.,
-68,my-quizzes.tsx,my_quizzes_title,My Quizzes,Mis cuestionarios,Mes quiz,
+68,my-quizzes.tsx,my_quizzes_title,Saved Quizzes,Cuestionarios guardados,Quiz enregistrés,
 69,my-quizzes.tsx,no_quizzes_in_progress,No quizzes in progress.,No hay cuestionarios en curso.,Aucun quiz en cours.,
 70,my-quizzes.tsx,quiz_in_progress_fallback,Quiz in progress,Cuestionario en curso,Quiz en cours,
 71,my-quizzes.tsx,question_n_of_total,Question {n} of {total},Pregunta {n} de {total},Question {n} sur {total},Template — also used in quiz.tsx
@@ -271,3 +271,6 @@
 270,generate-quiz.tsx,feedback_title,Feedback,Comentarios,Commentaires,Screen title used instead of Generate Quiz when the tailored feedback card is showing
 271,generate-quiz.tsx,generating_progress,Writing questions… {done} of {total},Escribiendo preguntas… {done} de {total},Rédaction des questions… {done} sur {total},
 272,settings.tsx,account_section_title,Account,Cuenta,Compte,"Heading above Delete Account, moved here from Home"
+273,my-quizzes.tsx,no_quizzes_yet_title,No quizzes yet,Aún no hay cuestionarios,Aucun quiz pour l'instant,
+274,my-quizzes.tsx,no_quizzes_yet_hint,"Build a list, then generate a quiz from it — it'll show up here.",Crea una lista y genera un cuestionario a partir de ella; aparecerá aquí.,"Crée une liste, puis génère un quiz à partir de celle-ci — il apparaîtra ici.",
+275,my-quizzes.tsx,browse_lists_button,Browse Your Lists,Ver tus listas,Voir tes listes,"Links to My Lists, which also has ready-made Sample Lists"
