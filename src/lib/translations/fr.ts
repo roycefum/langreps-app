@@ -276,4 +276,5 @@ export const fr = {
   "no_quizzes_yet_hint": "Crée une liste, puis génère un quiz à partir de celle-ci — il apparaîtra ici.",
   "browse_lists_button": "Voir tes listes",
   "select_tenses_placeholder": "Sélectionne les temps",
+  "not_sure_which_tense": "Pas sûr du temps verbal ?",
 };

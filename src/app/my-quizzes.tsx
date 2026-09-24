@@ -39,6 +39,14 @@ type CompletedSessionRow = {
 
 type SortBy = "name" | "date";
 
+// Flattened because Link asChild's Slot rejects an array of styles on its
+// child (same fix as index.tsx's My Lists / My Quizzes buttons).
+const browseListsButtonStyle = StyleSheet.flatten([
+  shared.primaryButton,
+  shared.generateQuizButton,
+  { marginTop: 4, alignSelf: "stretch" as const },
+]);
+
 export default function MyQuizzes() {
   const router = useRouter();
   const { t } = useI18n();
@@ -322,7 +330,7 @@ export default function MyQuizzes() {
           <Text style={styles.emptyTitle}>{t("no_quizzes_yet_title")}</Text>
           <Text style={shared.hint}>{t("no_quizzes_yet_hint")}</Text>
           <Link href="/my-lists" asChild>
-            <PressButton style={[shared.primaryButton, shared.generateQuizButton, styles.emptyButton]}>
+            <PressButton style={browseListsButtonStyle}>
               <Text style={shared.primaryButtonText}>{t("browse_lists_button")}</Text>
             </PressButton>
           </Link>
@@ -560,10 +568,6 @@ const styles = StyleSheet.create({
     fontSize: 17,
     fontWeight: "700",
     textAlign: "center",
-  },
-  emptyButton: {
-    marginTop: 4,
-    alignSelf: "stretch",
   },
   sectionTitle: {
     fontSize: 16,

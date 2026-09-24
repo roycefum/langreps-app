@@ -24,15 +24,27 @@ import { colors, shared } from "@/constants/styles";
 import { useI18n } from "@/lib/i18n";
 import { usePairs } from "@/lib/pairs-context";
 import { useQuiz } from "@/lib/quiz-context";
+import { TENSES_BY_LANGUAGE } from "@/lib/types";
 
 export default function Quiz() {
   const router = useRouter();
   const { t } = useI18n();
   const { targetLanguage } = usePairs();
-  const { questions, currentIndex, phase, lastAnswer, wasCorrect, isComplete, submitAnswer, skipQuestion, nextQuestion } =
-    useQuiz();
+  const {
+    questions,
+    currentIndex,
+    phase,
+    lastAnswer,
+    wasCorrect,
+    isComplete,
+    submitAnswer,
+    skipQuestion,
+    nextQuestion,
+    markTenseHintUsed,
+  } = useQuiz();
   const [answer, setAnswer] = useState("");
   const [showWordList, setShowWordList] = useState(false);
+  const [showTenseHint, setShowTenseHint] = useState(false);
   const answerInputRef = useRef<TextInput>(null);
 
   // Every possible answer in this quiz, for the optional "stuck?" reveal —
@@ -56,6 +68,9 @@ export default function Quiz() {
 
   const currentQuestion = questions[currentIndex];
   const total = questions.length;
+  const currentTenseLabel = currentQuestion.tense
+    ? TENSES_BY_LANGUAGE[targetLanguage]?.find((tense) => tense.value === currentQuestion.tense)?.label
+    : null;
 
   function handleSubmit() {
     submitAnswer(answer);
@@ -64,6 +79,7 @@ export default function Quiz() {
   async function handleNext() {
     setAnswer("");
     setShowWordList(false);
+    setShowTenseHint(false);
     await nextQuestion();
   }
 
@@ -130,11 +146,31 @@ export default function Quiz() {
                 <Text style={styles.centerText}>{wordList.join(", ")}</Text>
               </ScrollView>
             )}
+            {/* Only for verb-conjugation questions — currentTenseLabel is
+                null for vocab/flip questions and anything generated before
+                this existed, so the button doesn't render at all there.
+                No cost or limit, same as the word-list reveal above — this
+                just tells the tense, never the actual conjugated answer. */}
+            {currentTenseLabel && (
+              <Pressable
+                style={shared.backLink}
+                onPress={() => {
+                  if (!showTenseHint) markTenseHintUsed();
+                  setShowTenseHint((v) => !v);
+                }}
+              >
+                <Text style={styles.skipButtonText}>
+                  {showTenseHint ? currentTenseLabel : t("not_sure_which_tense")}
+                </Text>
+              </Pressable>
+            )}
           </>
         ) : (
           <Animated.View style={styles.feedbackBlock} entering={FadeIn.duration(200)}>
             <AnswerFeedback correct={wasCorrect}>
-              <Text style={styles.centerText}>{t("your_answer_was", { answer: lastAnswer })}</Text>
+              <Text style={[styles.yourAnswer, styles.centerText]}>
+                {t("your_answer_was", { answer: lastAnswer })}
+              </Text>
               {wasCorrect ? (
                 <Text style={[styles.correct, styles.centerText]}>✓ {t("correct_feedback")}</Text>
               ) : (
@@ -174,7 +210,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   questionText: {
-    fontSize: 20,
+    fontSize: 24,
     textAlign: "center",
   },
   answerInput: {
@@ -185,15 +221,24 @@ const styles = StyleSheet.create({
   skipButtonText: {
     opacity: 0.6,
   },
+  // Bigger and bolder than the rest of the feedback block — this is
+  // exactly where a dropped or wrong accent needs to actually be visible,
+  // and the previous size (inherited default text, ~14px) was too small
+  // to tell "jugabamos" from "jugábamos" at a glance.
+  yourAnswer: {
+    fontSize: 19,
+    fontWeight: "700",
+    color: colors.text,
+  },
   correct: {
     color: colors.success,
-    fontSize: 16,
-    fontWeight: "600",
+    fontSize: 19,
+    fontWeight: "800",
   },
   incorrect: {
     color: colors.error,
-    fontSize: 16,
-    fontWeight: "600",
+    fontSize: 19,
+    fontWeight: "800",
   },
   wordList: {
     maxHeight: 100,

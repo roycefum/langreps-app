@@ -6,6 +6,12 @@ export type Question = {
   // with no id (ad-hoc/unsaved lists). Used to record attempts against a
   // specific word for adaptive requizzing.
   vocab_pair_id: string | null;
+  // Which tense/mood value (e.g. "preterite") this specific question
+  // conjugates in — the AI reports this per question since it picks the
+  // tense itself in a multi-tense quiz. Null for vocab/flip questions and
+  // anything generated before this existed. Powers the "not sure which
+  // tense?" reveal on the quiz screen.
+  tense: string | null;
 };
 
 // Curated list for the language picker dropdowns — the backend accepts

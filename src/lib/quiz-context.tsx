@@ -43,6 +43,11 @@ type QuizState = {
   skipQuestion: () => void;
   nextQuestion: () => Promise<void>;
   resetQuiz: () => void;
+  // Marks that the current question's tense-hint reveal was tapped, so
+  // it's recorded alongside the attempt when this question is answered —
+  // developer-facing only (see create_quiz_attempt on the backend), never
+  // shown back to the user or affecting scoring.
+  markTenseHintUsed: () => void;
 };
 
 const QuizContext = createContext<QuizState | null>(null);
@@ -60,6 +65,7 @@ export function QuizProvider({ children }: { children: ReactNode }) {
   const [correctCount, setCorrectCount] = useState(0);
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [requireAccents, setRequireAccentsState] = useState(false);
+  const [usedTenseHint, setUsedTenseHint] = useState(false);
 
   const isComplete = questions.length > 0 && currentIndex >= questions.length;
 
@@ -70,6 +76,7 @@ export function QuizProvider({ children }: { children: ReactNode }) {
     setPhase("question");
     setCorrectCount(options.startCorrect ?? 0);
     setSessionId(newSessionId);
+    setUsedTenseHint(false);
     // Re-read fresh (per this specific language pair, not a flat global
     // default) so a change made in Settings takes effect on the next
     // quiz, without needing to restart the app.
@@ -82,7 +89,7 @@ export function QuizProvider({ children }: { children: ReactNode }) {
   // shouldn't block the user's quiz. Only meaningful when there's a real
   // session (a saved list); ad-hoc quizzes have no history to build.
   const recordAttempt = useCallback(
-    async (question: Question, correct: boolean, userAnswer: string) => {
+    async (question: Question, correct: boolean, userAnswer: string, hintUsed: boolean) => {
       if (!sessionId) return;
       try {
         await apiRequest("/quiz-attempts", {
@@ -95,6 +102,8 @@ export function QuizProvider({ children }: { children: ReactNode }) {
             was_correct: correct,
             user_answer: userAnswer,
             correct_answer: question.correct_answer,
+            tense: question.tense ?? null,
+            used_tense_hint: hintUsed,
           },
         });
       } catch {
@@ -142,7 +151,7 @@ export function QuizProvider({ children }: { children: ReactNode }) {
       setWasCorrect(correct);
       if (correct) setCorrectCount((prev) => prev + 1);
       setPhase("feedback");
-      recordAttempt(current, correct, answer);
+      recordAttempt(current, correct, answer, usedTenseHint);
       persistProgress(currentIndex + 1);
       Haptics.notificationAsync(
         correct
@@ -152,7 +161,7 @@ export function QuizProvider({ children }: { children: ReactNode }) {
         // No-op on platforms/devices without haptic support (e.g. web).
       });
     },
-    [questions, currentIndex, recordAttempt, persistProgress, requireAccents]
+    [questions, currentIndex, recordAttempt, persistProgress, requireAccents, usedTenseHint]
   );
 
   const skipQuestion = useCallback(() => {
@@ -160,9 +169,9 @@ export function QuizProvider({ children }: { children: ReactNode }) {
     setLastAnswer("(skipped)");
     setWasCorrect(false);
     setPhase("feedback");
-    recordAttempt(current, false, "(skipped)");
+    recordAttempt(current, false, "(skipped)", usedTenseHint);
     persistProgress(currentIndex + 1);
-  }, [questions, currentIndex, recordAttempt, persistProgress]);
+  }, [questions, currentIndex, recordAttempt, persistProgress, usedTenseHint]);
 
   const nextQuestion = useCallback(async () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {
@@ -170,7 +179,10 @@ export function QuizProvider({ children }: { children: ReactNode }) {
     });
     setCurrentIndex((prev) => prev + 1);
     setPhase("question");
+    setUsedTenseHint(false);
   }, []);
+
+  const markTenseHintUsed = useCallback(() => setUsedTenseHint(true), []);
 
   const resetQuiz = useCallback(() => {
     setQuestions([]);
@@ -195,6 +207,7 @@ export function QuizProvider({ children }: { children: ReactNode }) {
       skipQuestion,
       nextQuestion,
       resetQuiz,
+      markTenseHintUsed,
     }),
     [
       questions,
@@ -210,6 +223,7 @@ export function QuizProvider({ children }: { children: ReactNode }) {
       skipQuestion,
       nextQuestion,
       resetQuiz,
+      markTenseHintUsed,
     ]
   );
 
