@@ -86,11 +86,15 @@ export default function Onboarding() {
   const { t } = useI18n();
   const [slideIndex, setSlideIndex] = useState(0);
   const [goingBack, setGoingBack] = useState(false);
+  const [dontShowAgain, setDontShowAgain] = useState(false);
   const isLast = slideIndex === SLIDES.length - 1;
   const slide = SLIDES[slideIndex];
 
+  // Skip and Get Started only dismiss this for the current launch — the
+  // intro comes back next time — unless "Don't show again" was ticked, the
+  // only thing that permanently turns it off.
   async function finish() {
-    await setHasSeenOnboarding(true);
+    if (dontShowAgain) await setHasSeenOnboarding(true);
     router.replace("/");
   }
 
@@ -153,6 +157,11 @@ export default function Onboarding() {
           <Text style={shared.primaryButtonText}>{isLast ? t("get_started") : t("next")}</Text>
         </PressButton>
       </View>
+
+      <Pressable style={styles.dontShowRow} onPress={() => setDontShowAgain((v) => !v)} hitSlop={8}>
+        <Text style={styles.dontShowCheckbox}>{dontShowAgain ? "☑" : "☐"}</Text>
+        <Text style={shared.hint}>{t("dont_show_again")}</Text>
+      </Pressable>
     </View>
   );
 }
@@ -205,6 +214,16 @@ const styles = StyleSheet.create({
   },
   navSpacer: {
     width: 1,
+  },
+  dontShowRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+    marginTop: 4,
+  },
+  dontShowCheckbox: {
+    fontSize: 24,
+    color: colors.tertiary,
   },
   nextButton: {
     paddingHorizontal: 32,

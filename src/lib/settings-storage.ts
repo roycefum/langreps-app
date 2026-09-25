@@ -41,10 +41,12 @@ export async function setAdaptiveQuizzesEnabled(enabled: boolean): Promise<void>
   await SecureStore.setItemAsync(ADAPTIVE_QUIZZES_ENABLED_KEY, String(enabled));
 }
 
-// Off by default (i.e. "not seen yet") — gates the one-time onboarding
-// screen shown on first launch. Web has no persistence for this (see
-// isWeb guard above), so it would show every time on web — acceptable
-// since web isn't a real distribution target for this app.
+// Off by default (i.e. "not dismissed yet") — the intro screens show on
+// every app launch until the user explicitly taps "Don't show again" on
+// them; only that persists this. Skipping or finishing the intro without
+// ticking it just dismisses it for this launch. Web has no persistence for
+// this (see isWeb guard above), so it would show every time on web —
+// acceptable since web isn't a real distribution target for this app.
 export async function getHasSeenOnboarding(): Promise<boolean> {
   if (isWeb) return true;
   const stored = await SecureStore.getItemAsync(HAS_SEEN_ONBOARDING_KEY);
@@ -54,6 +56,22 @@ export async function getHasSeenOnboarding(): Promise<boolean> {
 export async function setHasSeenOnboarding(seen: boolean): Promise<void> {
   if (isWeb) return;
   await SecureStore.setItemAsync(HAS_SEEN_ONBOARDING_KEY, String(seen));
+}
+
+// In-memory only, deliberately NOT persisted — resets on every app launch,
+// which is exactly the "once per launch" behavior wanted. Without it, an
+// intro that no longer marks itself permanently seen when dismissed would
+// be redirected to again the moment Home remounts, forever: Home would see
+// "not permanently dismissed," bounce back to the intro, and the user
+// could never reach Home at all.
+let onboardingShownThisLaunch = false;
+
+export function hasShownOnboardingThisLaunch(): boolean {
+  return onboardingShownThisLaunch;
+}
+
+export function markOnboardingShownThisLaunch(): void {
+  onboardingShownThisLaunch = true;
 }
 
 // ============================================================

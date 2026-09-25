@@ -8,7 +8,11 @@ import { apiRequest } from "@/lib/api";
 import { useAuth } from "@/lib/auth-context";
 import { useI18n } from "@/lib/i18n";
 import { usePairs } from "@/lib/pairs-context";
-import { getHasSeenOnboarding } from "@/lib/settings-storage";
+import {
+  getHasSeenOnboarding,
+  hasShownOnboardingThisLaunch,
+  markOnboardingShownThisLaunch,
+} from "@/lib/settings-storage";
 
 export default function Home() {
   const router = useRouter();
@@ -43,7 +47,15 @@ export default function Home() {
     (async () => {
       const seenOnboarding = await getHasSeenOnboarding();
       if (cancelled) return;
-      if (!seenOnboarding) {
+      // Shown once per app launch until permanently dismissed ("Don't show
+      // again" on the intro itself). The in-memory flag is what keeps this
+      // from redirecting again the moment Home remounts after the intro is
+      // dismissed for this launch — without it the intro would loop
+      // forever. Falling through (instead of returning) once it's been
+      // shown this launch is deliberate: a first-time logged-in user still
+      // needs to reach the Settings redirect below afterward.
+      if (!seenOnboarding && !hasShownOnboardingThisLaunch()) {
+        markOnboardingShownThisLaunch();
         router.replace("/onboarding");
         return;
       }

@@ -277,4 +277,5 @@ export const es = {
   "browse_lists_button": "Ver tus listas",
   "select_tenses_placeholder": "Selecciona los tiempos verbales",
   "not_sure_which_tense": "¿No sabes qué tiempo verbal es?",
+  "dont_show_again": "No volver a mostrar",
 };

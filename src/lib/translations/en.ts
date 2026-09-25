@@ -277,4 +277,5 @@ export const en = {
   "browse_lists_button": "Browse Your Lists",
   "select_tenses_placeholder": "Select tenses",
   "not_sure_which_tense": "Not sure which tense?",
+  "dont_show_again": "Don't show this again",
 };

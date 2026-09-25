@@ -24,6 +24,7 @@ import { colors, shared } from "@/constants/styles";
 import { useI18n } from "@/lib/i18n";
 import { usePairs } from "@/lib/pairs-context";
 import { useQuiz } from "@/lib/quiz-context";
+import { removeAccents } from "@/lib/text";
 import { TENSES_BY_LANGUAGE } from "@/lib/types";
 
 export default function Quiz() {
@@ -172,7 +173,25 @@ export default function Quiz() {
                 {t("your_answer_was", { answer: lastAnswer })}
               </Text>
               {wasCorrect ? (
-                <Text style={[styles.correct, styles.centerText]}>✓ {t("correct_feedback")}</Text>
+                <>
+                  <Text style={[styles.correct, styles.centerText]}>✓ {t("correct_feedback")}</Text>
+                  {/* Graded correct, but what was typed still differs from the
+                      real spelling (ignoring case) — which can only be
+                      because accents are being ignored. Counted as right,
+                      but the real spelling is shown with just the accented
+                      letters picked out, so the accent isn't silently never
+                      learned. No sentence explaining it — the highlight
+                      does the talking. */}
+                  {lastAnswer.trim().toLowerCase() !== currentQuestion.correct_answer.trim().toLowerCase() && (
+                    <Text style={[styles.accentAnswer, styles.centerText]}>
+                      {[...currentQuestion.correct_answer.normalize("NFC")].map((char, i) => (
+                        <Text key={i} style={removeAccents(char) !== char ? styles.accentLetter : undefined}>
+                          {char}
+                        </Text>
+                      ))}
+                    </Text>
+                  )}
+                </>
               ) : (
                 <Text style={[styles.incorrect, styles.centerText]}>
                   {t("incorrect_feedback", { answer: currentQuestion.correct_answer })}
@@ -239,6 +258,19 @@ const styles = StyleSheet.create({
     color: colors.error,
     fontSize: 19,
     fontWeight: "800",
+  },
+  // Shown under a correct answer when accents were ignored in grading — the
+  // real spelling gets the same large, bold treatment as the rest of the
+  // feedback, with only the accented letters colored and underlined.
+  accentAnswer: {
+    fontSize: 26,
+    fontWeight: "800",
+    color: colors.text,
+    marginTop: 4,
+  },
+  accentLetter: {
+    color: colors.accentShadow,
+    textDecorationLine: "underline",
   },
   wordList: {
     maxHeight: 100,

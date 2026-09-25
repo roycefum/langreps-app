@@ -276,3 +276,4 @@
 275,my-quizzes.tsx,browse_lists_button,Browse Your Lists,Ver tus listas,Voir tes listes,"Links to My Lists, which also has ready-made Sample Lists"
 276,generate-quiz.tsx,select_tenses_placeholder,Select tenses,Selecciona los tiempos verbales,Sélectionne les temps,Multi-select tense field's collapsed placeholder when nothing's picked (shouldn't normally happen — Generate is disabled with none selected)
 277,quiz.tsx,not_sure_which_tense,Not sure which tense?,¿No sabes qué tiempo verbal es?,Pas sûr du temps verbal ?,"Reveals just the tense label (e.g. ""Preterite""), never the answer"
+278,onboarding.tsx,dont_show_again,Don't show this again,No volver a mostrar,Ne plus afficher,Checkbox on the intro screens — the only thing that permanently turns the intro off
