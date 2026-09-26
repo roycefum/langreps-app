@@ -18,7 +18,7 @@ import { BackButton } from "@/components/back-button";
 import { CefrLevelPicker } from "@/components/cefr-level-picker";
 import { InsightCard, InsightSkeleton } from "@/components/insight-card";
 import { LanguageSummary } from "@/components/language-picker";
-import { MultiSelectDropdown } from "@/components/multi-select-dropdown";
+import { Dropdown } from "@/components/dropdown";
 import { ProgressBar } from "@/components/progress-bar";
 import { PressButton } from "@/components/press-button";
 import { colors, shared } from "@/constants/styles";
@@ -59,14 +59,12 @@ export default function GenerateQuiz() {
   const [cefrLevel, setCefrLevel] = useState<CefrLevel>(DEFAULT_CEFR_LEVEL);
   // Only meaningful for a "Verb" list — defaults to just that language's
   // present tense (the first entry in TENSES_BY_LANGUAGE), since present
-  // tense is the most useful starting point for most learners. More than
-  // one can be picked (see the MultiSelectDropdown below), spreading the
-  // quiz's questions across the selected tenses instead of always
-  // conjugating in just one.
-  const [verbTenses, setVerbTenses] = useState<string[]>(() => {
-    const first = TENSES_BY_LANGUAGE[targetLanguage]?.[0]?.value;
-    return first ? [first] : [];
-  });
+  // tense is the most useful starting point for most learners. One tense
+  // per quiz: the learner is told which one it is, so the questions don't
+  // need to give it away with a time word or other clue.
+  const [verbTense, setVerbTense] = useState<string>(
+    () => TENSES_BY_LANGUAGE[targetLanguage]?.[0]?.value ?? ""
+  );
   // Vocab-only reversed-direction mode — shows the target word and asks for
   // its source-language translation. Not offered for verb lists.
   const [flip, setFlip] = useState(false);
@@ -79,13 +77,8 @@ export default function GenerateQuiz() {
   const [progress, setProgress] = useState({ done: 0, total: 0 });
 
   const tenseOptions = TENSES_BY_LANGUAGE[targetLanguage] ?? [];
-  // What the collapsed tense field shows — the selected labels joined, in
-  // the language's own tense order rather than selection order, or a
-  // placeholder if somehow nothing's selected.
-  const tenseDisplayValue = tenseOptions
-    .filter((tense) => verbTenses.includes(tense.value))
-    .map((tense) => tense.label)
-    .join(", ") || t("select_tenses_placeholder");
+  const tenseLabels = tenseOptions.map((tense) => tense.label);
+  const selectedTenseLabel = tenseOptions.find((tense) => tense.value === verbTense)?.label ?? "";
 
   useEffect(() => {
     getLanguagePairSettings(sourceLanguage, targetLanguage).then((settings) =>
@@ -137,7 +130,7 @@ export default function GenerateQuiz() {
   }, [userId, savedListId, pairs.length]);
 
   const requestedCount = Math.max(1, Math.min(parseInt(countText, 10) || 1, pairs.length));
-  const cannotGenerate = pairs.length < 3 || (listType === "Verb" && verbTenses.length === 0);
+  const cannotGenerate = pairs.length < 3;
 
   async function handleGenerate(mode: "similar" | "targeted" = "similar") {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium).catch(() => {
@@ -193,7 +186,7 @@ export default function GenerateQuiz() {
             target_language: targetLanguage,
             batch_size: c.length,
             level: cefrLevel,
-            verb_tenses: listType === "Verb" ? verbTenses : [],
+            verb_tenses: listType === "Verb" && verbTense ? [verbTense] : [],
             flip: listType === "Vocab" && flip,
             // Distinguishes "verb-shaped pair, tested as an ordinary word"
             // (a Vocab list) from "verb-shaped pair, conjugate it" (a Verb
@@ -219,7 +212,7 @@ export default function GenerateQuiz() {
           body: {
             list_id: savedListId,
             questions: allQuestions,
-            verb_tenses: listType === "Verb" ? verbTenses : [],
+            verb_tenses: listType === "Verb" && verbTense ? [verbTense] : [],
           },
         });
         sessionId = session.session_id;
@@ -296,11 +289,12 @@ export default function GenerateQuiz() {
           {listType === "Verb" && tenseOptions.length > 0 && (
             <View style={styles.tenseField}>
               <Text style={shared.fieldLabel}>{t("tense_label")}</Text>
-              <MultiSelectDropdown
-                displayValue={tenseDisplayValue}
-                selectedValues={verbTenses}
-                onChange={setVerbTenses}
-                options={tenseOptions}
+              <Dropdown
+                value={selectedTenseLabel}
+                onChange={(label) =>
+                  setVerbTense(tenseOptions.find((tense) => tense.label === label)?.value ?? verbTense)
+                }
+                options={tenseLabels}
               />
             </View>
           )}

@@ -41,11 +41,9 @@ export default function Quiz() {
     submitAnswer,
     skipQuestion,
     nextQuestion,
-    markTenseHintUsed,
   } = useQuiz();
   const [answer, setAnswer] = useState("");
   const [showWordList, setShowWordList] = useState(false);
-  const [showTenseHint, setShowTenseHint] = useState(false);
   const answerInputRef = useRef<TextInput>(null);
 
   // Every possible answer in this quiz, for the optional "stuck?" reveal —
@@ -80,7 +78,6 @@ export default function Quiz() {
   async function handleNext() {
     setAnswer("");
     setShowWordList(false);
-    setShowTenseHint(false);
     await nextQuestion();
   }
 
@@ -105,6 +102,10 @@ export default function Quiz() {
 
       {/* Keyed by question so each new question slides in fresh. */}
       <Animated.View key={currentIndex} style={styles.body} entering={FadeInRight.duration(260)}>
+        {/* Verb quizzes are a single tense the learner is told up front —
+            the sentence itself carries no time clue for it. Null for
+            vocab/flip questions, so nothing renders there. */}
+        {currentTenseLabel && <Text style={styles.tenseLabel}>{currentTenseLabel}</Text>}
         <Text style={styles.questionText}>{currentQuestion.question_text}</Text>
 
         {phase === "question" ? (
@@ -146,24 +147,6 @@ export default function Quiz() {
               <ScrollView style={styles.wordList}>
                 <Text style={styles.centerText}>{wordList.join(", ")}</Text>
               </ScrollView>
-            )}
-            {/* Only for verb-conjugation questions — currentTenseLabel is
-                null for vocab/flip questions and anything generated before
-                this existed, so the button doesn't render at all there.
-                No cost or limit, same as the word-list reveal above — this
-                just tells the tense, never the actual conjugated answer. */}
-            {currentTenseLabel && (
-              <Pressable
-                style={shared.backLink}
-                onPress={() => {
-                  if (!showTenseHint) markTenseHintUsed();
-                  setShowTenseHint((v) => !v);
-                }}
-              >
-                <Text style={styles.skipButtonText}>
-                  {showTenseHint ? currentTenseLabel : t("not_sure_which_tense")}
-                </Text>
-              </Pressable>
             )}
           </>
         ) : (
@@ -227,6 +210,12 @@ const styles = StyleSheet.create({
   },
   centerText: {
     textAlign: "center",
+  },
+  tenseLabel: {
+    textAlign: "center",
+    fontSize: 15,
+    fontWeight: "700",
+    color: colors.accentShadow,
   },
   questionText: {
     fontSize: 24,
