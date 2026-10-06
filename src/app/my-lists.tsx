@@ -27,11 +27,14 @@ type SortBy = "name" | "date";
 // One canonical direction per language pair — the app's own Flip toggle
 // (Generate Quiz, for Vocab lists) already covers quizzing the reverse
 // direction, so offering both directions as separate options would just
-// be redundant clutter.
+// be redundant clutter. English is also offered as a target, for Spanish
+// and French speakers learning English.
 const LANGUAGE_PAIRS: [string, string][] = [
   ["English", "Spanish"],
   ["English", "French"],
   ["Spanish", "French"],
+  ["Spanish", "English"],
+  ["French", "English"],
 ];
 
 const PAIR_OPTIONS = LANGUAGE_PAIRS.map(([source, target]) => `${source} → ${target}`);
@@ -40,11 +43,21 @@ const PAIR_OPTIONS = LANGUAGE_PAIRS.map(([source, target]) => `${source} → ${t
 // (core/sample_lists.py) — POST /sample-lists takes this literal string.
 // labelKey is the frontend's own translated display label, which can
 // differ from the backend's (always-English) stored list name.
+// `count` is only known for the everyday lists (always 50 words); the grammar
+// lists vary in size by language, so their rows show no count.
 const SAMPLE_CATEGORY_DEFS = [
-  { categoryKey: "common_words", labelKey: "sample_category_common_words" },
-  { categoryKey: "common_verbs", labelKey: "sample_category_common_verbs" },
-  { categoryKey: "irregular_verbs", labelKey: "sample_category_irregular_verbs" },
-  { categoryKey: "food", labelKey: "sample_category_food" },
+  { categoryKey: "common_words", labelKey: "sample_category_common_words", group: "everyday", count: 50 },
+  { categoryKey: "common_verbs", labelKey: "sample_category_common_verbs", group: "everyday", count: 50 },
+  { categoryKey: "irregular_verbs", labelKey: "sample_category_irregular_verbs", group: "everyday", count: 50 },
+  { categoryKey: "food", labelKey: "sample_category_food", group: "everyday", count: 50 },
+  { categoryKey: "subject_pronouns", labelKey: "sample_category_subject_pronouns", group: "grammar", count: 0 },
+  { categoryKey: "conjunctions", labelKey: "sample_category_conjunctions", group: "grammar", count: 0 },
+  { categoryKey: "prepositions", labelKey: "sample_category_prepositions", group: "grammar", count: 0 },
+];
+
+const SAMPLE_GROUPS = [
+  { groupKey: "everyday", titleKey: "sample_group_everyday" },
+  { groupKey: "grammar", titleKey: "sample_group_grammar" },
 ];
 
 // Mirrors core/sample_lists.py's SAMPLE_CATEGORY_META labels exactly —
@@ -56,6 +69,9 @@ const ENGLISH_CATEGORY_LABELS: Record<string, string> = {
   common_verbs: "Common Verbs",
   irregular_verbs: "Irregular Verbs",
   food: "Food",
+  subject_pronouns: "Subject Pronouns",
+  conjunctions: "Conjunctions",
+  prepositions: "Prepositions",
 };
 
 export default function MyLists() {
@@ -375,7 +391,10 @@ export default function MyLists() {
       {!isLoading && activeTab === "samples" && (
         <View style={styles.section}>
           <Text style={shared.hint}>{t("sample_lists_hint")}</Text>
-              {SAMPLE_CATEGORY_DEFS.map((def) => {
+              {SAMPLE_GROUPS.map((group) => (
+                <View key={group.groupKey} style={styles.section}>
+                  <Text style={styles.sectionTitle}>{t(group.titleKey)}</Text>
+                  {SAMPLE_CATEGORY_DEFS.filter((def) => def.group === group.groupKey).map((def) => {
                 const pairIndex = pairIndexByCategory[def.categoryKey] ?? 0;
                 const [sourceLanguage, targetLanguage] = LANGUAGE_PAIRS[pairIndex];
                 // The backend saves a sample list under its plain English
@@ -393,10 +412,12 @@ export default function MyLists() {
                 return (
                   <View key={def.categoryKey} style={styles.row}>
                     <View style={styles.rowMain}>
-                      {/* Every category is a fixed 50-word set (see
-                          core/sample_lists.py) — no local data to read a
-                          real count from now that generation is on-demand. */}
-                      <Text style={styles.rowTitle}>{t(def.labelKey)} (50)</Text>
+                      {/* The everyday lists are a fixed 50-word set (see
+                          core/sample_lists.py); grammar lists vary by
+                          language, so they show no count. */}
+                      <Text style={styles.rowTitle}>
+                        {def.count > 0 ? `${t(def.labelKey)} (${def.count})` : t(def.labelKey)}
+                      </Text>
                       <Dropdown
                         value={PAIR_OPTIONS[pairIndex]}
                         onChange={(label) => {
@@ -423,7 +444,9 @@ export default function MyLists() {
                     </PressButton>
                   </View>
                 );
-              })}
+                  })}
+                </View>
+              ))}
         </View>
       )}
     </ScrollView>

@@ -127,7 +127,7 @@ export function PairsReview({ source, children }: PairsReviewProps) {
   function showListTypeExplanation(isLocked: boolean) {
     Alert.alert(
       t("list_type_info_alert_title"),
-      `${t("list_type_info_vocab")}\n\n${t("list_type_info_verb")}` +
+      `${t("list_type_info_vocab")}\n\n${t("list_type_info_verb")}\n\n${t("list_type_info_grammar")}` +
         (isLocked ? `\n\n${t("list_type_locked_explanation")}` : "")
     );
   }

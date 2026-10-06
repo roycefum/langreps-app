@@ -123,7 +123,9 @@ export function PairsProvider({ children }: { children: ReactNode }) {
     setTargetLanguage(list.target_language);
     setSavedListId(list.id);
     setListName(list.name);
-    setListType(list.list_type === "verb" ? "Verb" : DEFAULT_LIST_TYPE);
+    setListType(
+      list.list_type === "verb" ? "Verb" : list.list_type === "grammar" ? "Grammar" : DEFAULT_LIST_TYPE
+    );
   }, []);
 
   return (

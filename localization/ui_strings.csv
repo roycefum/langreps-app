@@ -138,7 +138,7 @@
 137,quiz-feedback.ts,trend_declining_a_lot_5,"A significant drop here. Don't worry, just revisit the list before jumping back in.","Una bajada importante aquí. No te preocupes, solo repasa la lista antes de volver a intentarlo.","Une baisse importante ici. Pas de souci, revois juste la liste avant de t'y remettre.",
 138,backend (api errors),backend_error_text,Various FastAPI HTTPException / Pydantic validation messages surfaced via e.message,,,"Decided: stays English-only — these are dev-facing/edge-case errors (malformed requests, validation failures), not normal user-facing copy"
 139,my-lists.tsx,sample_lists_title,Sample Lists,Listas de ejemplo,Listes types,
-140,my-lists.tsx,sample_lists_hint,"Add a ready-made 50-word list for any language pair — add as many as you want, whenever you want.","Añade una lista de 50 palabras ya preparada para cualquier par de idiomas — añade tantas como quieras, cuando quieras.","Ajoute une liste de 50 mots prête à l'emploi pour n'importe quelle paire de langues — ajoutes-en autant que tu veux, quand tu veux.",
+140,my-lists.tsx,sample_lists_hint,"Add a ready-made list for any language pair — add as many as you want, whenever you want.","Añade una lista ya preparada para cualquier par de idiomas — añade tantas como quieras, cuando quieras.","Ajoute une liste prête à l'emploi pour n'importe quelle paire de langues — ajoutes-en autant que tu veux, quand tu veux.",
 141,my-lists.tsx,sample_list_name_template,{source} → {target} Vocab / {source} → {target} Verbs,{source} → {target} Vocabulario / {source} → {target} Verbos,{source} → {target} Vocabulaire / {source} → {target} Verbes,Template — used as both display label and saved list name
 142,my-lists.tsx,sample_list_add,Add,Añadir,Ajouter,
 143,my-lists.tsx,sample_list_adding,Adding…,Añadiendo…,Ajout en cours…,
@@ -277,3 +277,10 @@
 276,generate-quiz.tsx,select_tenses_placeholder,Select tenses,Selecciona los tiempos verbales,Sélectionne les temps,Multi-select tense field's collapsed placeholder when nothing's picked (shouldn't normally happen — Generate is disabled with none selected)
 277,quiz.tsx,not_sure_which_tense,Not sure which tense?,¿No sabes qué tiempo verbal es?,Pas sûr du temps verbal ?,"Reveals just the tense label (e.g. ""Preterite""), never the answer"
 278,onboarding.tsx,dont_show_again,Don't show this again,No volver a mostrar,Ne plus afficher,Checkbox on the intro screens — the only thing that permanently turns the intro off
+279,my-lists.tsx,sample_category_subject_pronouns,Subject Pronouns,Pronombres de sujeto,Pronoms sujets,Grammar sample-list category label
+280,my-lists.tsx,sample_category_conjunctions,Conjunctions,Conjunciones,Conjonctions,Grammar sample-list category label
+281,my-lists.tsx,sample_category_prepositions,Prepositions,Preposiciones,Prépositions,Grammar sample-list category label
+282,my-lists.tsx,sample_group_everyday,Everyday words,Palabras cotidianas,Mots du quotidien,"Section header on the Sample Lists tab, above the 50-word lists"
+283,my-lists.tsx,sample_group_grammar,Grammar words,Palabras gramaticales,Mots grammaticaux,"Section header on the Sample Lists tab, above the grammar-word lists"
+284,pairs-review.tsx,list_type_info_grammar,"Grammar — function words (pronouns, prepositions, conjunctions, etc.), tested in context: each question gives you the sentence the word depends on.","Gramática — palabras funcionales (pronombres, preposiciones, conjunciones, etc.), evaluadas en contexto: cada pregunta te da la frase de la que depende la palabra.","Grammaire — mots outils (pronoms, prépositions, conjonctions, etc.), testés en contexte : chaque question te donne la phrase dont dépend le mot.",Third line of the list-type info alert
+285,my-quizzes.tsx,quiz_type_badge_grammar,Grammar,Gramática,Grammaire,Small badge next to the quiz row title

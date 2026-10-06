@@ -33,11 +33,13 @@ export type CefrLevel = (typeof CEFR_LEVELS)[number];
 export const DEFAULT_CEFR_LEVEL: CefrLevel = "A1";
 
 // Chosen when a list is saved (see pairs-review.tsx) — "Verb" unlocks a
-// tense selector on Generate Quiz; other types (e.g. Adjectives) can be
-// added later without touching the conjugation-testing logic itself,
-// which already fires automatically per-pair regardless of list type.
+// tense selector on Generate Quiz; "Grammar" (pronouns, prepositions,
+// conjunctions, ...) gets context-rich questions instead of a one-detail
+// sentence. Other types (e.g. Adjectives) can be added later without
+// touching the conjugation-testing logic itself, which already fires
+// automatically per-pair regardless of list type.
 // Lowercased before being sent as SaveListRequest.list_type on the backend.
-export const LIST_TYPES = ["Vocab", "Verb"] as const;
+export const LIST_TYPES = ["Vocab", "Verb", "Grammar"] as const;
 export type ListType = (typeof LIST_TYPES)[number];
 export const DEFAULT_LIST_TYPE: ListType = "Vocab";
 

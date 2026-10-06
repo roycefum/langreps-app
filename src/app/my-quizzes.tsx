@@ -17,7 +17,7 @@ type ListSummary = {
   name: string;
   source_language: string;
   target_language: string;
-  list_type: "vocab" | "verb";
+  list_type: "vocab" | "verb" | "grammar";
 };
 
 type QuizSessionRow = {
@@ -407,7 +407,9 @@ export default function MyQuizzes() {
                   ? `${t("quiz_type_badge_verb")} — ${
                       sessionTenseLabels.length > 0 ? sessionTenseLabels.join(", ") : t("mixed_tense")
                     }`
-                  : t("quiz_type_badge_vocab");
+                  : list.list_type === "grammar"
+                    ? t("quiz_type_badge_grammar")
+                    : t("quiz_type_badge_vocab");
               return (
                 <Animated.View
                   key={session.id}
