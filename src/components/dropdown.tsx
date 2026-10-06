@@ -1,5 +1,5 @@
 import * as Haptics from "expo-haptics";
-import { useRef, useState } from "react";
+import { useRef, useState, type ComponentRef } from "react";
 import { FlatList, Modal, Pressable, StyleSheet, Text, useWindowDimensions, View } from "react-native";
 import Animated, { FadeIn } from "react-native-reanimated";
 
@@ -27,7 +27,9 @@ const EDGE_MARGIN = 16;
 // when there's no room below), not as a sheet at the bottom of the screen.
 export function Dropdown({ value, onChange, options, disabled }: DropdownProps) {
   const [anchor, setAnchor] = useState<Anchor | null>(null);
-  const fieldRef = useRef<View>(null);
+  // ComponentRef gives the instance type (with measureInWindow) — React Native
+  // 0.88's strict types no longer accept the component type itself as the ref type.
+  const fieldRef = useRef<ComponentRef<typeof View>>(null);
   const { height: windowHeight } = useWindowDimensions();
 
   function open() {

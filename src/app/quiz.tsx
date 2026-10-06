@@ -1,5 +1,5 @@
 import { useRouter } from "expo-router";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState, type ComponentRef } from "react";
 import {
   Keyboard,
   KeyboardAvoidingView,
@@ -44,7 +44,7 @@ export default function Quiz() {
   } = useQuiz();
   const [answer, setAnswer] = useState("");
   const [showWordList, setShowWordList] = useState(false);
-  const answerInputRef = useRef<TextInput>(null);
+  const answerInputRef = useRef<ComponentRef<typeof TextInput>>(null);
 
   // Every possible answer in this quiz, for the optional "stuck?" reveal —
   // an occasionally-ambiguous question can still be figured out by
