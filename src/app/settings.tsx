@@ -5,6 +5,7 @@ import { Alert, Pressable, StyleSheet, Switch, Text, View } from "react-native";
 import { BackButton } from "@/components/back-button";
 import { CefrLevelPicker } from "@/components/cefr-level-picker";
 import { LanguageForm } from "@/components/language-form";
+import { PressButton } from "@/components/press-button";
 import { colors, shared } from "@/constants/styles";
 import { useAuth } from "@/lib/auth-context";
 import { useI18n } from "@/lib/i18n";
@@ -20,6 +21,12 @@ import {
   type LanguagePairSettings,
 } from "@/lib/settings-storage";
 import { type CefrLevel } from "@/lib/types";
+
+// Flattened because Link asChild's Slot rejects an array of styles on its child.
+const loginButtonStyle = StyleSheet.flatten([
+  shared.secondaryButton,
+  { backgroundColor: colors.accent, borderBottomColor: colors.accentShadow, alignSelf: "stretch" as const },
+]);
 
 export default function Settings() {
   const { t } = useI18n();
@@ -114,10 +121,6 @@ export default function Settings() {
 
   return (
     <View style={shared.screen}>
-      {/* Blocks the native edge-swipe-back gesture too, not just the
-          custom arrow below — same reasoning as BackButton's disabled
-          prop: guarantee generation finishes before this screen can be
-          left, not just usually finish in time. */}
       <BackButton href="/" />
       <Text style={shared.title}>{t("settings_title")}</Text>
 
@@ -169,6 +172,18 @@ export default function Settings() {
         </View>
         <Switch value={autoDelete} onValueChange={handleAutoDeleteChange} />
       </View>
+
+      {!userId && (
+        <View style={styles.settingBlock}>
+          <Text style={styles.settingTitle}>{t("account_section_title")}</Text>
+          <Text style={shared.hint}>{t("signup_incentive_hint")}</Text>
+          <Link href="/login" asChild>
+            <PressButton style={loginButtonStyle}>
+              <Text style={[shared.secondaryButtonText, shared.accentButtonText]}>{t("log_in_sign_up")}</Text>
+            </PressButton>
+          </Link>
+        </View>
+      )}
 
       {userId && (
         <View style={styles.settingBlock}>

@@ -8,6 +8,7 @@ const ADAPTIVE_QUIZZES_ENABLED_KEY = "langreps_adaptive_quizzes_enabled";
 const HAS_SEEN_ONBOARDING_KEY = "langreps_has_seen_onboarding";
 const LANGUAGE_PAIRS_KEY = "langreps_language_pairs";
 const ACTIVE_PAIR_KEY = "langreps_active_pair";
+const CONTINUED_AS_GUEST_KEY = "langreps_continued_as_guest";
 
 // Same web guard as auth-storage.ts — expo-secure-store throws (not
 // no-ops) on web, and this is a device-local setting anyway (explicitly
@@ -57,6 +58,18 @@ export async function getHasSeenOnboarding(): Promise<boolean> {
 export async function setHasSeenOnboarding(seen: boolean): Promise<void> {
   if (isWeb) return;
   await SecureStore.setItemAsync(HAS_SEEN_ONBOARDING_KEY, String(seen));
+}
+
+// Set when someone taps "Continue without an account" on the welcome screen,
+// so a returning guest goes straight to Home instead of being asked again.
+export async function getContinuedAsGuest(): Promise<boolean> {
+  if (isWeb) return true;
+  return (await SecureStore.getItemAsync(CONTINUED_AS_GUEST_KEY)) === "true";
+}
+
+export async function setContinuedAsGuest(continued: boolean): Promise<void> {
+  if (isWeb) return;
+  await SecureStore.setItemAsync(CONTINUED_AS_GUEST_KEY, String(continued));
 }
 
 // In-memory only, deliberately NOT persisted — resets on every app launch,

@@ -9,6 +9,7 @@ import Animated, { FadeInDown, LinearTransition, SlideOutLeft } from "react-nati
 import { BackButton } from "@/components/back-button";
 import { colors, shared } from "@/constants/styles";
 import { apiRequest } from "@/lib/api";
+import { useAuth } from "@/lib/auth-context";
 import { useI18n } from "@/lib/i18n";
 import { inMode, useMode } from "@/lib/mode-context";
 import { useQuiz } from "@/lib/quiz-context";
@@ -53,6 +54,7 @@ export default function MyQuizzes() {
   const router = useRouter();
   const { t } = useI18n();
   const { startQuiz } = useQuiz();
+  const { userId } = useAuth();
   const { mode } = useMode();
   const [lists, setLists] = useState<ListSummary[]>([]);
   const [sessions, setSessions] = useState<QuizSessionRow[]>([]);
@@ -87,6 +89,11 @@ export default function MyQuizzes() {
   }, [sessions, lists, sortBy]);
 
   const load = useCallback(async () => {
+    // Saved quizzes live on the account — a guest has none to load.
+    if (!userId) {
+      setIsLoading(false);
+      return;
+    }
     setIsLoading(true);
     setError(null);
     try {
@@ -106,7 +113,7 @@ export default function MyQuizzes() {
     } finally {
       setIsLoading(false);
     }
-  }, [mode]);
+  }, [mode, userId]);
 
   useFocusEffect(
     useCallback(() => {
@@ -324,6 +331,17 @@ export default function MyQuizzes() {
       <Text style={shared.title}>{t("my_quizzes_title")}</Text>
       <ModeChip />
 
+      {!userId && (
+        <View style={styles.emptyState}>
+          <Text style={styles.emptyTitle}>{t("quizzes_signin_prompt")}</Text>
+          <Link href="/login" asChild>
+            <PressButton style={browseListsButtonStyle}>
+              <Text style={shared.primaryButtonText}>{t("log_in_sign_up")}</Text>
+            </PressButton>
+          </Link>
+        </View>
+      )}
+
       {error && <Text style={shared.errorText}>{error}</Text>}
       {isLoading && <Text style={shared.hint}>{t("loading_ellipsis")}</Text>}
 
@@ -332,7 +350,7 @@ export default function MyQuizzes() {
           only when BOTH sections are empty; either one alone still gets
           its own plain sentence below, since that's a normal state for an
           active user (e.g. no quiz currently in progress). */}
-      {!isLoading && sessions.length === 0 && completedSessions.length === 0 && (
+      {!isLoading && !!userId && sessions.length === 0 && completedSessions.length === 0 && (
         <View style={styles.emptyState}>
           <Text style={styles.emptyTitle}>{t("no_quizzes_yet_title")}</Text>
           <Text style={shared.hint}>{t("no_quizzes_yet_hint")}</Text>
