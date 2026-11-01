@@ -26,7 +26,7 @@ export default function Home() {
   // entering a builder screen from Home should always start fresh —
   // otherwise backing out of a List Details session and opening a
   // different builder screen would silently keep showing that list.
-  function startFreshList(route: "/list-details" | "/paste-text" | "/upload-file") {
+  function startFreshList(route: "/list-details" | "/paste-text") {
     clearPairs();
     router.push(route);
   }
@@ -140,22 +140,20 @@ export default function Home() {
         <PressButton style={shared.primaryButton} onPress={() => startFreshList("/paste-text")}>
           <Text style={shared.primaryButtonText}>{t("paste_vocab_list")}</Text>
         </PressButton>
-        <PressButton style={shared.primaryButton} onPress={() => startFreshList("/upload-file")}>
-          <Text style={shared.primaryButtonText}>{t("upload_a_file")}</Text>
-        </PressButton>
+        {/* Shown to everyone — it holds both the learner's own lists and the
+            ready-made Essentials, and browsing those is a reason to sign up,
+            so adding one (not looking) is what asks for an account. */}
+        <Link href="/lists" asChild>
+          <PressButton style={libraryButtonStyle}>
+            <Text style={shared.primaryButtonText}>{t("lists")}</Text>
+          </PressButton>
+        </Link>
         {userId && (
-          <>
-            <Link href="/my-lists" asChild>
-              <PressButton style={libraryButtonStyle}>
-                <Text style={shared.primaryButtonText}>{t("my_lists")}</Text>
-              </PressButton>
-            </Link>
-            <Link href="/my-quizzes" asChild>
-              <PressButton style={libraryButtonStyle}>
-                <Text style={shared.primaryButtonText}>{t("my_quizzes")}</Text>
-              </PressButton>
-            </Link>
-          </>
+          <Link href="/my-quizzes" asChild>
+            <PressButton style={libraryButtonStyle}>
+              <Text style={shared.primaryButtonText}>{t("my_quizzes")}</Text>
+            </PressButton>
+          </Link>
         )}
       </View>
     </View>

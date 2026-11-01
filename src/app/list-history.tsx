@@ -71,7 +71,7 @@ export default function ListHistory() {
 
   return (
     <ScrollView style={shared.screen} contentContainerStyle={styles.content}>
-      <BackButton href="/my-lists" />
+      <BackButton href="/lists" />
       <Text style={shared.title}>{listName ?? t("progress_title")}</Text>
       <Text style={shared.hint}>{t("progress_title")}</Text>
 

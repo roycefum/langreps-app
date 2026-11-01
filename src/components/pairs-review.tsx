@@ -273,7 +273,7 @@ export function PairsReview({ source, children }: PairsReviewProps) {
             />
           </View>
           <Link
-            href="/my-lists"
+            href="/lists"
             style={[shared.secondaryButton, shared.myListsButton, styles.myListsInline]}
           >
             <Text style={[shared.secondaryButtonText, shared.accentButtonText]}>{t("my_lists_link")}</Text>

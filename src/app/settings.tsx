@@ -236,7 +236,6 @@ export default function Settings() {
           </View>
         )}
 
-        {isSavingProfile && <Text style={shared.hint}>{t("generating_starter_lists")}</Text>}
         {profileMessage && <Text style={shared.hint}>{profileMessage}</Text>}
         {profileError && <Text style={shared.errorText}>{profileError}</Text>}
       </View>

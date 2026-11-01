@@ -329,7 +329,7 @@ export default function MyQuizzes() {
         <View style={styles.emptyState}>
           <Text style={styles.emptyTitle}>{t("no_quizzes_yet_title")}</Text>
           <Text style={shared.hint}>{t("no_quizzes_yet_hint")}</Text>
-          <Link href="/my-lists" asChild>
+          <Link href="/lists" asChild>
             <PressButton style={browseListsButtonStyle}>
               <Text style={shared.primaryButtonText}>{t("browse_lists_button")}</Text>
             </PressButton>

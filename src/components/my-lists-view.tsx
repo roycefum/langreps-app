@@ -3,10 +3,6 @@ import { useCallback, useMemo, useRef, useState } from "react";
 import { Alert, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import Animated, { FadeInDown, LinearTransition, SlideOutLeft } from "react-native-reanimated";
 
-type Tab = "lists" | "samples";
-
-import { BackButton } from "@/components/back-button";
-import { Dropdown } from "@/components/dropdown";
 import { PressButton } from "@/components/press-button";
 import { colors, shared } from "@/constants/styles";
 import { apiRequest } from "@/lib/api";
@@ -24,74 +20,25 @@ type ListSummary = {
 
 type SortBy = "name" | "date";
 
-// One canonical direction per language pair — the app's own Flip toggle
-// (Generate Quiz, for Vocab lists) already covers quizzing the reverse
-// direction, so offering both directions as separate options would just
-// be redundant clutter. English is also offered as a target, for Spanish
-// and French speakers learning English.
-const LANGUAGE_PAIRS: [string, string][] = [
-  ["English", "Spanish"],
-  ["English", "French"],
-  ["Spanish", "French"],
-  ["Spanish", "English"],
-  ["French", "English"],
+const browseEssentialsButtonStyle = [
+  shared.primaryButton,
+  shared.generateQuizButton,
+  { marginTop: 4, alignSelf: "stretch" as const },
 ];
 
-const PAIR_OPTIONS = LANGUAGE_PAIRS.map(([source, target]) => `${source} → ${target}`);
-
-// categoryKey matches the backend's SAMPLE_CATEGORY_META keys exactly
-// (core/sample_lists.py) — POST /sample-lists takes this literal string.
-// labelKey is the frontend's own translated display label, which can
-// differ from the backend's (always-English) stored list name.
-// `count` is only known for the everyday lists (always 50 words); the grammar
-// lists vary in size by language, so their rows show no count.
-const SAMPLE_CATEGORY_DEFS = [
-  { categoryKey: "common_words", labelKey: "sample_category_common_words", group: "everyday", count: 50 },
-  { categoryKey: "common_verbs", labelKey: "sample_category_common_verbs", group: "everyday", count: 50 },
-  { categoryKey: "irregular_verbs", labelKey: "sample_category_irregular_verbs", group: "everyday", count: 50 },
-  { categoryKey: "food", labelKey: "sample_category_food", group: "everyday", count: 50 },
-  { categoryKey: "subject_pronouns", labelKey: "sample_category_subject_pronouns", group: "grammar", count: 0 },
-  { categoryKey: "conjunctions", labelKey: "sample_category_conjunctions", group: "grammar", count: 0 },
-  { categoryKey: "prepositions", labelKey: "sample_category_prepositions", group: "grammar", count: 0 },
-];
-
-const SAMPLE_GROUPS = [
-  { groupKey: "everyday", titleKey: "sample_group_everyday" },
-  { groupKey: "grammar", titleKey: "sample_group_grammar" },
-];
-
-// Mirrors core/sample_lists.py's SAMPLE_CATEGORY_META labels exactly —
-// used only to recognize an already-added list by name (the backend
-// always names a generated list in English, regardless of the app's UI
-// locale), never shown to the user.
-const ENGLISH_CATEGORY_LABELS: Record<string, string> = {
-  common_words: "Common Words",
-  common_verbs: "Common Verbs",
-  irregular_verbs: "Irregular Verbs",
-  food: "Food",
-  subject_pronouns: "Subject Pronouns",
-  conjunctions: "Conjunctions",
-  prepositions: "Prepositions",
-};
-
-export default function MyLists() {
+// The "My Lists" tab of the Lists screen (see app/lists.tsx) — the learner's
+// saved lists. onBrowseEssentials switches to the other tab from the empty state.
+export function MyListsView({ onBrowseEssentials }: { onBrowseEssentials: () => void }) {
   const router = useRouter();
   const { t } = useI18n();
   const { loadList } = usePairs();
   const [lists, setLists] = useState<ListSummary[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [addingKey, setAddingKey] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<Tab>("lists");
   const [sortBy, setSortBy] = useState<SortBy>("date");
   const [selectMode, setSelectMode] = useState(false);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [isBulkDeleting, setIsBulkDeleting] = useState(false);
-  // One selected language-pair index per category, independent of each
-  // other — defaults to English -> Spanish (index 0) for all of them.
-  const [pairIndexByCategory, setPairIndexByCategory] = useState<Record<string, number>>(() =>
-    Object.fromEntries(SAMPLE_CATEGORY_DEFS.map((c) => [c.categoryKey, 0]))
-  );
 
   const sortedLists = useMemo(() => {
     const copy = [...lists];
@@ -241,49 +188,12 @@ export default function MyLists() {
     );
   }
 
-  // Generates (via Gemini, server-side) and saves one category's sample
-  // list for its currently-selected language pair — no more static local
-  // data, so this takes a moment rather than being instant.
-  async function handleAddSample(categoryKey: string) {
-    if (addingKey) return;
-    const [sourceLanguage, targetLanguage] = LANGUAGE_PAIRS[pairIndexByCategory[categoryKey] ?? 0];
-    setAddingKey(categoryKey);
-    setError(null);
-    try {
-      await apiRequest("/sample-lists", {
-        method: "POST",
-        body: { category: categoryKey, source_language: sourceLanguage, target_language: targetLanguage },
-      });
-      await load();
-    } catch (e) {
-      setError(e instanceof Error ? e.message : t("error_adding_sample"));
-    } finally {
-      setAddingKey(null);
-    }
-  }
-
   return (
-    <ScrollView style={shared.screen} contentContainerStyle={styles.content}>
-      <BackButton href="/" />
-      <Text style={shared.title}>{t("my_lists_title")}</Text>
-
+    <ScrollView style={styles.scroll} contentContainerStyle={styles.content}>
       {error && <Text style={shared.errorText}>{error}</Text>}
       {isLoading && <Text style={shared.hint}>{t("loading_ellipsis")}</Text>}
 
-      <View style={styles.tabRow}>
-        <Pressable style={[styles.tab, activeTab === "lists" && styles.tabActive]} onPress={() => setActiveTab("lists")}>
-          <Text style={[styles.tabText, activeTab === "lists" && styles.tabTextActive]}>
-            {t("your_lists_section_title")}
-          </Text>
-        </Pressable>
-        <Pressable style={[styles.tab, activeTab === "samples" && styles.tabActive]} onPress={() => setActiveTab("samples")}>
-          <Text style={[styles.tabText, activeTab === "samples" && styles.tabTextActive]}>
-            {t("sample_lists_title")}
-          </Text>
-        </Pressable>
-      </View>
-
-      {!isLoading && activeTab === "lists" && (
+      {!isLoading && (
         <View style={styles.section}>
           <View style={styles.sectionHeaderRow}>
             {lists.length > 0 &&
@@ -336,7 +246,12 @@ export default function MyLists() {
           )}
 
           {lists.length === 0 ? (
-            <Text style={shared.hint}>{t("no_saved_lists")}</Text>
+            <View style={styles.emptyState}>
+              <Text style={shared.hint}>{t("no_saved_lists")}</Text>
+              <PressButton style={browseEssentialsButtonStyle} onPress={onBrowseEssentials}>
+                <Text style={shared.primaryButtonText}>{t("browse_essentials_button")}</Text>
+              </PressButton>
+            </View>
           ) : (
             sortedLists.map((list, index) => (
               <Animated.View
@@ -388,72 +303,14 @@ export default function MyLists() {
         </View>
       )}
 
-      {!isLoading && activeTab === "samples" && (
-        <View style={styles.section}>
-          <Text style={shared.hint}>{t("sample_lists_hint")}</Text>
-              {SAMPLE_GROUPS.map((group) => (
-                <View key={group.groupKey} style={styles.section}>
-                  <Text style={styles.sectionTitle}>{t(group.titleKey)}</Text>
-                  {SAMPLE_CATEGORY_DEFS.filter((def) => def.group === group.groupKey).map((def) => {
-                const pairIndex = pairIndexByCategory[def.categoryKey] ?? 0;
-                const [sourceLanguage, targetLanguage] = LANGUAGE_PAIRS[pairIndex];
-                // The backend saves a sample list under its plain English
-                // label with no suffix (find_list/save_list disambiguate by
-                // name + language pair together, not a suffixed name), so
-                // matching just checks those three fields directly instead
-                // of reconstructing a suffixed string to compare against.
-                const expectedLabel = ENGLISH_CATEGORY_LABELS[def.categoryKey];
-                const alreadyAdded = lists.some(
-                  (l) =>
-                    l.name === expectedLabel &&
-                    l.source_language === sourceLanguage &&
-                    l.target_language === targetLanguage
-                );
-                return (
-                  <View key={def.categoryKey} style={styles.row}>
-                    <View style={styles.rowMain}>
-                      {/* The everyday lists are a fixed 50-word set (see
-                          core/sample_lists.py); grammar lists vary by
-                          language, so they show no count. */}
-                      <Text style={styles.rowTitle}>
-                        {def.count > 0 ? `${t(def.labelKey)} (${def.count})` : t(def.labelKey)}
-                      </Text>
-                      <Dropdown
-                        value={PAIR_OPTIONS[pairIndex]}
-                        onChange={(label) => {
-                          const next = PAIR_OPTIONS.indexOf(label);
-                          if (next >= 0) {
-                            setPairIndexByCategory((prev) => ({ ...prev, [def.categoryKey]: next }));
-                          }
-                        }}
-                        options={PAIR_OPTIONS}
-                      />
-                    </View>
-                    <PressButton
-                      style={[shared.secondaryButton, shared.saveActionButton, styles.addButton]}
-                      disabled={addingKey === def.categoryKey}
-                      onPress={() => handleAddSample(def.categoryKey)}
-                    >
-                      <Text style={[shared.secondaryButtonText, shared.accentButtonText]}>
-                        {addingKey === def.categoryKey
-                          ? t("sample_list_adding")
-                          : alreadyAdded
-                            ? t("sample_list_added")
-                            : t("sample_list_add")}
-                      </Text>
-                    </PressButton>
-                  </View>
-                );
-                  })}
-                </View>
-              ))}
-        </View>
-      )}
     </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
+  scroll: {
+    flex: 1,
+  },
   content: {
     gap: 16,
     paddingBottom: 32,
@@ -461,40 +318,13 @@ const styles = StyleSheet.create({
   section: {
     gap: 8,
   },
-  sectionTitle: {
-    fontSize: 16,
-    fontWeight: "700",
-  },
   sectionHeaderRow: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
   },
-  tabRow: {
-    flexDirection: "row",
-    gap: 8,
-    marginBottom: 4,
-  },
-  tab: {
-    flex: 1,
-    paddingVertical: 10,
-    borderRadius: 10,
-    alignItems: "center",
-    backgroundColor: colors.secondaryBackground,
-  },
-  tabActive: {
-    backgroundColor: colors.tertiary,
-  },
-  tabText: {
-    fontSize: 14,
-    fontWeight: "700",
-    color: colors.text,
-  },
-  tabTextActive: {
-    color: "white",
-  },
-  addButton: {
-    paddingHorizontal: 20,
+  emptyState: {
+    gap: 10,
   },
   sortRow: {
     flexDirection: "row",
