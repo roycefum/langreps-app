@@ -8,6 +8,7 @@ import { AppSplash, MIN_VISIBLE_MS } from "@/components/app-splash";
 import { colors } from "@/constants/styles";
 import { AuthProvider, useAuth } from "@/lib/auth-context";
 import { LocaleProvider } from "@/lib/i18n";
+import { ModeProvider } from "@/lib/mode-context";
 import { PairsProvider } from "@/lib/pairs-context";
 import { QuizProvider } from "@/lib/quiz-context";
 
@@ -41,6 +42,7 @@ export default function RootLayout() {
     <QueryClientProvider client={queryClient}>
       <LocaleProvider>
         <AuthProvider>
+          <ModeProvider>
           <PairsProvider>
             <QuizProvider>
               <SafeAreaProvider>
@@ -68,6 +70,7 @@ export default function RootLayout() {
               </SafeAreaProvider>
             </QuizProvider>
           </PairsProvider>
+          </ModeProvider>
         </AuthProvider>
       </LocaleProvider>
     </QueryClientProvider>

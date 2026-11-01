@@ -2,11 +2,13 @@ import { Link, useRouter } from "expo-router";
 import { useEffect } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 
+import { LanguageForm } from "@/components/language-form";
+import { ModeChip } from "@/components/mode-chip";
 import { PressButton } from "@/components/press-button";
 import { colors, shared } from "@/constants/styles";
-import { apiRequest } from "@/lib/api";
 import { useAuth } from "@/lib/auth-context";
 import { useI18n } from "@/lib/i18n";
+import { useMode } from "@/lib/mode-context";
 import { usePairs } from "@/lib/pairs-context";
 import {
   getHasSeenOnboarding,
@@ -18,7 +20,8 @@ export default function Home() {
   const router = useRouter();
   const { t } = useI18n();
   const { userId, email, isLoading, logout } = useAuth();
-  const { clearPairs } = usePairs();
+  const { clearPairs, setSourceLanguage, setTargetLanguage } = usePairs();
+  const { isLoaded: modeLoaded, mode, setMode } = useMode();
 
   // pairs-context is one shared "list currently being built," so it
   // persists across navigation by design (that's what lets My Lists'
@@ -28,60 +31,39 @@ export default function Home() {
   // different builder screen would silently keep showing that list.
   function startFreshList(route: "/list-details" | "/paste-text") {
     clearPairs();
+    // A new list starts in the active language mode.
+    if (mode) {
+      setSourceLanguage(mode.sourceLanguage);
+      setTargetLanguage(mode.targetLanguage);
+    }
     router.push(route);
   }
 
-  // Onboarding must always win for a first-time user, and the Settings
-  // redirect below must never fire before it. These used to be two
-  // independent effects — one reading local device storage, the other
-  // hitting the network — and whichever resolved LAST called
-  // router.replace on top of the other, so the outcome was a coin flip.
-  // The network check had a cancellation guard for this exact race but
-  // the onboarding check didn't, so a fast /me/profile response could
-  // silently skip onboarding entirely (more likely on Android, where a
-  // first-time secure-storage read can be slower than the network).
-  // Running them in one sequence, gated on the onboarding check
-  // finishing first, makes the order deterministic instead of racy.
+  // The intro shows once per app launch until permanently dismissed ("Don't
+  // show again" on the intro itself). The in-memory flag keeps this from
+  // redirecting again the moment Home remounts after the intro is dismissed
+  // for this launch — without it the intro would loop forever.
   useEffect(() => {
     let cancelled = false;
     (async () => {
       const seenOnboarding = await getHasSeenOnboarding();
       if (cancelled) return;
-      // Shown once per app launch until permanently dismissed ("Don't show
-      // again" on the intro itself). The in-memory flag is what keeps this
-      // from redirecting again the moment Home remounts after the intro is
-      // dismissed for this launch — without it the intro would loop
-      // forever. Falling through (instead of returning) once it's been
-      // shown this launch is deliberate: a first-time logged-in user still
-      // needs to reach the Settings redirect below afterward.
       if (!seenOnboarding && !hasShownOnboardingThisLaunch()) {
         markOnboardingShownThisLaunch();
         router.replace("/onboarding");
-        return;
-      }
-
-      // Forces a first-ever-logged-in user (or one who closed the app
-      // before finishing) straight to Settings to pick a learning pair —
-      // checked on every login, not just right after signup, since they
-      // might not have gotten to it the first time. Anonymous users have
-      // no server-side profile at all, so this only runs once actually
-      // logged in.
-      if (isLoading || !userId) return;
-      try {
-        const profile = await apiRequest<{ learning_target_language: string | null }>(
-          "/me/profile"
-        );
-        if (!cancelled && !profile.learning_target_language) {
-          router.replace("/settings");
-        }
-      } catch {
-        // best-effort — a failed check just means no redirect this time
       }
     })();
     return () => {
       cancelled = true;
     };
-  }, [userId, isLoading, router]);
+  }, [router]);
+
+  // First run: pick the language mode, then land on Essentials — the
+  // quickest way to a first quiz.
+  async function handleChooseMode(source: string, target: string) {
+    await setMode(source, target);
+    router.push({ pathname: "/lists", params: { tab: "essentials" } });
+  }
 
   return (
     <View style={[shared.screenCentered, styles.container]}>
@@ -133,29 +115,41 @@ export default function Home() {
         </View>
       )}
 
-      <View style={styles.buttonGroup}>
-        <PressButton style={shared.primaryButton} onPress={() => startFreshList("/list-details")}>
-          <Text style={shared.primaryButtonText}>{t("add_words_manually")}</Text>
-        </PressButton>
-        <PressButton style={shared.primaryButton} onPress={() => startFreshList("/paste-text")}>
-          <Text style={shared.primaryButtonText}>{t("paste_vocab_list")}</Text>
-        </PressButton>
-        {/* Shown to everyone — it holds both the learner's own lists and the
-            ready-made Essentials, and browsing those is a reason to sign up,
-            so adding one (not looking) is what asks for an account. */}
-        <Link href="/lists" asChild>
-          <PressButton style={libraryButtonStyle}>
-            <Text style={shared.primaryButtonText}>{t("lists")}</Text>
+      {modeLoaded && !mode && (
+        <View style={styles.setupCard}>
+          <Text style={styles.setupTitle}>{t("setup_title")}</Text>
+          <Text style={shared.hint}>{t("setup_hint")}</Text>
+          <LanguageForm submitLabel={t("setup_continue")} onSubmit={handleChooseMode} />
+        </View>
+      )}
+
+      {mode && <ModeChip />}
+
+      {mode && (
+        <View style={styles.buttonGroup}>
+          <PressButton style={shared.primaryButton} onPress={() => startFreshList("/list-details")}>
+            <Text style={shared.primaryButtonText}>{t("add_words_manually")}</Text>
           </PressButton>
-        </Link>
-        {userId && (
-          <Link href="/my-quizzes" asChild>
+          <PressButton style={shared.primaryButton} onPress={() => startFreshList("/paste-text")}>
+            <Text style={shared.primaryButtonText}>{t("paste_vocab_list")}</Text>
+          </PressButton>
+          {/* Shown to everyone — it holds both the learner's own lists and the
+              Essentials, which anyone can quiz; saving progress is what asks
+              for an account. */}
+          <Link href="/lists" asChild>
             <PressButton style={libraryButtonStyle}>
-              <Text style={shared.primaryButtonText}>{t("my_quizzes")}</Text>
+              <Text style={shared.primaryButtonText}>{t("lists")}</Text>
             </PressButton>
           </Link>
-        )}
-      </View>
+          {userId && (
+            <Link href="/my-quizzes" asChild>
+              <PressButton style={libraryButtonStyle}>
+                <Text style={shared.primaryButtonText}>{t("my_quizzes")}</Text>
+              </PressButton>
+            </Link>
+          )}
+        </View>
+      )}
     </View>
   );
 }
@@ -209,6 +203,18 @@ const styles = StyleSheet.create({
     fontWeight: "600",
   },
   emailBold: {
+    fontWeight: "700",
+    color: colors.text,
+  },
+  setupCard: {
+    alignSelf: "stretch",
+    gap: 12,
+    backgroundColor: colors.secondaryBackground,
+    borderRadius: 12,
+    padding: 16,
+  },
+  setupTitle: {
+    fontSize: 22,
     fontWeight: "700",
     color: colors.text,
   },

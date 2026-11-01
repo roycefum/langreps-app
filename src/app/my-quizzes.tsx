@@ -2,6 +2,7 @@ import { Link, useFocusEffect, useRouter } from "expo-router";
 import { useCallback, useMemo, useRef, useState } from "react";
 import { Alert, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 
+import { ModeChip } from "@/components/mode-chip";
 import { PressButton } from "@/components/press-button";
 import Animated, { FadeInDown, LinearTransition, SlideOutLeft } from "react-native-reanimated";
 
@@ -9,6 +10,7 @@ import { BackButton } from "@/components/back-button";
 import { colors, shared } from "@/constants/styles";
 import { apiRequest } from "@/lib/api";
 import { useI18n } from "@/lib/i18n";
+import { inMode, useMode } from "@/lib/mode-context";
 import { useQuiz } from "@/lib/quiz-context";
 import { TENSES_BY_LANGUAGE, type Question } from "@/lib/types";
 
@@ -51,6 +53,7 @@ export default function MyQuizzes() {
   const router = useRouter();
   const { t } = useI18n();
   const { startQuiz } = useQuiz();
+  const { mode } = useMode();
   const [lists, setLists] = useState<ListSummary[]>([]);
   const [sessions, setSessions] = useState<QuizSessionRow[]>([]);
   const [completedSessions, setCompletedSessions] = useState<CompletedSessionRow[]>([]);
@@ -92,15 +95,18 @@ export default function MyQuizzes() {
         apiRequest<{ sessions: QuizSessionRow[] }>("/quiz-sessions"),
         apiRequest<{ sessions: CompletedSessionRow[] }>("/quiz-sessions/completed"),
       ]);
-      setLists(listsResult.lists);
-      setSessions(sessionsResult.sessions);
-      setCompletedSessions(completedResult.sessions);
+      // Only the active language mode's quizzes: a session belongs to its list.
+      const modeLists = listsResult.lists.filter((l) => inMode(mode, l));
+      const modeListIds = new Set(modeLists.map((l) => l.id));
+      setLists(modeLists);
+      setSessions(sessionsResult.sessions.filter((s) => modeListIds.has(s.list_id)));
+      setCompletedSessions(completedResult.sessions.filter((s) => modeListIds.has(s.list_id)));
     } catch (e) {
       setError(e instanceof Error ? e.message : t("error_loading_quizzes"));
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [mode]);
 
   useFocusEffect(
     useCallback(() => {
@@ -316,6 +322,7 @@ export default function MyQuizzes() {
     <ScrollView style={shared.screen} contentContainerStyle={styles.content}>
       <BackButton href="/" />
       <Text style={shared.title}>{t("my_quizzes_title")}</Text>
+      <ModeChip />
 
       {error && <Text style={shared.errorText}>{error}</Text>}
       {isLoading && <Text style={shared.hint}>{t("loading_ellipsis")}</Text>}

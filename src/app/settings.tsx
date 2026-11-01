@@ -1,17 +1,15 @@
-import { Link, Stack, useRouter } from "expo-router";
+import { Link, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { Alert, Pressable, StyleSheet, Switch, Text, View } from "react-native";
 
 import { BackButton } from "@/components/back-button";
 import { CefrLevelPicker } from "@/components/cefr-level-picker";
-import { Dropdown } from "@/components/dropdown";
-import { PressButton } from "@/components/press-button";
+import { LanguageForm } from "@/components/language-form";
 import { colors, shared } from "@/constants/styles";
-import { apiRequest } from "@/lib/api";
 import { useAuth } from "@/lib/auth-context";
 import { useI18n } from "@/lib/i18n";
+import { useMode } from "@/lib/mode-context";
 import {
-  addLanguagePair,
   getAdaptiveQuizzesEnabled,
   getAutoDeleteOldQuizzes,
   getLanguagePairs,
@@ -21,83 +19,33 @@ import {
   updateLanguagePairSettings,
   type LanguagePairSettings,
 } from "@/lib/settings-storage";
-import { DEFAULT_SOURCE_LANGUAGE, DEFAULT_TARGET_LANGUAGE, LANGUAGES, type CefrLevel } from "@/lib/types";
+import { type CefrLevel } from "@/lib/types";
 
 export default function Settings() {
   const { t } = useI18n();
   const router = useRouter();
   const { userId, deleteAccount } = useAuth();
+  const { setMode, refresh: refreshMode } = useMode();
   const [deleteError, setDeleteError] = useState<string | null>(null);
   const [autoDelete, setAutoDelete] = useState(false);
   const [adaptiveQuizzes, setAdaptiveQuizzes] = useState(true);
   const [languagePairs, setLanguagePairsState] = useState<LanguagePairSettings[]>([]);
-  const [newPairSource, setNewPairSource] = useState<string>(DEFAULT_SOURCE_LANGUAGE);
-  const [newPairTarget, setNewPairTarget] = useState<string>(DEFAULT_TARGET_LANGUAGE);
-  // isSavingProfile only covers the FIRST language pair ever added — that's
-  // the one that syncs server-side and can trigger sample-list generation
-  // (see handleAddLanguage). Every pair after that is a purely local
-  // add, which is effectively instant.
-  const [isSavingProfile, setIsSavingProfile] = useState(false);
-  // Whether the SERVER knows this account's learning pair yet (null until
-  // checked). This, not the phone's own pair list, decides when to sync: a
-  // pair saved locally earlier — e.g. while the first request failed —
-  // must not stop the server from ever being told, or Home keeps
-  // redirecting back here.
-  const [serverProfileSet, setServerProfileSet] = useState<boolean | null>(null);
-  const [profileMessage, setProfileMessage] = useState<string | null>(null);
-  const [profileError, setProfileError] = useState<string | null>(null);
-
   useEffect(() => {
     getAutoDeleteOldQuizzes().then(setAutoDelete);
     getAdaptiveQuizzesEnabled().then(setAdaptiveQuizzes);
     getLanguagePairs().then(setLanguagePairsState);
   }, []);
 
-  useEffect(() => {
-    if (!userId) return;
-    apiRequest<{ learning_target_language: string | null }>("/me/profile")
-      .then((profile) => setServerProfileSet(!!profile.learning_target_language))
-      .catch(() => {
-        // Unknown — handleAddLanguage syncs anyway, and the server ignores
-        // a repeat, so guessing wrong is harmless.
-      });
-  }, [userId]);
-
   async function refreshLanguagePairs() {
     setLanguagePairsState(await getLanguagePairs());
+    await refreshMode();
   }
 
-  // Adding a pair also syncs it to the server (PATCH /me/profile) whenever
-  // the server has no learning pair for this account yet — that's what
-  // lifts the forced redirect to this screen and triggers one-time
-  // sample-list generation (see index.tsx and
-  // core/sample_list_generator.py on the backend). Once the server has
-  // one, further pairs are purely local: CEFR level and accent leniency
-  // are device preferences, not account data.
-  async function handleAddLanguage() {
-    if (newPairSource === newPairTarget) return;
-    await addLanguagePair(newPairSource, newPairTarget);
-    await refreshLanguagePairs();
-
-    if (userId && serverProfileSet !== true) {
-      setIsSavingProfile(true);
-      setProfileMessage(null);
-      setProfileError(null);
-      try {
-        const result = await apiRequest<{ generated_sample_lists: boolean }>("/me/profile", {
-          method: "PATCH",
-          body: { source_language: newPairSource, target_language: newPairTarget },
-        });
-        setServerProfileSet(true);
-        if (result.generated_sample_lists) {
-          setProfileMessage(t("starter_lists_ready_message"));
-        }
-      } catch (e) {
-        setProfileError(e instanceof Error ? e.message : t("error_generic"));
-      } finally {
-        setIsSavingProfile(false);
-      }
-    }
+  // Adding a pair makes it the active language mode (and syncs it to the
+  // account) — see mode-context.tsx.
+  async function handleAddLanguage(source: string, target: string) {
+    await setMode(source, target);
+    setLanguagePairsState(await getLanguagePairs());
   }
 
   function confirmRemoveLanguage(pair: LanguagePairSettings) {
@@ -170,8 +118,7 @@ export default function Settings() {
           custom arrow below — same reasoning as BackButton's disabled
           prop: guarantee generation finishes before this screen can be
           left, not just usually finish in time. */}
-      <Stack.Screen options={{ gestureEnabled: !isSavingProfile }} />
-      <BackButton href="/" disabled={isSavingProfile} />
+      <BackButton href="/" />
       <Text style={shared.title}>{t("settings_title")}</Text>
 
       <View style={styles.settingBlock}>
@@ -204,40 +151,7 @@ export default function Settings() {
           </View>
         ))}
 
-        {userId && (
-          <View style={styles.addLanguageRow}>
-            <View style={styles.pairField}>
-              <Text style={shared.hint}>{t("from_label")}</Text>
-              <Dropdown
-                value={newPairSource}
-                onChange={setNewPairSource}
-                options={LANGUAGES}
-                disabled={isSavingProfile}
-              />
-            </View>
-            <View style={styles.pairField}>
-              <Text style={shared.hint}>{t("to_label")}</Text>
-              <Dropdown
-                value={newPairTarget}
-                onChange={setNewPairTarget}
-                options={LANGUAGES}
-                disabled={isSavingProfile}
-              />
-            </View>
-            <PressButton
-              style={[shared.secondaryButton, shared.addActionButton, styles.addLanguageButton]}
-              onPress={handleAddLanguage}
-              disabled={isSavingProfile}
-            >
-              <Text style={[shared.secondaryButtonText, shared.accentButtonText]}>
-                {t("add_language_button")}
-              </Text>
-            </PressButton>
-          </View>
-        )}
-
-        {profileMessage && <Text style={shared.hint}>{profileMessage}</Text>}
-        {profileError && <Text style={shared.errorText}>{profileError}</Text>}
+        <LanguageForm submitLabel={t("add_language_button")} onSubmit={handleAddLanguage} />
       </View>
 
       <View style={[shared.row, styles.settingBlock]}>
@@ -316,18 +230,6 @@ const styles = StyleSheet.create({
   accentsDesc: {
     fontSize: 12,
     opacity: 0.55,
-  },
-  addLanguageRow: {
-    flexDirection: "row",
-    alignItems: "flex-end",
-    gap: 8,
-  },
-  pairField: {
-    flex: 1,
-    gap: 4,
-  },
-  addLanguageButton: {
-    paddingHorizontal: 16,
   },
   deleteLink: {
     color: colors.error,

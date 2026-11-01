@@ -7,6 +7,7 @@ import { PressButton } from "@/components/press-button";
 import { colors, shared } from "@/constants/styles";
 import { apiRequest } from "@/lib/api";
 import { useI18n } from "@/lib/i18n";
+import { inMode, useMode } from "@/lib/mode-context";
 import { usePairs, type SavedList } from "@/lib/pairs-context";
 
 type ListSummary = {
@@ -32,6 +33,7 @@ export function MyListsView({ onBrowseEssentials }: { onBrowseEssentials: () => 
   const router = useRouter();
   const { t } = useI18n();
   const { loadList } = usePairs();
+  const { mode } = useMode();
   const [lists, setLists] = useState<ListSummary[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -58,13 +60,13 @@ export function MyListsView({ onBrowseEssentials }: { onBrowseEssentials: () => 
     setError(null);
     try {
       const listsResult = await apiRequest<{ lists: ListSummary[] }>("/lists");
-      setLists(listsResult.lists);
+      setLists(listsResult.lists.filter((l) => inMode(mode, l)));
     } catch (e) {
       setError(e instanceof Error ? e.message : t("error_loading_lists"));
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [mode]);
 
   useFocusEffect(
     useCallback(() => {

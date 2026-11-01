@@ -7,6 +7,7 @@ const AUTO_DELETE_OLD_QUIZZES_KEY = "langreps_auto_delete_old_quizzes";
 const ADAPTIVE_QUIZZES_ENABLED_KEY = "langreps_adaptive_quizzes_enabled";
 const HAS_SEEN_ONBOARDING_KEY = "langreps_has_seen_onboarding";
 const LANGUAGE_PAIRS_KEY = "langreps_language_pairs";
+const ACTIVE_PAIR_KEY = "langreps_active_pair";
 
 // Same web guard as auth-storage.ts — expo-secure-store throws (not
 // no-ops) on web, and this is a device-local setting anyway (explicitly
@@ -112,17 +113,16 @@ export async function getLanguagePairs(): Promise<LanguagePairSettings[]> {
   return readLanguagePairs();
 }
 
-// Called specifically when a NEW account is created (see auth-context.tsx's
-// signup()) — language pairs are device-local, not account-bound, by
-// design (see the comment above), which means they otherwise leak across
-// accounts on the same device: creating a brand-new account would
-// immediately show whatever pairs an earlier account, or anonymous use,
-// left behind. Deliberately NOT called on logout/login — that would wipe
-// a real user's own preferences every time they're logged out (e.g. by a
-// 401) and back in as themselves, which is the common case this must not
-// break.
-export async function clearLanguagePairs(): Promise<void> {
-  await writeLanguagePairs([]);
+// The pair the whole app is currently set to (the "mode" — see
+// mode-context.tsx), stored as "Source|Target". Null until one is chosen.
+export async function getActivePairKey(): Promise<string | null> {
+  if (isWeb) return null;
+  return SecureStore.getItemAsync(ACTIVE_PAIR_KEY);
+}
+
+export async function setActivePairKey(key: string): Promise<void> {
+  if (isWeb) return;
+  await SecureStore.setItemAsync(ACTIVE_PAIR_KEY, key);
 }
 
 export async function addLanguagePair(sourceLanguage: string, targetLanguage: string): Promise<void> {

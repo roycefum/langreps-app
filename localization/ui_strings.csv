@@ -213,7 +213,7 @@
 212,translate-skipped-lines.tsx,translate_button,Translate,Traducir,Traduire,
 213,translate-skipped-lines.tsx,translating_ellipsis,Translating…,Traduciendo…,Traduction en cours…,
 214,translate-skipped-lines.tsx,error_translating,Something went wrong translating those words.,Algo salió mal al traducir esas palabras.,Une erreur s'est produite lors de la traduction de ces mots.,
-215,onboarding.tsx,slide1_body_updated,"Type words or paste a list. Or jump right in with Essentials: ready-made lists you can add with a tap.","Escribe palabras o pega una lista. O empieza directamente con Esenciales: listas ya preparadas que añades con un toque.","Tape des mots ou colle une liste. Ou lance-toi directement avec les Essentiels : des listes prêtes à l'emploi que tu ajoutes d'un geste.","Updated — removed ""or snap a photo"" since Upload Photo was tabled"
+215,onboarding.tsx,slide1_body_updated,Type words or paste a list. Or jump right in with Essentials: curated lists you can quiz with a tap.,Escribe palabras o pega una lista. O empieza directamente con Esenciales: listas seleccionadas con las que te pones a prueba con un toque.,Tape des mots ou colle une liste. Ou lance-toi directement avec les Essentiels : des listes choisies avec soin pour t'exercer d'un geste.,"Updated — removed ""or snap a photo"" since Upload Photo was tabled"
 216,pairs-review.tsx,rename_link,Rename,Cambiar nombre,Renommer,New — separates renaming an already-saved list from saving its pairs
 217,pairs-review.tsx,rename_save_button,Save,Guardar,Enregistrer,Inline rename confirm button
 218,pairs-review.tsx,rename_cancel_button,Cancel,Cancelar,Annuler,Inline rename cancel button
@@ -286,13 +286,13 @@
 285,my-quizzes.tsx,quiz_type_badge_grammar,Grammar,Gramática,Grammaire,Small badge next to the quiz row title
 286,index.tsx,essentials,Essentials,Esenciales,Essentiels,Home button for the ready-made lists (closed sets)
 287,essentials.tsx,essentials_title,Essentials,Esenciales,Essentiels,Screen title
-288,essentials.tsx,essentials_hint,"Complete, ready-made lists for the language you're learning. Add one with a tap, then quiz yourself.",Listas completas y ya preparadas para el idioma que estás aprendiendo. Añade una con un toque y ponte a prueba.,"Des listes complètes et prêtes à l'emploi pour la langue que tu apprends. Ajoutes-en une d'un geste, puis teste-toi.",Subtitle under the screen title
+288,essentials.tsx,essentials_hint,"Complete, curated lists for the language you're learning. Tap Quiz to start — no account needed.",Listas completas y seleccionadas para el idioma que estás aprendiendo. Toca Cuestionario para empezar — sin necesidad de cuenta.,Des listes complètes et choisies avec soin pour la langue que tu apprends. Touche Quiz pour commencer — sans compte.,Subtitle under the screen title
 289,essentials.tsx,essentials_signin_prompt,Create a free account to add Essentials to your lists and save your progress.,Crea una cuenta gratis para añadir Esenciales a tus listas y guardar tu progreso.,Crée un compte gratuit pour ajouter les Essentiels à tes listes et enregistrer ta progression.,"Shown to signed-out visitors, above the log in / sign up button"
 290,essentials.tsx,essentials_no_pair,Add the language you're learning in Settings to see Essentials for it.,Añade en Configuración el idioma que estás aprendiendo para ver sus Esenciales.,Ajoute dans Paramètres la langue que tu apprends pour voir ses Essentiels.,Shown to a signed-in user who has not saved a language pair yet
 291,essentials.tsx,essentials_quiz_now,Quiz now,Hacer cuestionario,Faire un quiz,Button on an added Essentials card; goes straight to Generate Quiz
 292,my-lists.tsx,browse_essentials_button,Browse Essentials,Ver Esenciales,Voir les Essentiels,Empty My Lists state
-293,essentials.tsx,essentials_desc_common_words,The everyday basics: 50 words you'll meet everywhere.,Lo básico del día a día: 50 palabras que encontrarás en todas partes.,Les bases du quotidien : 50 mots que tu rencontreras partout.,Card description
-294,essentials.tsx,essentials_desc_common_verbs,"50 of the most useful verbs, ready to conjugate.","50 de los verbos más útiles, listos para conjugar.","50 des verbes les plus utiles, prêts à conjuguer.",Card description
+293,essentials.tsx,essentials_desc_common_words,The everyday basics you'll meet everywhere.,Lo básico del día a día que encontrarás en todas partes.,Les bases du quotidien que tu rencontreras partout.,Card description
+294,essentials.tsx,essentials_desc_common_verbs,"The most useful verbs, ready to conjugate.","Los verbos más útiles, listos para conjugar.","Les verbes les plus utiles, prêts à conjuguer.",Card description
 295,essentials.tsx,essentials_desc_irregular_verbs,The irregular verbs that trip everyone up.,Los verbos irregulares con los que todos tropiezan.,Les verbes irréguliers qui font trébucher tout le monde.,Card description
 296,essentials.tsx,essentials_desc_food,What's on the menu and in the kitchen.,Lo que hay en el menú y en la cocina.,Ce qu'il y a au menu et dans la cuisine.,Card description
 297,essentials.tsx,essentials_desc_subject_pronouns,The words for who is doing the action.,Las palabras que indican quién realiza la acción.,Les mots qui disent qui fait l'action.,Card description (language-neutral: the learner's target language varies)
@@ -300,3 +300,14 @@
 299,essentials.tsx,essentials_desc_prepositions,"The short words that express place, time, direction and relationship.","Las palabras cortas que expresan lugar, tiempo, dirección y relación.","Les petits mots qui expriment le lieu, le temps, la direction et la relation.",Card description
 300,index.tsx,lists,Lists,Listas,Listes,"Home button and title of the Lists screen (tabs: My Lists, Essentials)"
 301,lists.tsx,lists_signin_prompt,Log in to see and manage your saved lists.,Inicia sesión para ver y gestionar tus listas guardadas.,Connecte-toi pour voir et gérer tes listes enregistrées.,Shown on the My Lists tab to signed-out visitors
+302,language-form.tsx,i_speak_label,I speak,Hablo,Je parle,Label above the native-language dropdown
+303,language-form.tsx,im_learning_label,I'm learning,Estoy aprendiendo,J'apprends,Label above the target-language dropdown
+304,language-form.tsx,choose_different_languages,Pick two different languages.,Elige dos idiomas distintos.,Choisis deux langues différentes.,Shown when both dropdowns match
+305,mode-chip.tsx,language_mode_title,Language,Idioma,Langue,Title of the sheet opened from the language chip
+306,mode-chip.tsx,add_a_language,Add a language,Añadir un idioma,Ajouter une langue,Link in the language chip's sheet
+307,index.tsx,setup_title,What are you learning?,¿Qué estás aprendiendo?,Qu'apprends-tu ?,First-run card on Home
+308,index.tsx,setup_hint,Pick the language you speak and the one you're learning. You can change this any time.,Elige el idioma que hablas y el que estás aprendiendo. Puedes cambiarlo cuando quieras.,Choisis la langue que tu parles et celle que tu apprends. Tu peux la changer à tout moment.,First-run card hint
+309,index.tsx,setup_continue,Continue,Continuar,Continuer,First-run card button; goes to Essentials
+310,essentials-view.tsx,essentials_quiz,Quiz,Cuestionario,Quiz,One-tap button on an Essentials card
+311,essentials-view.tsx,essentials_in_my_lists,In My Lists,En Mis listas,Dans Mes listes,Tag on an Essentials card once its list exists in My Lists
+312,essentials-view.tsx,essentials_preparing,Preparing…,Preparando…,Préparation…,Quiz button while the list loads
