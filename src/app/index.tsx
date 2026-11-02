@@ -5,6 +5,7 @@ import { Pressable, StyleSheet, Text, View } from "react-native";
 import { LanguageForm } from "@/components/language-form";
 import { ModeChip } from "@/components/mode-chip";
 import { PressButton } from "@/components/press-button";
+import { WobbleTitle } from "@/components/wobble-title";
 import { colors, shared } from "@/constants/styles";
 import { apiRequest } from "@/lib/api";
 import { useAuth } from "@/lib/auth-context";
@@ -116,7 +117,7 @@ export default function Home() {
   if (modeLoaded && !mode) {
     return (
       <View style={[shared.screenCentered, styles.container]}>
-        <Text style={styles.title}>{t("app_name")}</Text>
+        <WobbleTitle>{t("app_name")}</WobbleTitle>
         <View style={styles.setupCard}>
           <Text style={styles.setupTitle}>{t("setup_title")}</Text>
           <Text style={shared.hint}>{t("setup_hint")}</Text>
@@ -144,34 +145,10 @@ export default function Home() {
         </Link>
       )}
 
-      <Text style={styles.title}>{t("app_name")}</Text>
+      <WobbleTitle>{t("app_name")}</WobbleTitle>
       <Text style={styles.subtitle}>{t("home_subtitle")}</Text>
 
       {mode && <ModeChip />}
-
-      {/* Only the signed-in status lives on Home — a guest signs up from
-          Settings (or the welcome screen), so Home stays just the actions. */}
-      {!isLoading && userId && (
-        <View style={styles.authRow}>
-          {/* Signed-in status and its one directly related action (log
-              out) share a row, first — everything else here is
-              secondary to "who am I and how do I leave." */}
-          <View style={styles.signedInRow}>
-            <Text style={shared.hint}>
-              {t("signed_in_as", { email: "" })}
-              <Text style={styles.emailBold}>{email}</Text>
-            </Text>
-            <Pressable onPress={logout} hitSlop={8}>
-              <Text style={styles.authLink}>{t("log_out")}</Text>
-            </Pressable>
-          </View>
-          {__DEV__ && (
-            <Link href="/test-data" style={styles.authLink}>
-              Test data
-            </Link>
-          )}
-        </View>
-      )}
 
       {mode && (
         <View style={styles.buttonGroup}>
@@ -191,6 +168,29 @@ export default function Home() {
               <PressButton style={quizzesButtonStyle}>
                 <Text style={shared.primaryButtonText}>{t("my_quizzes")}</Text>
               </PressButton>
+            </Link>
+          )}
+        </View>
+      )}
+
+      {/* Signed-in status sits below the actions, out of the way. A guest
+          sees nothing here and signs up from the corner link or Settings. */}
+      {!isLoading && userId && (
+        <View style={styles.authRow}>
+          {/* Signed-in status and its one directly related action (log out)
+              share a row. */}
+          <View style={styles.signedInRow}>
+            <Text style={shared.hint}>
+              {t("signed_in_as", { email: "" })}
+              <Text style={styles.emailBold}>{email}</Text>
+            </Text>
+            <Pressable onPress={logout} hitSlop={8}>
+              <Text style={styles.authLink}>{t("log_out")}</Text>
+            </Pressable>
+          </View>
+          {__DEV__ && (
+            <Link href="/test-data" style={styles.authLink}>
+              Test data
             </Link>
           )}
         </View>
@@ -235,10 +235,6 @@ const styles = StyleSheet.create({
   settingsIcon: {
     fontSize: 28,
     color: colors.tertiary,
-  },
-  title: {
-    fontSize: 44,
-    fontWeight: "700",
   },
   subtitle: {
     fontSize: 16,
