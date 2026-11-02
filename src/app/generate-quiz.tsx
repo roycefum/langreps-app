@@ -175,32 +175,39 @@ export default function GenerateQuiz() {
       }
 
       const chunks = chunk(selectedPairs, BATCH_SIZE);
-      const allQuestions: Question[] = [];
       setProgress({ done: 0, total: selectedPairs.length });
-      for (const c of chunks) {
-        const result = await apiRequest<Question[]>("/generate-questions", {
-          method: "POST",
-          body: {
-            pairs: c,
-            source_language: sourceLanguage,
-            target_language: targetLanguage,
-            batch_size: c.length,
-            level: cefrLevel,
-            verb_tenses: listType === "Verb" && verbTense ? [verbTense] : [],
-            flip: listType === "Vocab" && flip,
-            // Distinguishes "verb-shaped pair, tested as an ordinary word"
-            // (a Vocab list) from "verb-shaped pair, conjugate it" (a Verb
-            // list) — verb_tenses alone can't tell these apart, since a
-            // Vocab list never sends any tenses at all.
-            list_type: listType.toLowerCase(),
-            // Only Target My Mistakes writes questions around the pattern —
-            // ordinary quizzes are a plain random spread.
-            focus: mode === "targeted" ? insight?.focus ?? null : null,
-          },
-        });
-        allQuestions.push(...result);
-        setProgress({ done: allQuestions.length, total: selectedPairs.length });
-      }
+      // All batches go out at once — each takes several seconds on the
+      // server, so running them one after another made a quiz take
+      // (batches x that) to appear. Promise.all keeps the batches in order.
+      let doneCount = 0;
+      const batches = await Promise.all(
+        chunks.map(async (c) => {
+          const result = await apiRequest<Question[]>("/generate-questions", {
+            method: "POST",
+            body: {
+              pairs: c,
+              source_language: sourceLanguage,
+              target_language: targetLanguage,
+              batch_size: c.length,
+              level: cefrLevel,
+              verb_tenses: listType === "Verb" && verbTense ? [verbTense] : [],
+              flip: listType === "Vocab" && flip,
+              // Distinguishes "verb-shaped pair, tested as an ordinary word"
+              // (a Vocab list) from "verb-shaped pair, conjugate it" (a Verb
+              // list) — verb_tenses alone can't tell these apart, since a
+              // Vocab list never sends any tenses at all.
+              list_type: listType.toLowerCase(),
+              // Only Target My Mistakes writes questions around the pattern —
+              // ordinary quizzes are a plain random spread.
+              focus: mode === "targeted" ? insight?.focus ?? null : null,
+            },
+          });
+          doneCount += result.length;
+          setProgress({ done: doneCount, total: selectedPairs.length });
+          return result;
+        })
+      );
+      const allQuestions: Question[] = batches.flat();
 
       // A quiz session only makes sense for a saved list (quiz_sessions.list_id
       // isn't nullable server-side) — building an unsaved, ad-hoc list stays
