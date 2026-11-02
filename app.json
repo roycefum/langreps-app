@@ -10,7 +10,8 @@
     "ios": {
       "icon": "./assets/images/icon.png",
       "bundleIdentifier": "com.roycefum.langreps",
-      "buildNumber": "3",
+      "buildNumber": "4",
+      "appleTeamId": "B5Z78C43HL",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false,
         "NSLocalNetworkUsageDescription": "Lets the app connect to the development server on your computer."

@@ -1,5 +1,5 @@
 import { useFocusEffect, useRouter } from "expo-router";
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 
 import { LanguageForm } from "@/components/language-form";
@@ -20,25 +20,17 @@ type ListSummary = {
   target_language: string;
 };
 
-// categoryKey matches the backend's SAMPLE_CATEGORY_META keys exactly
-// (core/sample_lists.py) — POST /sample-lists takes this literal string.
-// englishName is the name the backend saves the list under (always English,
-// regardless of the app's UI language) — used only to recognize an already-
-// added list, never shown. The visible title and description come from the
-// translation tables: sample_category_<key> and essentials_desc_<key>.
-const ESSENTIALS = [
-  { categoryKey: "common_words", englishName: "Common Words", group: "everyday" },
-  { categoryKey: "common_verbs", englishName: "Common Verbs", group: "everyday" },
-  { categoryKey: "irregular_verbs", englishName: "Irregular Verbs", group: "everyday" },
-  { categoryKey: "food", englishName: "Food", group: "everyday" },
-  { categoryKey: "subject_pronouns", englishName: "Subject Pronouns", group: "grammar" },
-  { categoryKey: "possessives", englishName: "Possessives", group: "grammar" },
-  { categoryKey: "question_words", englishName: "Question Words", group: "grammar" },
-  { categoryKey: "relative_pronouns", englishName: "Relative Pronouns", group: "grammar" },
-  { categoryKey: "negatives_indefinites", englishName: "Negatives and Indefinites", group: "grammar" },
-  { categoryKey: "conjunctions", englishName: "Conjunctions", group: "grammar" },
-  { categoryKey: "prepositions", englishName: "Prepositions", group: "grammar" },
-];
+// One Essentials card, as the backend lists it for the active target language
+// (GET /essentials) — each language has its own catalog. name is the English
+// name the backend saves the list under; it is used only to recognize an
+// already-added list, never shown. The visible title and description come from
+// the translation tables: sample_category_<key> and essentials_desc_<key>.
+type EssentialsItem = {
+  key: string;
+  name: string;
+  list_type: string;
+  group: "everyday" | "grammar";
+};
 
 const GROUPS = [
   { groupKey: "everyday", titleKey: "sample_group_everyday" },
@@ -57,6 +49,7 @@ export function EssentialsView() {
   const { loadList, clearPairs, setPairs, setSourceLanguage, setTargetLanguage, setListType, setListName } =
     usePairs();
   const [lists, setLists] = useState<ListSummary[]>([]);
+  const [catalog, setCatalog] = useState<EssentialsItem[]>([]);
   const [busyKey, setBusyKey] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   // Guards a double-tap on Quiz from opening the quiz screen twice.
@@ -71,6 +64,23 @@ export function EssentialsView() {
       setError(e instanceof Error ? e.message : t("error_loading_lists"));
     }
   }, [userId]);
+
+  // The catalog follows the learning language, signed in or not.
+  const targetLanguage = mode?.targetLanguage;
+  useEffect(() => {
+    if (!targetLanguage) return;
+    let cancelled = false;
+    apiRequest<{ categories: EssentialsItem[] }>(`/essentials?target_language=${encodeURIComponent(targetLanguage)}`)
+      .then((result) => {
+        if (!cancelled) setCatalog(result.categories);
+      })
+      .catch((e) => {
+        if (!cancelled) setError(e instanceof Error ? e.message : t("error_loading_lists"));
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [targetLanguage]);
 
   useFocusEffect(
     useCallback(() => {
@@ -153,13 +163,13 @@ export function EssentialsView() {
         GROUPS.map((group) => (
           <View key={group.groupKey} style={styles.section}>
             <Text style={styles.sectionTitle}>{t(group.titleKey)}</Text>
-            {ESSENTIALS.filter((e) => e.group === group.groupKey).map((item) => {
-              const inMyLists = userId ? findAdded(item.englishName) : undefined;
-              const isBusy = busyKey === item.categoryKey;
+            {catalog.filter((e) => e.group === group.groupKey).map((item) => {
+              const inMyLists = userId ? findAdded(item.name) : undefined;
+              const isBusy = busyKey === item.key;
               return (
-                <View key={item.categoryKey} style={styles.card}>
-                  <Text style={styles.cardTitle}>{t(`sample_category_${item.categoryKey}`)}</Text>
-                  <Text style={styles.cardDescription}>{t(`essentials_desc_${item.categoryKey}`)}</Text>
+                <View key={item.key} style={styles.card}>
+                  <Text style={styles.cardTitle}>{t(`sample_category_${item.key}`)}</Text>
+                  <Text style={styles.cardDescription}>{t(`essentials_desc_${item.key}`)}</Text>
                   <View style={styles.cardActions}>
                     {inMyLists ? (
                       <Text style={styles.addedText}>✓ {t("essentials_in_my_lists")}</Text>
@@ -173,7 +183,7 @@ export function EssentialsView() {
                         !!busyKey && shared.primaryButtonDisabled,
                       ]}
                       disabled={!!busyKey}
-                      onPress={() => handleQuiz(item.categoryKey)}
+                      onPress={() => handleQuiz(item.key)}
                     >
                       <Text style={[shared.secondaryButtonText, shared.accentButtonText]}>
                         {isBusy ? t("essentials_preparing") : t("essentials_quiz")}
