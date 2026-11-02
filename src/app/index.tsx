@@ -1,14 +1,15 @@
-import { Link, useRouter } from "expo-router";
-import { useEffect, useState } from "react";
+import { Link, useFocusEffect, useRouter } from "expo-router";
+import { useCallback, useEffect, useState } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 
 import { LanguageForm } from "@/components/language-form";
 import { ModeChip } from "@/components/mode-chip";
 import { PressButton } from "@/components/press-button";
 import { colors, shared } from "@/constants/styles";
+import { apiRequest } from "@/lib/api";
 import { useAuth } from "@/lib/auth-context";
 import { useI18n } from "@/lib/i18n";
-import { useMode } from "@/lib/mode-context";
+import { inMode, useMode } from "@/lib/mode-context";
 import { usePairs } from "@/lib/pairs-context";
 import {
   getContinuedAsGuest,
@@ -39,6 +40,36 @@ export default function Home() {
     }
     router.push("/list-details");
   }
+
+  // The Quizzes button only appears once there is something in it: a guest
+  // never has saved quizzes, and a new account has none until a first quiz.
+  const [hasQuizzes, setHasQuizzes] = useState(false);
+  useFocusEffect(
+    useCallback(() => {
+      if (!userId) {
+        setHasQuizzes(false);
+        return;
+      }
+      let cancelled = false;
+      (async () => {
+        try {
+          const [lists, active, completed] = await Promise.all([
+            apiRequest<{ lists: { id: string; source_language: string; target_language: string }[] }>("/lists"),
+            apiRequest<{ sessions: { list_id: string }[] }>("/quiz-sessions"),
+            apiRequest<{ sessions: { list_id: string }[] }>("/quiz-sessions/completed"),
+          ]);
+          const modeListIds = new Set(lists.lists.filter((l) => inMode(mode, l)).map((l) => l.id));
+          const found = [...active.sessions, ...completed.sessions].some((s) => modeListIds.has(s.list_id));
+          if (!cancelled) setHasQuizzes(found);
+        } catch {
+          // can't tell — leave the button as it was
+        }
+      })();
+      return () => {
+        cancelled = true;
+      };
+    }, [userId, mode])
+  );
 
   // Hides Home until the checks below settle, so it never flashes before a
   // redirect to the intro or the welcome screen.
@@ -155,11 +186,13 @@ export default function Home() {
               <Text style={shared.primaryButtonText}>{t("lists")}</Text>
             </PressButton>
           </Link>
-          <Link href="/my-quizzes" asChild>
-            <PressButton style={quizzesButtonStyle}>
-              <Text style={shared.primaryButtonText}>{t("my_quizzes")}</Text>
-            </PressButton>
-          </Link>
+          {hasQuizzes && (
+            <Link href="/my-quizzes" asChild>
+              <PressButton style={quizzesButtonStyle}>
+                <Text style={shared.primaryButtonText}>{t("my_quizzes")}</Text>
+              </PressButton>
+            </Link>
+          )}
         </View>
       )}
     </View>

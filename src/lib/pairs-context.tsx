@@ -52,6 +52,8 @@ type PairsState = {
   // Shown on Generate Quiz so it's never ambiguous which list a quiz is
   // being generated from — null means "not saved / no name yet".
   listName: string | null;
+  // For a list that has a name but isn't saved (a guest's Essentials quiz).
+  setListName: (name: string | null) => void;
   setSavedList: (id: string, name: string) => void;
   loadList: (list: SavedList) => void;
 };
@@ -146,6 +148,7 @@ export function PairsProvider({ children }: { children: ReactNode }) {
         setListType,
         savedListId,
         listName,
+        setListName,
         setSavedList,
         loadList,
       }}

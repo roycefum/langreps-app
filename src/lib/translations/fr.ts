@@ -313,5 +313,12 @@ export const fr = {
   "essentials_in_my_lists": "Dans Mes listes",
   "essentials_preparing": "Préparation…",
   "continue_without_account": "Continuer sans compte",
-  "quizzes_signin_prompt": "Connecte-toi pour enregistrer tes quiz et reprendre où tu en étais.",
+  "sample_category_question_words": "Mots interrogatifs",
+  "sample_category_possessives": "Possessifs",
+  "sample_category_negatives_indefinites": "Négation et indéfinis",
+  "essentials_desc_question_words": "Les mots pour demander qui, quoi, où, quand, pourquoi et comment.",
+  "essentials_desc_possessives": "Les mots qui disent à qui est quelque chose : mon, ton, son, notre, votre, leur.",
+  "essentials_desc_negatives_indefinites": "Jamais, rien, personne, nulle part et leurs contraires affirmatifs.",
+  "sample_category_relative_pronouns": "Pronoms relatifs",
+  "essentials_desc_relative_pronouns": "Les mots qui relient une proposition au nom qu'elle décrit : qui, que, dont.",
 };

@@ -7,7 +7,7 @@ import { useReducedMotion } from "react-native-reanimated";
 import { Confetti } from "@/components/confetti";
 import { InsightCard } from "@/components/insight-card";
 import { PressButton } from "@/components/press-button";
-import { shared } from "@/constants/styles";
+import { colors, shared } from "@/constants/styles";
 import { apiRequest } from "@/lib/api";
 import { useAuth } from "@/lib/auth-context";
 import { LOCALE_NAMES, useI18n } from "@/lib/i18n";
@@ -115,6 +115,18 @@ export default function QuizComplete() {
         {t("score_correct", { n: shownCorrect, total: questions.length })}
       </Text>
       {feedback ? <InsightCard message={feedback} examples={examples} /> : null}
+      {/* A guest's quiz isn't kept anywhere — this is the moment signing up
+          makes sense, so say so. */}
+      {!userId && (
+        <View style={styles.signupCard}>
+          <Text style={shared.hint}>{t("signup_incentive_hint")}</Text>
+          <Link href="/login" asChild>
+            <PressButton style={signupButtonStyle}>
+              <Text style={[shared.secondaryButtonText, shared.accentButtonText]}>{t("log_in_sign_up")}</Text>
+            </PressButton>
+          </Link>
+        </View>
+      )}
       <View style={styles.buttonGroup}>
         {sessionId && (
           <Link href={{ pathname: "/quiz-results", params: { sessionId } }} asChild>
@@ -131,7 +143,20 @@ export default function QuizComplete() {
   );
 }
 
+// Flattened because Link asChild's Slot rejects an array of styles on its child.
+const signupButtonStyle = StyleSheet.flatten([
+  shared.secondaryButton,
+  { backgroundColor: colors.accent, borderBottomColor: colors.accentShadow, alignSelf: "stretch" as const },
+]);
+
 const styles = StyleSheet.create({
+  signupCard: {
+    alignSelf: "stretch",
+    gap: 10,
+    backgroundColor: colors.secondaryBackground,
+    borderRadius: 10,
+    padding: 14,
+  },
   container: {
     alignItems: "center",
   },

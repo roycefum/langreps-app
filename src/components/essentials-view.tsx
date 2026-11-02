@@ -32,6 +32,10 @@ const ESSENTIALS = [
   { categoryKey: "irregular_verbs", englishName: "Irregular Verbs", group: "everyday" },
   { categoryKey: "food", englishName: "Food", group: "everyday" },
   { categoryKey: "subject_pronouns", englishName: "Subject Pronouns", group: "grammar" },
+  { categoryKey: "possessives", englishName: "Possessives", group: "grammar" },
+  { categoryKey: "question_words", englishName: "Question Words", group: "grammar" },
+  { categoryKey: "relative_pronouns", englishName: "Relative Pronouns", group: "grammar" },
+  { categoryKey: "negatives_indefinites", englishName: "Negatives and Indefinites", group: "grammar" },
   { categoryKey: "conjunctions", englishName: "Conjunctions", group: "grammar" },
   { categoryKey: "prepositions", englishName: "Prepositions", group: "grammar" },
 ];
@@ -50,7 +54,8 @@ export function EssentialsView() {
   const { t } = useI18n();
   const { userId } = useAuth();
   const { mode, isLoaded, setMode } = useMode();
-  const { loadList, clearPairs, setPairs, setSourceLanguage, setTargetLanguage, setListType } = usePairs();
+  const { loadList, clearPairs, setPairs, setSourceLanguage, setTargetLanguage, setListType, setListName } =
+    usePairs();
   const [lists, setLists] = useState<ListSummary[]>([]);
   const [busyKey, setBusyKey] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -111,6 +116,7 @@ export function EssentialsView() {
         }>(`/essentials/${categoryKey}?${query}`);
         clearPairs();
         setPairs(result.pairs);
+        setListName(t(`sample_category_${categoryKey}`));
         setSourceLanguage(mode.sourceLanguage);
         setTargetLanguage(mode.targetLanguage);
         const type = LIST_TYPES.find((lt) => lt.toLowerCase() === result.list_type);

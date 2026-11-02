@@ -313,5 +313,12 @@ export const en = {
   "essentials_in_my_lists": "In My Lists",
   "essentials_preparing": "Preparing…",
   "continue_without_account": "Continue without an account",
-  "quizzes_signin_prompt": "Log in to save your quizzes and pick up where you left off.",
+  "sample_category_question_words": "Question Words",
+  "sample_category_possessives": "Possessives",
+  "sample_category_negatives_indefinites": "Negatives and Indefinites",
+  "essentials_desc_question_words": "The words you use to ask who, what, where, when, why and how.",
+  "essentials_desc_possessives": "The words that say whose something is: my, your, his, her, our, their.",
+  "essentials_desc_negatives_indefinites": "Never, nothing, nobody, nowhere, and their positive partners.",
+  "sample_category_relative_pronouns": "Relative Pronouns",
+  "essentials_desc_relative_pronouns": "The words that link a clause to the noun it describes: who, which, whose.",
 };

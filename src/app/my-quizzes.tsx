@@ -331,17 +331,6 @@ export default function MyQuizzes() {
       <Text style={shared.title}>{t("my_quizzes_title")}</Text>
       <ModeChip />
 
-      {!userId && (
-        <View style={styles.emptyState}>
-          <Text style={styles.emptyTitle}>{t("quizzes_signin_prompt")}</Text>
-          <Link href="/login" asChild>
-            <PressButton style={browseListsButtonStyle}>
-              <Text style={shared.primaryButtonText}>{t("log_in_sign_up")}</Text>
-            </PressButton>
-          </Link>
-        </View>
-      )}
-
       {error && <Text style={shared.errorText}>{error}</Text>}
       {isLoading && <Text style={shared.hint}>{t("loading_ellipsis")}</Text>}
 
@@ -350,7 +339,7 @@ export default function MyQuizzes() {
           only when BOTH sections are empty; either one alone still gets
           its own plain sentence below, since that's a normal state for an
           active user (e.g. no quiz currently in progress). */}
-      {!isLoading && !!userId && sessions.length === 0 && completedSessions.length === 0 && (
+      {!isLoading && sessions.length === 0 && completedSessions.length === 0 && (
         <View style={styles.emptyState}>
           <Text style={styles.emptyTitle}>{t("no_quizzes_yet_title")}</Text>
           <Text style={shared.hint}>{t("no_quizzes_yet_hint")}</Text>

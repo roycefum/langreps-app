@@ -1,6 +1,6 @@
 import { Link, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
-import { Alert, Pressable, StyleSheet, Switch, Text, View } from "react-native";
+import { Alert, Pressable, ScrollView, StyleSheet, Switch, Text, View } from "react-native";
 
 import { BackButton } from "@/components/back-button";
 import { CefrLevelPicker } from "@/components/cefr-level-picker";
@@ -31,7 +31,7 @@ const loginButtonStyle = StyleSheet.flatten([
 export default function Settings() {
   const { t } = useI18n();
   const router = useRouter();
-  const { userId, deleteAccount } = useAuth();
+  const { userId, email, deleteAccount } = useAuth();
   const { setMode, refresh: refreshMode } = useMode();
   const [deleteError, setDeleteError] = useState<string | null>(null);
   const [autoDelete, setAutoDelete] = useState(false);
@@ -120,9 +120,37 @@ export default function Settings() {
   }
 
   return (
-    <View style={shared.screen}>
+    <ScrollView style={shared.screen} contentContainerStyle={styles.content}>
       <BackButton href="/" />
       <Text style={shared.title}>{t("settings_title")}</Text>
+
+      {/* Account first — it is the one thing here a guest or a signed-in user
+          both come looking for. */}
+      {!userId && (
+        <View style={styles.settingBlock}>
+          <Text style={styles.settingTitle}>{t("account_section_title")}</Text>
+          <Text style={shared.hint}>{t("signup_incentive_hint")}</Text>
+          <Link href="/login" asChild>
+            <PressButton style={loginButtonStyle}>
+              <Text style={[shared.secondaryButtonText, shared.accentButtonText]}>{t("log_in_sign_up")}</Text>
+            </PressButton>
+          </Link>
+        </View>
+      )}
+
+      {userId && (
+        <View style={styles.settingBlock}>
+          <Text style={styles.settingTitle}>{t("account_section_title")}</Text>
+          <Text style={shared.hint}>
+            {t("signed_in_as", { email: "" })}
+            <Text style={styles.emailBold}>{email}</Text>
+          </Text>
+          <Pressable onPress={confirmDeleteAccount} hitSlop={8}>
+            <Text style={styles.deleteLink}>{t("delete_account")}</Text>
+          </Pressable>
+          {deleteError && <Text style={shared.errorText}>{deleteError}</Text>}
+        </View>
+      )}
 
       <View style={styles.settingBlock}>
         <Text style={styles.settingTitle}>{t("learning_pair_title")}</Text>
@@ -173,36 +201,22 @@ export default function Settings() {
         <Switch value={autoDelete} onValueChange={handleAutoDeleteChange} />
       </View>
 
-      {!userId && (
-        <View style={styles.settingBlock}>
-          <Text style={styles.settingTitle}>{t("account_section_title")}</Text>
-          <Text style={shared.hint}>{t("signup_incentive_hint")}</Text>
-          <Link href="/login" asChild>
-            <PressButton style={loginButtonStyle}>
-              <Text style={[shared.secondaryButtonText, shared.accentButtonText]}>{t("log_in_sign_up")}</Text>
-            </PressButton>
-          </Link>
-        </View>
-      )}
-
-      {userId && (
-        <View style={styles.settingBlock}>
-          <Text style={styles.settingTitle}>{t("account_section_title")}</Text>
-          <Pressable onPress={confirmDeleteAccount} hitSlop={8}>
-            <Text style={styles.deleteLink}>{t("delete_account")}</Text>
-          </Pressable>
-          {deleteError && <Text style={shared.errorText}>{deleteError}</Text>}
-        </View>
-      )}
-
       <Link href="/onboarding" style={[shared.backLink, shared.linkText]}>
         {t("about_langreps_link")}
       </Link>
-    </View>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
+  content: {
+    gap: 16,
+    paddingBottom: 32,
+  },
+  emailBold: {
+    fontWeight: "700",
+    color: colors.text,
+  },
   settingBlock: {
     gap: 6,
   },

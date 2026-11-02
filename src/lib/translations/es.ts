@@ -313,5 +313,12 @@ export const es = {
   "essentials_in_my_lists": "En Mis listas",
   "essentials_preparing": "Preparando…",
   "continue_without_account": "Continuar sin cuenta",
-  "quizzes_signin_prompt": "Inicia sesión para guardar tus cuestionarios y continuar donde lo dejaste.",
+  "sample_category_question_words": "Palabras interrogativas",
+  "sample_category_possessives": "Posesivos",
+  "sample_category_negatives_indefinites": "Negación e indefinidos",
+  "essentials_desc_question_words": "Las palabras para preguntar quién, qué, dónde, cuándo, por qué y cómo.",
+  "essentials_desc_possessives": "Las palabras que dicen de quién es algo: mi, tu, su, nuestro, vuestro.",
+  "essentials_desc_negatives_indefinites": "Nunca, nada, nadie, en ninguna parte y sus contrarios afirmativos.",
+  "sample_category_relative_pronouns": "Pronombres relativos",
+  "essentials_desc_relative_pronouns": "Las palabras que unen una oración con el nombre que describe: que, quien, cuyo.",
 };
