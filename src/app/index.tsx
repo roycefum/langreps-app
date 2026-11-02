@@ -42,9 +42,23 @@ export default function Home() {
     router.push("/list-details");
   }
 
-  // The Quizzes button only appears once there is something in it: a guest
-  // never has saved quizzes, and a new account has none until a first quiz.
-  const [hasQuizzes, setHasQuizzes] = useState(false);
+  // Whether there are saved quizzes to come back to: a guest never has any
+  // and a new account has none until a first quiz.
+  // The last answer is remembered across visits to Home (keyed by account and
+  // language mode), so coming back from another screen shows the right state
+  // at once instead of re-checking from "none".
+  const quizzesKey = `${userId ?? ""}|${mode?.sourceLanguage}|${mode?.targetLanguage}`;
+  const [hasQuizzes, setHasQuizzesState] = useState(knownHasQuizzes.get(quizzesKey) ?? false);
+  const setHasQuizzes = useCallback(
+    (found: boolean) => {
+      knownHasQuizzes.set(quizzesKey, found);
+      setHasQuizzesState(found);
+    },
+    [quizzesKey]
+  );
+  useEffect(() => {
+    setHasQuizzesState(knownHasQuizzes.get(quizzesKey) ?? false);
+  }, [quizzesKey]);
   useFocusEffect(
     useCallback(() => {
       if (!userId) {
@@ -69,7 +83,7 @@ export default function Home() {
       return () => {
         cancelled = true;
       };
-    }, [userId, mode])
+    }, [userId, mode, setHasQuizzes])
   );
 
   // Hides Home until the checks below settle, so it never flashes before a
@@ -163,10 +177,19 @@ export default function Home() {
               <Text style={shared.primaryButtonText}>{t("lists")}</Text>
             </PressButton>
           </Link>
-          {hasQuizzes && (
+          {/* One button that always works: "Take a Quiz" (straight to the
+              Essentials) until there are saved quizzes to come back to, then
+              "Quizzes". Never grayed out, so it can't pop in late. */}
+          {hasQuizzes ? (
             <Link href="/my-quizzes" asChild>
               <PressButton style={quizzesButtonStyle}>
                 <Text style={shared.primaryButtonText}>{t("my_quizzes")}</Text>
+              </PressButton>
+            </Link>
+          ) : (
+            <Link href={{ pathname: "/lists", params: { tab: "essentials" } }} asChild>
+              <PressButton style={quizzesButtonStyle}>
+                <Text style={shared.primaryButtonText}>{t("take_a_quiz_button")}</Text>
               </PressButton>
             </Link>
           )}
@@ -201,6 +224,9 @@ export default function Home() {
 
 // Flattened because Link asChild's Slot rejects an array of styles on its child.
 const libraryButtonStyle = StyleSheet.flatten([shared.primaryButton, shared.generateQuizButton]);
+// Whether each account + language mode had saved quizzes the last time Home checked.
+const knownHasQuizzes = new Map<string, boolean>();
+
 const quizzesButtonStyle = StyleSheet.flatten([
   shared.primaryButton,
   { backgroundColor: colors.accent, borderBottomColor: colors.accentShadow },

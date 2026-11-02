@@ -3,7 +3,7 @@ import { createContext, useCallback, useContext, useMemo, useState, type ReactNo
 
 import { apiRequest } from "./api";
 import { getLanguagePairSettings } from "./settings-storage";
-import { removeAccents } from "./text";
+import { normalizeApostrophes, removeAccents } from "./text";
 import type { Question } from "./types";
 
 type QuizPhase = "question" | "feedback";
@@ -135,7 +135,7 @@ export function QuizProvider({ children }: { children: ReactNode }) {
     (answer: string) => {
       const current = questions[currentIndex];
       const normalize = (s: string) => {
-        const lowered = s.trim().toLowerCase();
+        const lowered = normalizeApostrophes(s.trim().toLowerCase());
         return requireAccents ? lowered : removeAccents(lowered);
       };
       const correct = normalize(answer) === normalize(current.correct_answer);

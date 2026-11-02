@@ -10,7 +10,7 @@ import { apiRequest } from "@/lib/api";
 import { useAuth } from "@/lib/auth-context";
 import { useI18n } from "@/lib/i18n";
 import { useMode } from "@/lib/mode-context";
-import { usePairs, type SavedList } from "@/lib/pairs-context";
+import { usePairs } from "@/lib/pairs-context";
 import { LIST_TYPES, type ListType } from "@/lib/types";
 
 type ListSummary = {
@@ -46,11 +46,12 @@ export function EssentialsView() {
   const { t } = useI18n();
   const { userId } = useAuth();
   const { mode, isLoaded, setMode } = useMode();
-  const { loadList, clearPairs, setPairs, setSourceLanguage, setTargetLanguage, setListType, setListName } =
+  const { clearPairs, setPairs, setSourceLanguage, setTargetLanguage, setListType, setListName } =
     usePairs();
   const [lists, setLists] = useState<ListSummary[]>([]);
   const [catalog, setCatalog] = useState<EssentialsItem[]>([]);
   const [busyKey, setBusyKey] = useState<string | null>(null);
+  const [addingKey, setAddingKey] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   // Guards a double-tap on Quiz from opening the quiz screen twice.
   const isOpeningRef = useRef(false);
@@ -98,40 +99,27 @@ export function EssentialsView() {
     );
   }
 
-  // One tap to a quiz. Signed in: the list is created in My Lists if it isn't
-  // there yet (the server returns the existing copy untouched otherwise) and
-  // loaded like any saved list, so progress is tracked. Signed out: the
-  // words come straight from the built-in tables and live in memory only.
+  // One tap to a quiz, signed in or not: the words come straight from the
+  // built-in tables and live in memory only. Nothing is saved — that is what
+  // "Add to My Lists" is for.
   async function handleQuiz(categoryKey: string) {
     if (!mode || isOpeningRef.current) return;
     isOpeningRef.current = true;
     setBusyKey(categoryKey);
     setError(null);
     try {
-      if (userId) {
-        const { list_id } = await apiRequest<{ list_id: string }>("/sample-lists", {
-          method: "POST",
-          body: {
-            category: categoryKey,
-            source_language: mode.sourceLanguage,
-            target_language: mode.targetLanguage,
-          },
-        });
-        loadList(await apiRequest<SavedList>(`/lists/${list_id}`));
-      } else {
-        const query = `source_language=${encodeURIComponent(mode.sourceLanguage)}&target_language=${encodeURIComponent(mode.targetLanguage)}`;
-        const result = await apiRequest<{
-          list_type: string;
-          pairs: { "source word": string; "target word": string }[];
-        }>(`/essentials/${categoryKey}?${query}`);
-        clearPairs();
-        setPairs(result.pairs);
-        setListName(t(`sample_category_${categoryKey}`));
-        setSourceLanguage(mode.sourceLanguage);
-        setTargetLanguage(mode.targetLanguage);
-        const type = LIST_TYPES.find((lt) => lt.toLowerCase() === result.list_type);
-        if (type) setListType(type as ListType);
-      }
+      const query = `source_language=${encodeURIComponent(mode.sourceLanguage)}&target_language=${encodeURIComponent(mode.targetLanguage)}`;
+      const result = await apiRequest<{
+        list_type: string;
+        pairs: { "source word": string; "target word": string }[];
+      }>(`/essentials/${categoryKey}?${query}`);
+      clearPairs();
+      setPairs(result.pairs);
+      setListName(t(`sample_category_${categoryKey}`));
+      setSourceLanguage(mode.sourceLanguage);
+      setTargetLanguage(mode.targetLanguage);
+      const type = LIST_TYPES.find((lt) => lt.toLowerCase() === result.list_type);
+      if (type) setListType(type as ListType);
       router.push("/generate-quiz");
       setTimeout(() => {
         isOpeningRef.current = false;
@@ -141,6 +129,29 @@ export function EssentialsView() {
       isOpeningRef.current = false;
     } finally {
       setBusyKey(null);
+    }
+  }
+
+  // Signed in only: saves the list to My Lists (the server returns an
+  // existing copy untouched), where quizzes on it keep their history.
+  async function handleAdd(categoryKey: string) {
+    if (!mode) return;
+    setAddingKey(categoryKey);
+    setError(null);
+    try {
+      await apiRequest("/sample-lists", {
+        method: "POST",
+        body: {
+          category: categoryKey,
+          source_language: mode.sourceLanguage,
+          target_language: mode.targetLanguage,
+        },
+      });
+      await load();
+    } catch (e) {
+      setError(e instanceof Error ? e.message : t("error_loading_list"));
+    } finally {
+      setAddingKey(null);
     }
   }
 
@@ -171,10 +182,20 @@ export function EssentialsView() {
                   <Text style={styles.cardTitle}>{t(`sample_category_${item.key}`)}</Text>
                   <Text style={styles.cardDescription}>{t(`essentials_desc_${item.key}`)}</Text>
                   <View style={styles.cardActions}>
-                    {inMyLists ? (
+                    {!userId ? (
+                      <View />
+                    ) : inMyLists ? (
                       <Text style={styles.addedText}>✓ {t("essentials_in_my_lists")}</Text>
                     ) : (
-                      <View />
+                      <PressButton
+                        style={[shared.secondaryButton, !!addingKey && shared.primaryButtonDisabled]}
+                        disabled={!!addingKey}
+                        onPress={() => handleAdd(item.key)}
+                      >
+                        <Text style={shared.secondaryButtonText}>
+                          {addingKey === item.key ? t("essentials_adding") : t("essentials_add_to_my_lists")}
+                        </Text>
+                      </PressButton>
                     )}
                     <PressButton
                       style={[

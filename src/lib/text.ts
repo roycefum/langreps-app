@@ -6,6 +6,12 @@ export function removeAccents(text: string): string {
   return text.normalize("NFD").replace(COMBINING_DIACRITICS, "");
 }
 
+// Phone keyboards turn a typed ' into a curly ’ (or ʼ), so French elisions
+// like l'ami would otherwise never match the stored straight-apostrophe form.
+export function normalizeApostrophes(text: string): string {
+  return text.replace(/[\u2018\u2019\u02BC]/g, "'");
+}
+
 // Flips which side of each pair is "known" vs "learning" — used when a
 // user tells LanguageOrderConfirm the app's initial column-order guess was
 // backwards (e.g. a textbook list puts the foreign/learning word first).
