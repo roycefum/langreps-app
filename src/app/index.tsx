@@ -167,14 +167,14 @@ export default function Home() {
       {mode && (
         <View style={styles.buttonGroup}>
           <PressButton style={shared.primaryButton} onPress={startFreshList}>
-            <Text style={shared.primaryButtonText}>{t("add_words_manually")}</Text>
+            <Text style={styles.homeButtonText}>{t("add_words_manually")}</Text>
           </PressButton>
           {/* Shown to everyone — it holds both the learner's own lists and the
               Essentials, which anyone can quiz; saving progress is what asks
               for an account. */}
           <Link href="/lists" asChild>
             <PressButton style={libraryButtonStyle}>
-              <Text style={shared.primaryButtonText}>{t("lists")}</Text>
+              <Text style={styles.homeButtonText}>{t("lists")}</Text>
             </PressButton>
           </Link>
           {/* One button that always works: "Take a Quiz" (straight to the
@@ -183,13 +183,13 @@ export default function Home() {
           {hasQuizzes ? (
             <Link href="/my-quizzes" asChild>
               <PressButton style={quizzesButtonStyle}>
-                <Text style={shared.primaryButtonText}>{t("my_quizzes")}</Text>
+                <Text style={styles.homeButtonText}>{t("my_quizzes")}</Text>
               </PressButton>
             </Link>
           ) : (
             <Link href={{ pathname: "/lists", params: { tab: "essentials" } }} asChild>
               <PressButton style={quizzesButtonStyle}>
-                <Text style={shared.primaryButtonText}>{t("take_a_quiz_button")}</Text>
+                <Text style={styles.homeButtonText}>{t("take_a_quiz_button")}</Text>
               </PressButton>
             </Link>
           )}
@@ -229,10 +229,14 @@ const knownHasQuizzes = new Map<string, boolean>();
 
 const quizzesButtonStyle = StyleSheet.flatten([
   shared.primaryButton,
-  { backgroundColor: colors.accent, borderBottomColor: colors.accentShadow },
+  { backgroundColor: colors.tertiary, borderBottomColor: colors.tertiaryShadow },
 ]);
 
 const styles = StyleSheet.create({
+  homeButtonText: {
+    ...shared.primaryButtonText,
+    fontSize: 22,
+  },
   container: {
     alignItems: "center",
     gap: 24,

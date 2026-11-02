@@ -8,7 +8,7 @@ export const en = {
   "delete_account": "Delete Account",
   "log_in_sign_up": "Log In / Sign Up",
   "signed_in_as": "Signed in as {email}",
-  "add_words_manually": "Add Words",
+  "add_words_manually": "New List",
   "paste_vocab_list": "Paste Vocab List",
   "upload_a_file": "Upload a File",
   "share_a_picture": "Upload a Photo",

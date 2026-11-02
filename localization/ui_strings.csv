@@ -6,7 +6,7 @@
 5,index.tsx,delete_account,Delete Account,Eliminar cuenta,Supprimer le compte,Also used as alert title
 6,index.tsx,log_in_sign_up,Log In / Sign Up,Iniciar sesión / Registrarse,Se connecter / S'inscrire,
 7,index.tsx,signed_in_as,Signed in as {email},Sesión iniciada como {email},Connecté en tant que {email},Template — {email} not translated
-8,index.tsx,add_words_manually,Add Words,Añadir palabras,Ajouter des mots,
+8,index.tsx,add_words_manually,New List,Nueva lista,Nouvelle liste,
 9,index.tsx,paste_vocab_list,Paste Vocab List,Pegar lista de vocabulario,Coller une liste de vocabulaire,
 10,index.tsx,upload_a_file,Upload a File,Subir un archivo,Importer un fichier,
 11,index.tsx,share_a_picture,Upload a Photo,Subir una foto,Importer une photo,

@@ -8,7 +8,7 @@ export const fr = {
   "delete_account": "Supprimer le compte",
   "log_in_sign_up": "Se connecter / S'inscrire",
   "signed_in_as": "Connecté en tant que {email}",
-  "add_words_manually": "Ajouter des mots",
+  "add_words_manually": "Nouvelle liste",
   "paste_vocab_list": "Coller une liste de vocabulaire",
   "upload_a_file": "Importer un fichier",
   "share_a_picture": "Importer une photo",

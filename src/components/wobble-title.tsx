@@ -37,7 +37,7 @@ export function WobbleTitle({ children }: { children: string }) {
 
 const styles = StyleSheet.create({
   title: {
-    fontSize: 44,
+    fontSize: 56,
     fontWeight: "700",
   },
 });
