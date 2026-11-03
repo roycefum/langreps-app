@@ -1,6 +1,6 @@
 import { useFocusEffect, useRouter } from "expo-router";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { ScrollView, StyleSheet, Text, View } from "react-native";
+import { ActivityIndicator, ScrollView, StyleSheet, Text, View } from "react-native";
 
 import { LanguageForm } from "@/components/language-form";
 
@@ -25,11 +25,14 @@ type ListSummary = {
 // name the backend saves the list under; it is used only to recognize an
 // already-added list, never shown. The visible title and description come from
 // the translation tables: sample_category_<key> and essentials_desc_<key>.
+type WordPair = { "source word": string; "target word": string };
+
 type EssentialsItem = {
   key: string;
   name: string;
   list_type: string;
   group: "everyday" | "grammar";
+  level?: "beginner" | "intermediate" | "advanced";
 };
 
 const GROUPS = [
@@ -53,6 +56,11 @@ export function EssentialsView() {
   const [busyKey, setBusyKey] = useState<string | null>(null);
   const [addingKey, setAddingKey] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  // "View words": which card is expanded, and the words already fetched for
+  // each (keyed by category and language pair, so switching mode refetches).
+  const [openKey, setOpenKey] = useState<string | null>(null);
+  const [previews, setPreviews] = useState<Record<string, WordPair[]>>({});
+  const [loadingPreview, setLoadingPreview] = useState<string | null>(null);
   // Guards a double-tap on Quiz from opening the quiz screen twice.
   const isOpeningRef = useRef(false);
 
@@ -99,6 +107,43 @@ export function EssentialsView() {
     );
   }
 
+  async function togglePreview(categoryKey: string) {
+    if (!mode) return;
+    if (openKey === categoryKey) {
+      setOpenKey(null);
+      return;
+    }
+    setOpenKey(categoryKey);
+    const cacheKey = `${categoryKey}|${mode.sourceLanguage}|${mode.targetLanguage}`;
+    if (previews[cacheKey]) return;
+    setLoadingPreview(categoryKey);
+    setError(null);
+    try {
+      const query = `source_language=${encodeURIComponent(mode.sourceLanguage)}&target_language=${encodeURIComponent(mode.targetLanguage)}`;
+      const result = await apiRequest<{ pairs: WordPair[] }>(`/essentials/${categoryKey}?${query}`);
+      setPreviews((prev) => ({ ...prev, [cacheKey]: result.pairs }));
+    } catch (e) {
+      setOpenKey(null);
+      setError(e instanceof Error ? e.message : t("error_loading_list"));
+    } finally {
+      setLoadingPreview(null);
+    }
+  }
+
+  // A category the app has no translation for yet (a newer or older server)
+  // shows the server's English name instead of a raw string key.
+  function titleOf(item: { key: string; name: string }): string {
+    const key = `sample_category_${item.key}`;
+    const title = t(key);
+    return title === key ? item.name : title;
+  }
+
+  function previewFor(categoryKey: string): WordPair[] | undefined {
+    return mode
+      ? previews[`${categoryKey}|${mode.sourceLanguage}|${mode.targetLanguage}`]
+      : undefined;
+  }
+
   // One tap to a quiz, signed in or not: the words come straight from the
   // built-in tables and live in memory only. Nothing is saved — that is what
   // "Add to My Lists" is for.
@@ -115,7 +160,7 @@ export function EssentialsView() {
       }>(`/essentials/${categoryKey}?${query}`);
       clearPairs();
       setPairs(result.pairs);
-      setListName(t(`sample_category_${categoryKey}`));
+      setListName(titleOf(catalog.find((c) => c.key === categoryKey) ?? { key: categoryKey, name: categoryKey }));
       setSourceLanguage(mode.sourceLanguage);
       setTargetLanguage(mode.targetLanguage);
       const type = LIST_TYPES.find((lt) => lt.toLowerCase() === result.list_type);
@@ -174,13 +219,36 @@ export function EssentialsView() {
         GROUPS.map((group) => (
           <View key={group.groupKey} style={styles.section}>
             <Text style={styles.sectionTitle}>{t(group.titleKey)}</Text>
-            {catalog.filter((e) => e.group === group.groupKey).map((item) => {
+            {[...catalog]
+              .filter((e) => e.group === group.groupKey)
+              .sort((a, b) => titleOf(a).localeCompare(titleOf(b)))
+              .map((item) => {
               const inMyLists = userId ? findAdded(item.name) : undefined;
               const isBusy = busyKey === item.key;
               return (
                 <View key={item.key} style={styles.card}>
-                  <Text style={styles.cardTitle}>{t(`sample_category_${item.key}`)}</Text>
-                  <Text style={styles.cardDescription}>{t(`essentials_desc_${item.key}`)}</Text>
+                  <View style={styles.cardTitleRow}>
+                    <Text style={styles.cardTitle}>{titleOf(item)}</Text>
+                    {item.level && <Text style={styles.levelText}>{t(`level_${item.level}`)}</Text>}
+                  </View>
+                  {t(`essentials_desc_${item.key}`) !== `essentials_desc_${item.key}` && (
+                    <Text style={styles.cardDescription}>{t(`essentials_desc_${item.key}`)}</Text>
+                  )}
+                  {openKey === item.key && (
+                    <View style={styles.previewBox}>
+                      {loadingPreview === item.key && !previewFor(item.key) ? (
+                        <ActivityIndicator />
+                      ) : (
+                        previewFor(item.key)?.map((p, i) => (
+                          <Text key={i} style={styles.previewRow}>
+                            <Text style={styles.previewTarget}>{p["target word"]}</Text>
+                            {"  ·  "}
+                            {p["source word"]}
+                          </Text>
+                        ))
+                      )}
+                    </View>
+                  )}
                   <View style={styles.cardActions}>
                     {!userId ? (
                       <View />
@@ -197,19 +265,30 @@ export function EssentialsView() {
                         </Text>
                       </PressButton>
                     )}
-                    <PressButton
-                      style={[
-                        shared.secondaryButton,
-                        styles.quizButton,
-                        !!busyKey && shared.primaryButtonDisabled,
-                      ]}
-                      disabled={!!busyKey}
-                      onPress={() => handleQuiz(item.key)}
-                    >
-                      <Text style={[shared.secondaryButtonText, shared.accentButtonText]}>
-                        {isBusy ? t("essentials_preparing") : t("essentials_quiz")}
-                      </Text>
-                    </PressButton>
+                    <View style={styles.rightButtons}>
+                      <PressButton
+                        style={[shared.secondaryButton, styles.sizedButton]}
+                        onPress={() => togglePreview(item.key)}
+                      >
+                        <Text style={shared.secondaryButtonText}>
+                          {openKey === item.key ? t("essentials_hide_words") : t("essentials_view_words")}
+                        </Text>
+                      </PressButton>
+                      <PressButton
+                        style={[
+                          shared.secondaryButton,
+                          styles.sizedButton,
+                          styles.quizButton,
+                          !!busyKey && shared.primaryButtonDisabled,
+                        ]}
+                        disabled={!!busyKey}
+                        onPress={() => handleQuiz(item.key)}
+                      >
+                        <Text style={[shared.secondaryButtonText, shared.accentButtonText]}>
+                          {isBusy ? t("essentials_preparing") : t("essentials_quiz")}
+                        </Text>
+                      </PressButton>
+                    </View>
                   </View>
                 </View>
               );
@@ -250,10 +329,38 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
     paddingHorizontal: 14,
   },
+  cardTitleRow: {
+    flexDirection: "row",
+    alignItems: "baseline",
+    justifyContent: "space-between",
+    gap: 8,
+  },
+  levelText: {
+    fontSize: 12,
+    fontWeight: "700",
+    letterSpacing: 0.5,
+    textTransform: "uppercase",
+    color: colors.tertiary,
+  },
   cardTitle: {
+    flexShrink: 1,
     fontSize: 18,
     fontWeight: "700",
     color: colors.text,
+  },
+  previewBox: {
+    gap: 4,
+    paddingVertical: 8,
+    paddingHorizontal: 10,
+    borderRadius: 8,
+    backgroundColor: colors.secondaryBackground,
+  },
+  previewRow: {
+    fontSize: 14,
+    color: colors.text,
+  },
+  previewTarget: {
+    fontWeight: "700",
   },
   cardDescription: {
     fontSize: 14,
@@ -267,10 +374,18 @@ const styles = StyleSheet.create({
     marginTop: 6,
     gap: 10,
   },
+  rightButtons: {
+    flexDirection: "row",
+    gap: 10,
+  },
+  // View and Quiz share one size so the pair reads as a set.
+  sizedButton: {
+    minWidth: 92,
+    paddingHorizontal: 18,
+  },
   quizButton: {
     backgroundColor: colors.generateQuiz,
     borderBottomColor: colors.generateQuizShadow,
-    paddingHorizontal: 22,
   },
   addedText: {
     fontSize: 15,

@@ -153,7 +153,7 @@
 152,onboarding.tsx,slide2_headline,Practice With Adaptive Quizzes,Practica con cuestionarios adaptativos,Entraîne-toi avec des quiz adaptatifs,
 153,onboarding.tsx,slide2_body,"AI generates real sentences to test you — and the more you practice, the more it targets what you're actually struggling with.","La IA genera frases reales para ponerte a prueba — y cuanto más practiques, más se enfocará en lo que realmente te cuesta.","L'IA génère de vraies phrases pour te tester — et plus tu t'entraînes, plus elle cible ce qui te pose vraiment des difficultés.",
 154,onboarding.tsx,slide3_headline,Watch Your Progress,Observa tu progreso,Suis ta progression,
-155,onboarding.tsx,slide3_body,"See your scores improve over time, list by list.","Observa cómo mejoran tus resultados con el tiempo, lista por lista.","Regarde tes scores s'améliorer au fil du temps, liste par liste.",
+155,onboarding.tsx,slide3_body,Add a list to My Lists and watch your scores improve over time.,Añade una lista a Mis listas y observa cómo mejoran tus resultados con el tiempo.,Ajoute une liste à Mes listes et regarde tes scores s'améliorer au fil du temps.,
 156,settings.tsx,about_langreps_link,About LangReps,Acerca de LangReps,À propos de LangReps,Links to /onboarding to replay it manually
 157,my-lists.tsx,sort_by_label,Sort by,Ordenar por,Trier par,
 158,my-lists.tsx,sort_by_date,Last Uploaded,Última subida,Dernier import,
@@ -292,7 +292,7 @@
 291,essentials.tsx,essentials_quiz_now,Quiz now,Hacer cuestionario,Faire un quiz,Button on an added Essentials card; goes straight to Generate Quiz
 292,my-lists.tsx,browse_essentials_button,Browse Essentials,Ver Esenciales,Voir les Essentiels,Empty My Lists state
 293,essentials.tsx,essentials_desc_common_words,The everyday basics you'll meet everywhere.,Lo básico del día a día que encontrarás en todas partes.,Les bases du quotidien que tu rencontreras partout.,Card description
-294,essentials.tsx,essentials_desc_common_verbs,"The most useful verbs, ready to conjugate.","Los verbos más útiles, listos para conjugar.","Les verbes les plus utiles, prêts à conjuguer.",Card description
+294,essentials.tsx,essentials_desc_common_verbs,"Regular verbs you can use right away, ready to conjugate.","Verbos regulares que puedes usar ya, listos para conjugar.","Des verbes réguliers à utiliser tout de suite, prêts à conjuguer.",Card description
 295,essentials.tsx,essentials_desc_irregular_verbs,The irregular verbs that trip everyone up.,Los verbos irregulares con los que todos tropiezan.,Les verbes irréguliers qui font trébucher tout le monde.,Card description
 296,essentials.tsx,essentials_desc_food,What's on the menu and in the kitchen.,Lo que hay en el menú y en la cocina.,Ce qu'il y a au menu et dans la cuisine.,Card description
 297,essentials.tsx,essentials_desc_subject_pronouns,The words for who is doing the action.,Las palabras que indican quién realiza la acción.,Les mots qui disent qui fait l'action.,Card description (language-neutral: the learner's target language varies)
@@ -314,10 +314,10 @@
 313,welcome.tsx,continue_without_account,Continue without an account,Continuar sin cuenta,Continuer sans compte,Welcome screen: look around and quiz Essentials as a guest
 315,my-lists.tsx,sample_category_question_words,Question Words,Palabras interrogativas,Mots interrogatifs,Grammar sample-list category label
 316,my-lists.tsx,sample_category_possessives,Possessives,Posesivos,Possessifs,Grammar sample-list category label
-317,my-lists.tsx,sample_category_negatives_indefinites,Negatives and Indefinites,Negación e indefinidos,Négation et indéfinis,Grammar sample-list category label
+317,my-lists.tsx,sample_category_negatives,Negatives,Negaciones,Négations,Grammar sample-list category label
 319,essentials.tsx,essentials_desc_question_words,"The words you use to ask who, what, where, when, why and how.","Las palabras para preguntar quién, qué, dónde, cuándo, por qué y cómo.","Les mots pour demander qui, quoi, où, quand, pourquoi et comment.",Card description
 320,essentials.tsx,essentials_desc_possessives,"The words that say whose something is: my, your, his, her, our, their.","Las palabras que dicen de quién es algo: mi, tu, su, nuestro, vuestro.","Les mots qui disent à qui est quelque chose : mon, ton, son, notre, votre, leur.",Card description (language-neutral: the learner's target language varies)
-321,essentials.tsx,essentials_desc_negatives_indefinites,"Never, nothing, nobody, nowhere, and their positive partners.","Nunca, nada, nadie, en ninguna parte y sus contrarios afirmativos.","Jamais, rien, personne, nulle part et leurs contraires affirmatifs.",Card description (language-neutral: the learner's target language varies)
+321,essentials.tsx,essentials_desc_negatives,"Never, nothing, nobody, nowhere: the words that say no.","Nunca, nada, nadie, en ninguna parte: las palabras que dicen no.","Jamais, rien, personne, nulle part : les mots qui disent non.",Card description (language-neutral: the learner's target language varies)
 322,my-lists.tsx,sample_category_relative_pronouns,Relative Pronouns,Pronombres relativos,Pronoms relatifs,Grammar sample-list category label
 323,essentials.tsx,essentials_desc_relative_pronouns,"The words that link a clause to the noun it describes: who, which, whose.","Las palabras que unen una oración con el nombre que describe: que, quien, cuyo.","Les mots qui relient une proposition au nom qu'elle décrit : qui, que, dont.",Card description (language-neutral: the learner's target language varies)
 324,my-lists.tsx,sample_category_object_pronouns,Object Pronouns,Pronombres de complemento,Pronoms compléments,Grammar sample-list category label
@@ -334,3 +334,12 @@
 335,essentials-view.tsx,essentials_adding,Adding…,Añadiendo…,Ajout…,Add to My Lists button while saving
 336,quiz-complete.tsx,quiz_not_saved_hint,This quiz wasn't saved. Add the list to My Lists from Essentials to keep your results.,Este cuestionario no se ha guardado. Añade la lista a Mis listas desde Esenciales para conservar tus resultados.,Ce quiz n'a pas été enregistré. Ajoute la liste à Mes listes depuis les Essentiels pour garder tes résultats.,Signed-in learner finished a quiz on an unsaved Essentials list
 337,index.tsx,take_a_quiz_button,Take a Quiz,Hacer un cuestionario,Faire un quiz,Home button until there are saved quizzes: opens Essentials
+338,my-lists.tsx,sample_category_stressed_pronouns,Stressed Pronouns,Pronombres tónicos,Pronoms disjoints,Grammar sample-list category label
+339,essentials.tsx,essentials_desc_stressed_pronouns,"The pronouns used after a preposition or for emphasis: moi, mí.","Los pronombres que se usan tras una preposición o para enfatizar: moi, mí.","Les pronoms utilisés après une préposition ou pour insister : moi, mí.",Card description (language-neutral: the learner's target language varies)
+342,essentials.tsx,level_beginner,Beginner,Principiante,Débutant,Essentials card level badge
+343,essentials.tsx,level_intermediate,Intermediate,Intermedio,Intermédiaire,Essentials card level badge
+344,essentials.tsx,level_advanced,Advanced,Avanzado,Avancé,Essentials card level badge
+345,essentials.tsx,essentials_view_words,View,Ver,Voir,Essentials card: expand/collapse the word list
+346,essentials.tsx,essentials_hide_words,Hide,Ocultar,Masquer,Essentials card: expand/collapse the word list
+347,my-lists.tsx,sample_category_indefinites,Indefinites,Indefinidos,Indéfinis,Grammar sample-list category label
+348,essentials.tsx,essentials_desc_indefinites,"Something, somebody, somewhere, always: the vague words.","Algo, alguien, en alguna parte, siempre: las palabras imprecisas.","Quelque chose, quelqu'un, quelque part, toujours : les mots imprécis.",Card description (language-neutral: the learner's target language varies)
