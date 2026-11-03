@@ -20,6 +20,7 @@ import { InsightCard, InsightSkeleton } from "@/components/insight-card";
 import { LanguageSummary } from "@/components/language-picker";
 import { Dropdown } from "@/components/dropdown";
 import { ProgressBar } from "@/components/progress-bar";
+import { GenerateTitle } from "@/components/generate-title";
 import { PressButton } from "@/components/press-button";
 import { colors, shared } from "@/constants/styles";
 import { apiRequest } from "@/lib/api";
@@ -263,9 +264,9 @@ export default function GenerateQuiz() {
         keyboardShouldPersistTaps="handled"
         keyboardDismissMode="on-drag"
       >
-      <Text style={[shared.title, styles.centerText]}>
+      <GenerateTitle busy={isGenerating}>
         {insight?.message ? t("feedback_title") : t("generate_quiz_title")}
-      </Text>
+      </GenerateTitle>
       <Text style={[styles.centerText, styles.listNameHeading]}>
         {listName ? listName : t("unsaved_list")}
       </Text>
@@ -427,7 +428,7 @@ const styles = StyleSheet.create({
     gap: 16,
   },
   listNameHeading: {
-    fontSize: 20,
+    fontSize: 26,
     fontWeight: "700",
     color: colors.generateQuiz,
   },

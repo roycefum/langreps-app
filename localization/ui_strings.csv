@@ -280,8 +280,8 @@
 279,my-lists.tsx,sample_category_subject_pronouns,Subject Pronouns,Pronombres de sujeto,Pronoms sujets,Grammar sample-list category label
 280,my-lists.tsx,sample_category_conjunctions,Conjunctions,Conjunciones,Conjonctions,Grammar sample-list category label
 281,my-lists.tsx,sample_category_prepositions,Prepositions,Preposiciones,Prépositions,Grammar sample-list category label
-282,my-lists.tsx,sample_group_everyday,Everyday words,Palabras cotidianas,Mots du quotidien,"Section header on the Sample Lists tab, above the 50-word lists"
-283,my-lists.tsx,sample_group_grammar,Grammar words,Palabras gramaticales,Mots grammaticaux,"Section header on the Sample Lists tab, above the grammar-word lists"
+282,my-lists.tsx,sample_group_everyday,Everyday Vocabulary,Vocabulario cotidiano,Vocabulaire du quotidien,"Section header on the Sample Lists tab, above the 50-word lists"
+283,my-lists.tsx,sample_group_grammar,Grammar Concepts,Conceptos gramaticales,Notions de grammaire,"Section header on the Sample Lists tab, above the grammar-word lists"
 284,pairs-review.tsx,list_type_info_grammar,"Grammar — function words (pronouns, prepositions, conjunctions, etc.), tested in context: each question gives you the sentence the word depends on.","Gramática — palabras funcionales (pronombres, preposiciones, conjunciones, etc.), evaluadas en contexto: cada pregunta te da la frase de la que depende la palabra.","Grammaire — mots outils (pronoms, prépositions, conjonctions, etc.), testés en contexte : chaque question te donne la phrase dont dépend le mot.",Third line of the list-type info alert
 285,my-quizzes.tsx,quiz_type_badge_grammar,Grammar,Gramática,Grammaire,Small badge next to the quiz row title
 286,index.tsx,essentials,Essentials,Esenciales,Essentiels,Home button for the ready-made lists (closed sets)

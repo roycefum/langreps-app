@@ -317,8 +317,13 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   sectionTitle: {
-    fontSize: 16,
-    fontWeight: "700",
+    marginTop: 12,
+    paddingBottom: 4,
+    fontSize: 26,
+    fontWeight: "800",
+    color: colors.generateQuiz,
+    borderBottomWidth: 2,
+    borderBottomColor: colors.generateQuiz,
   },
   card: {
     gap: 6,
