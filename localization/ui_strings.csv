@@ -7,9 +7,6 @@
 6,index.tsx,log_in_sign_up,Log In / Sign Up,Iniciar sesión / Registrarse,Se connecter / S'inscrire,
 7,index.tsx,signed_in_as,Signed in as {email},Sesión iniciada como {email},Connecté en tant que {email},Template — {email} not translated
 8,index.tsx,add_words_manually,New List,Nueva lista,Nouvelle liste,
-9,index.tsx,paste_vocab_list,Paste Vocab List,Pegar lista de vocabulario,Coller une liste de vocabulaire,
-10,index.tsx,upload_a_file,Upload a File,Subir un archivo,Importer un fichier,
-11,index.tsx,share_a_picture,Upload a Photo,Subir una foto,Importer une photo,
 12,index.tsx,my_lists,My Lists,Mis listas,Mes listes,
 13,index.tsx,my_quizzes,Quizzes,Cuestionarios,Quiz,
 14,index.tsx,delete_account_confirm,This permanently deletes your account and all your saved lists. This can't be undone.,Esto elimina permanentemente tu cuenta y todas tus listas guardadas. Esta acción no se puede deshacer.,Cela supprime définitivement ton compte et toutes tes listes enregistrées. Cette action est irréversible.,Alert body
@@ -27,25 +24,6 @@
 26,login.tsx,account_created_message,Account created — log in below.,Cuenta creada — inicia sesión abajo.,Compte créé — connecte-toi ci-dessous.,
 27,list-details.tsx,list_details_title,List Details,Detalles de la lista,Détails de la liste,"Renamed from add_words_title/Add Words — screen now also used to view/manage an existing saved list, not just build a new one"
 28,list-details.tsx,add_to_list,Add to list,Añadir a la lista,Ajouter à la liste,Reused on paste-text.tsx
-29,paste-text.tsx,paste_vocab_list_title,Paste Vocab List,Pegar lista de vocabulario,Coller une liste de vocabulaire,
-30,paste-text.tsx,paste_instructions,"One pair per line — a tab, ""->"", "":"", or similar between each word and its translation. e.g. hello -> hola","Un par por línea — un tabulador, ""->"", "":"", o algo similar entre cada palabra y su traducción. p. ej. hello -> hola","Une paire par ligne — une tabulation, ""->"", "":"", ou un symbole similaire entre chaque mot et sa traduction. ex. hello -> hola",Contains a literal example — keep example untranslated or localize it
-31,paste-text.tsx,paste_placeholder,Paste your vocab list here,Pega aquí tu lista de vocabulario,Colle ici ta liste de vocabulaire,
-32,paste-text.tsx,parsing_ellipsis,Parsing…,Analizando…,Analyse en cours…,Reused on upload-file.tsx
-33,paste-text.tsx,couldnt_parse_lines,Couldn't parse {n} line(s): {list},No se pudieron leer {n} línea(s): {list},Impossible d'analyser {n} ligne(s) : {list},Template with pluralization (1 line vs N lines)
-34,paste-text.tsx,error_parsing_text,Something went wrong parsing that text.,Algo salió mal al analizar ese texto.,Une erreur s'est produite lors de l'analyse de ce texte.,
-35,upload-file.tsx,upload_a_file_title,Upload a File,Subir un archivo,Importer un fichier,
-36,upload-file.tsx,upload_file_instructions,"A plain text or CSV file, one pair per line — a tab, ""->"", "":"", or similar between each word and its translation.","Un archivo de texto plano o CSV, un par por línea — un tabulador, ""->"", "":"", o algo similar entre cada palabra y su traducción.","Un fichier texte brut ou CSV, une paire par ligne — une tabulation, ""->"", "":"", ou un symbole similaire entre chaque mot et sa traduction.",
-37,upload-file.tsx,choose_file,Choose File,Elegir archivo,Choisir un fichier,
-38,upload-file.tsx,last_file,Last file: {name},Último archivo: {name},Dernier fichier : {name},Template — filename not translated
-39,upload-file.tsx,error_parsing_file,Something went wrong parsing that file.,Algo salió mal al analizar ese archivo.,Une erreur s'est produite lors de l'analyse de ce fichier.,
-40,upload-picture.tsx,share_a_picture_title,Upload a Photo,Subir una foto,Importer une photo,
-41,upload-picture.tsx,share_picture_instructions,"A photo or screenshot of word pairs (e.g. ""house -> casa"") — AI will read the pairs out of it.","Una foto o captura de pantalla de pares de palabras (p. ej. ""house -> casa"") — la IA leerá los pares.","Une photo ou capture d'écran de paires de mots (ex. ""house -> casa"") — l'IA en extraira les paires.",Contains a literal example
-42,upload-picture.tsx,take_photo,Take Photo,Tomar foto,Prendre une photo,
-43,upload-picture.tsx,choose_from_library,Choose from Library,Elegir de la galería,Choisir depuis la galerie,
-44,upload-picture.tsx,reading_ellipsis,Reading…,Leyendo…,Lecture en cours…,
-45,upload-picture.tsx,error_camera_permission,Camera access is needed to take a photo.,Se necesita acceso a la cámara para tomar una foto.,L'accès à l'appareil photo est nécessaire pour prendre une photo.,
-46,upload-picture.tsx,error_library_permission,Photo library access is needed to choose an image.,Se necesita acceso a la galería de fotos para elegir una imagen.,L'accès à la photothèque est nécessaire pour choisir une image.,
-47,upload-picture.tsx,error_reading_image,Something went wrong reading that image.,Algo salió mal al leer esa imagen.,Une erreur s'est produite lors de la lecture de cette image.,
 48,generate-quiz.tsx,generate_quiz_title,Generate Quiz,Generar cuestionario,Générer un quiz,Also reused as button label
 49,generate-quiz.tsx,unsaved_list,Unsaved list,Lista sin guardar,Liste non enregistrée,Fallback when no list name
 50,generate-quiz.tsx,min_words_warning,You need at least 3 words to generate a quiz.,Necesitas al menos 3 palabras para generar un cuestionario.,Il te faut au moins 3 mots pour générer un quiz.,
@@ -110,7 +88,6 @@
 109,language-picker.tsx,from_label,From,Desde,Depuis,"Replaces ""I already know"" — short label translates cleanly, standard in translation-app pickers (Google Translate, Duolingo-style)"
 110,language-picker.tsx,to_label,To,Hacia,Vers,"Replaces ""I'm learning"" — same reasoning"
 111,language-picker.tsx,language_names,English / Español / Français,English / Español / Français,English / Español / Français,"Decided: always shown in each language's own native form, regardless of current UI language (matches iOS Settings/Duolingo convention) — not translated per UI language, so all three columns are identical on purpose"
-112,parsing-warning.tsx,parsing_warning_text,"Parsing can make mistakes with unusual formatting. For best results, try Share a Picture instead.","El análisis puede cometer errores con formatos inusuales. Para mejores resultados, prueba subir una foto en su lugar.","L'analyse peut faire des erreurs avec une mise en forme inhabituelle. Pour de meilleurs résultats, essaie plutôt d'importer une photo.",Contains an inline link to Share a Picture
 113,quiz-feedback.ts,trend_improving_a_lot_1,Great progress! Your scores are climbing fast — keep it up.,¡Gran progreso! Tus puntuaciones están subiendo rápido — sigue así.,Beaux progrès ! Tes scores grimpent rapidement — continue comme ça.,"5 message variants, picked at random each screen load"
 114,quiz-feedback.ts,trend_improving_a_lot_2,You're on a roll — your recent scores are way up from where you started.,Estás en racha — tus puntuaciones recientes están muy por encima de donde empezaste.,Tu es en pleine lancée — tes scores récents sont bien au-dessus de ton point de départ.,
 115,quiz-feedback.ts,trend_improving_a_lot_3,"Big jump in your scores lately. Whatever you're doing, keep doing it.",Gran salto en tus puntuaciones últimamente. Sigue haciendo lo que estás haciendo.,"Gros bond dans tes scores dernièrement. Continue comme ça, quoi que tu fasses.",
@@ -209,10 +186,6 @@
 208,pairs-review.tsx,save_input_placeholder_new,Name this list,Nombra esta lista,Nomme cette liste,"Placeholder text — shortened from ""Name this list to save it"", didn't fit alongside the Save button"
 209,pairs-review.tsx,save_input_placeholder_update,List name (updates it),Nombre de la lista (la actualiza),Nom de la liste (la met à jour),Placeholder shown once the list is already saved — shortened to fit
 210,pairs-review.tsx,remove_word_icon,✕,✕,✕,"New per-word remove button in the word list, was append/undo-last/clear-all only before — icon glyph, same in every language"
-211,translate-skipped-lines.tsx,translate_prompt_template,"{n} line(s) looked like single word(s), not pairs — translate into:","{n} línea(s) parecían palabras sueltas, no pares — traducir a:","{n} ligne(s) semblaient être des mots isolés, pas des paires — traduire vers :","New — shown under a parse's ""couldn't parse N lines"" message on Upload File and Paste"
-212,translate-skipped-lines.tsx,translate_button,Translate,Traducir,Traduire,
-213,translate-skipped-lines.tsx,translating_ellipsis,Translating…,Traduciendo…,Traduction en cours…,
-214,translate-skipped-lines.tsx,error_translating,Something went wrong translating those words.,Algo salió mal al traducir esas palabras.,Une erreur s'est produite lors de la traduction de ces mots.,
 215,onboarding.tsx,slide1_body_updated,"Add your own words, or jump right in with Essentials: curated lists you can quiz with a tap.","Añade tus propias palabras, o empieza directamente con Esenciales: listas seleccionadas con las que te pones a prueba con un toque.","Ajoute tes propres mots, ou lance-toi directement avec les Essentiels : des listes choisies avec soin pour t'exercer d'un geste.","Updated — removed ""or snap a photo"" since Upload Photo was tabled"
 216,pairs-review.tsx,rename_link,Rename,Cambiar nombre,Renommer,New — separates renaming an already-saved list from saving its pairs
 217,pairs-review.tsx,rename_save_button,Save,Guardar,Enregistrer,Inline rename confirm button
@@ -324,12 +297,12 @@
 325,essentials.tsx,essentials_desc_object_pronouns,"The words that stand in for the person or thing receiving the action: me, him, them.","Las palabras que sustituyen a la persona o cosa que recibe la acción: me, lo, les.","Les mots qui remplacent la personne ou la chose qui reçoit l'action : me, le, leur.",Card description (language-neutral: the learner's target language varies)
 326,my-lists.tsx,sample_category_reflexive_pronouns,Reflexive Pronouns,Pronombres reflexivos,Pronoms réfléchis,Grammar sample-list category label
 327,essentials.tsx,essentials_desc_reflexive_pronouns,"The words for when the action comes back to the doer: myself, themselves.","Las palabras para cuando la acción vuelve a quien la hace: myself, themselves.","Les mots pour quand l'action revient sur celui qui la fait : myself, themselves.",Card description (language-neutral: the learner's target language varies)
-328,my-lists.tsx,sample_category_articles,Articles,Artículos,Articles,Grammar sample-list category label
-329,essentials.tsx,essentials_desc_articles,"The small words in front of nouns: the, a, some.","Las palabras pequeñas que van delante de un nombre: el, un, unos.","Les petits mots devant un nom : le, un, des.",Card description (language-neutral: the learner's target language varies)
+328,my-lists.tsx,sample_category_definite_articles,Definite Articles,Artículos definidos,Articles définis,Grammar sample-list category label
+329,essentials.tsx,essentials_desc_definite_articles,The words for a specific one you both know: the.,"Las palabras para algo concreto que ambos conocéis: el, la.","Les mots pour une chose précise que l'on connaît : le, la.",Card description (language-neutral: the learner's target language varies)
 330,my-lists.tsx,sample_category_demonstratives,Demonstratives,Demostrativos,Démonstratifs,Grammar sample-list category label
 331,essentials.tsx,essentials_desc_demonstratives,"The words that point at things: this, that, these, those.","Las palabras que señalan cosas: este, ese, aquel.","Les mots qui montrent les choses : ce, celui, cela.",Card description (language-neutral: the learner's target language varies)
-332,my-lists.tsx,sample_category_articles_demonstratives,Articles and Demonstratives,Artículos y demostrativos,Articles et démonstratifs,Grammar sample-list category label
-333,essentials.tsx,essentials_desc_articles_demonstratives,"The small words in front of nouns, and the words that point: a, the, this, those.","Las palabras pequeñas delante de un nombre y las que señalan: a, the, this, those.","Les petits mots devant un nom et ceux qui montrent : a, the, this, those.",Card description (language-neutral: the learner's target language varies)
+332,my-lists.tsx,sample_category_articles,Articles,Artículos,Articles,Grammar sample-list category label
+333,essentials.tsx,essentials_desc_articles,"The small words in front of nouns: a, an, the.","Las palabras pequeñas delante de un nombre: un, una, el.","Les petits mots devant un nom : un, une, le.",Card description (language-neutral: the learner's target language varies)
 334,essentials-view.tsx,essentials_add_to_my_lists,Add to My Lists,Añadir a Mis listas,Ajouter à Mes listes,Essentials card button (signed in): saves the list
 335,essentials-view.tsx,essentials_adding,Adding…,Añadiendo…,Ajout…,Add to My Lists button while saving
 336,quiz-complete.tsx,quiz_not_saved_hint,This quiz wasn't saved. Add the list to My Lists from Essentials to keep your results.,Este cuestionario no se ha guardado. Añade la lista a Mis listas desde Esenciales para conservar tus resultados.,Ce quiz n'a pas été enregistré. Ajoute la liste à Mes listes depuis les Essentiels pour garder tes résultats.,Signed-in learner finished a quiz on an unsaved Essentials list
@@ -345,3 +318,5 @@
 348,essentials.tsx,essentials_desc_indefinites,"Something, somebody, somewhere: the vague words.","Algo, alguien, en alguna parte: las palabras imprecisas.","Quelque chose, quelqu'un, quelque part : les mots imprécis.",Card description (language-neutral: the learner's target language varies)
 349,my-lists.tsx,sample_category_stressed_pronouns_spanish,Prepositional Pronouns,Pronombres preposicionales,Pronoms prépositionnels,Grammar sample-list category label (Spanish target only: replaces the shared name)
 350,essentials.tsx,essentials_desc_stressed_pronouns_spanish,"The pronouns used after a preposition: mí, ti, conmigo.","Los pronombres que se usan tras una preposición: mí, ti, conmigo.","Les pronoms utilisés après une préposition : mí, ti, conmigo.",Card description (Spanish target only: replaces the shared description)
+351,my-lists.tsx,sample_category_indefinite_articles,Indefinite Articles,Artículos indefinidos,Articles indéfinis,Grammar sample-list category label
+352,essentials.tsx,essentials_desc_indefinite_articles,"The words for any one of something: a, an, some.","Las palabras para uno cualquiera de algo: un, una, unos.","Les mots pour un élément quelconque : un, une, des.",Card description (language-neutral: the learner's target language varies)

@@ -12,6 +12,10 @@ export type Question = {
   // anything generated before this existed. Powers the "not sure which
   // tense?" reveal on the quiz screen.
   tense: string | null;
+  // Grammar lists only: the word's label in the learner's own language
+  // ("subject pronoun, I, 1st person, singular"), shown above the sentence.
+  // Null for every other list type, flip questions and older saved quizzes.
+  hint?: string | null;
 };
 
 // Curated list for the language picker dropdowns — the backend accepts

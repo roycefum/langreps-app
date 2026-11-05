@@ -106,6 +106,10 @@ export default function Quiz() {
             the sentence itself carries no time clue for it. Null for
             vocab/flip questions, so nothing renders there. */}
         {currentTenseLabel && <Text style={styles.tenseLabel}>{currentTenseLabel}</Text>}
+        {/* Grammar quizzes name the form wanted, in the learner's language —
+            "subject pronoun, I, 1st person" — since a blank alone can fit
+            several words. */}
+        {currentQuestion.hint && <Text style={styles.grammarHint}>{currentQuestion.hint}</Text>}
         <Text style={styles.questionText}>{currentQuestion.question_text}</Text>
 
         {phase === "question" ? (
@@ -216,6 +220,12 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: "700",
     color: colors.accentShadow,
+  },
+  grammarHint: {
+    textAlign: "center",
+    fontSize: 15,
+    fontWeight: "700",
+    color: colors.generateQuiz,
   },
   questionText: {
     fontSize: 24,
