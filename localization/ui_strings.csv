@@ -335,11 +335,13 @@
 336,quiz-complete.tsx,quiz_not_saved_hint,This quiz wasn't saved. Add the list to My Lists from Essentials to keep your results.,Este cuestionario no se ha guardado. Añade la lista a Mis listas desde Esenciales para conservar tus resultados.,Ce quiz n'a pas été enregistré. Ajoute la liste à Mes listes depuis les Essentiels pour garder tes résultats.,Signed-in learner finished a quiz on an unsaved Essentials list
 337,index.tsx,take_a_quiz_button,Take a Quiz,Hacer un cuestionario,Faire un quiz,Home button until there are saved quizzes: opens Essentials
 338,my-lists.tsx,sample_category_stressed_pronouns,Stressed Pronouns,Pronombres tónicos,Pronoms disjoints,Grammar sample-list category label
-339,essentials.tsx,essentials_desc_stressed_pronouns,"The pronouns used after a preposition or for emphasis: moi, mí.","Los pronombres que se usan tras una preposición o para enfatizar: moi, mí.","Les pronoms utilisés après une préposition ou pour insister : moi, mí.",Card description (language-neutral: the learner's target language varies)
+339,essentials.tsx,essentials_desc_stressed_pronouns,"The pronouns used after a preposition or for emphasis: moi, toi, lui.","Los pronombres que se usan tras una preposición o para enfatizar: moi, toi, lui.","Les pronoms utilisés après une préposition ou pour insister : moi, toi, lui.",Card description (language-neutral: the learner's target language varies)
 342,essentials.tsx,level_beginner,Beginner,Principiante,Débutant,Essentials card level badge
 343,essentials.tsx,level_intermediate,Intermediate,Intermedio,Intermédiaire,Essentials card level badge
 344,essentials.tsx,level_advanced,Advanced,Avanzado,Avancé,Essentials card level badge
 345,essentials.tsx,essentials_view_words,View,Ver,Voir,Essentials card: expand/collapse the word list
 346,essentials.tsx,essentials_hide_words,Hide,Ocultar,Masquer,Essentials card: expand/collapse the word list
 347,my-lists.tsx,sample_category_indefinites,Indefinites,Indefinidos,Indéfinis,Grammar sample-list category label
-348,essentials.tsx,essentials_desc_indefinites,"Something, somebody, somewhere, always: the vague words.","Algo, alguien, en alguna parte, siempre: las palabras imprecisas.","Quelque chose, quelqu'un, quelque part, toujours : les mots imprécis.",Card description (language-neutral: the learner's target language varies)
+348,essentials.tsx,essentials_desc_indefinites,"Something, somebody, somewhere: the vague words.","Algo, alguien, en alguna parte: las palabras imprecisas.","Quelque chose, quelqu'un, quelque part : les mots imprécis.",Card description (language-neutral: the learner's target language varies)
+349,my-lists.tsx,sample_category_stressed_pronouns_spanish,Prepositional Pronouns,Pronombres preposicionales,Pronoms prépositionnels,Grammar sample-list category label (Spanish target only: replaces the shared name)
+350,essentials.tsx,essentials_desc_stressed_pronouns_spanish,"The pronouns used after a preposition: mí, ti, conmigo.","Los pronombres que se usan tras una preposición: mí, ti, conmigo.","Les pronoms utilisés après une préposition : mí, ti, conmigo.",Card description (Spanish target only: replaces the shared description)

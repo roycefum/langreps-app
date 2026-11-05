@@ -24,7 +24,8 @@ type ListSummary = {
 // (GET /essentials) — each language has its own catalog. name is the English
 // name the backend saves the list under; it is used only to recognize an
 // already-added list, never shown. The visible title and description come from
-// the translation tables: sample_category_<key> and essentials_desc_<key>.
+// the translation tables: sample_category_<key> and essentials_desc_<key>
+// (each optionally overridden per target language with a _<language> suffix).
 type WordPair = { "source word": string; "target word": string };
 
 type EssentialsItem = {
@@ -133,9 +134,25 @@ export function EssentialsView() {
   // A category the app has no translation for yet (a newer or older server)
   // shows the server's English name instead of a raw string key.
   function titleOf(item: { key: string; name: string }): string {
-    const key = `sample_category_${item.key}`;
-    const title = t(key);
-    return title === key ? item.name : title;
+    const title = categoryText("sample_category", item.key);
+    return title ?? item.name;
+  }
+
+  // A card's name or description, from the translation tables. Where a
+  // language's own grammar differs (Spanish "prepositional" vs French
+  // "stressed" pronouns) there is a <prefix>_<key>_<target language> entry that
+  // wins over the shared <prefix>_<key>; undefined when neither exists.
+  function categoryText(prefix: string, key: string): string | undefined {
+    const candidates = [
+      mode ? `${prefix}_${key}_${mode.targetLanguage.toLowerCase()}` : null,
+      `${prefix}_${key}`,
+    ];
+    for (const candidate of candidates) {
+      if (!candidate) continue;
+      const text = t(candidate);
+      if (text !== candidate) return text;
+    }
+    return undefined;
   }
 
   function previewFor(categoryKey: string): WordPair[] | undefined {
@@ -231,8 +248,8 @@ export function EssentialsView() {
                     <Text style={styles.cardTitle}>{titleOf(item)}</Text>
                     {item.level && <Text style={styles.levelText}>{t(`level_${item.level}`)}</Text>}
                   </View>
-                  {t(`essentials_desc_${item.key}`) !== `essentials_desc_${item.key}` && (
-                    <Text style={styles.cardDescription}>{t(`essentials_desc_${item.key}`)}</Text>
+                  {categoryText("essentials_desc", item.key) && (
+                    <Text style={styles.cardDescription}>{categoryText("essentials_desc", item.key)}</Text>
                   )}
                   {openKey === item.key && (
                     <View style={styles.previewBox}>
