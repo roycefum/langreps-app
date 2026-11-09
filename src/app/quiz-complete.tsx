@@ -127,13 +127,6 @@ export default function QuizComplete() {
           </Link>
         </View>
       )}
-      {/* A signed-in learner's Essentials quiz isn't tied to a saved list, so
-          its results aren't kept either. */}
-      {!!userId && !savedListId && (
-        <View style={styles.signupCard}>
-          <Text style={shared.hint}>{t("quiz_not_saved_hint")}</Text>
-        </View>
-      )}
       <View style={styles.buttonGroup}>
         {sessionId && (
           <Link href={{ pathname: "/quiz-results", params: { sessionId } }} asChild>

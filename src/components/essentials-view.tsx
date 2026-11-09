@@ -1,5 +1,5 @@
-import { useFocusEffect, useRouter } from "expo-router";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useRouter } from "expo-router";
+import { useEffect, useRef, useState } from "react";
 import { ActivityIndicator, ScrollView, StyleSheet, Text, View } from "react-native";
 
 import { LanguageForm } from "@/components/language-form";
@@ -13,17 +13,9 @@ import { useMode } from "@/lib/mode-context";
 import { usePairs } from "@/lib/pairs-context";
 import { LIST_TYPES, type ListType } from "@/lib/types";
 
-type ListSummary = {
-  id: string;
-  name: string;
-  source_language: string;
-  target_language: string;
-};
-
 // One Essentials card, as the backend lists it for the active target language
 // (GET /essentials) — each language has its own catalog. name is the English
-// name the backend saves the list under; it is used only to recognize an
-// already-added list, never shown. The visible title and description come from
+// name, shown only as a fallback. The visible title and description come from
 // the translation tables: sample_category_<key> and essentials_desc_<key>
 // (each optionally overridden per target language with a _<language> suffix).
 type WordPair = { "source word": string; "target word": string };
@@ -43,19 +35,18 @@ const GROUPS = [
 
 // The "Essentials" tab of the Lists screen (see app/lists.tsx): complete,
 // curated lists for the active language mode. Quiz is one tap and needs no
-// account — a signed-in learner's copy is created in My Lists behind the
-// scenes; anyone else quizzes straight from the built-in list.
+// account. Signed in, the quiz is recorded against the learner's own record
+// of the built-in list (kept out of My Lists), so feedback and history work;
+// anyone else quizzes straight from the built-in list, unrecorded.
 export function EssentialsView() {
   const router = useRouter();
   const { t } = useI18n();
   const { userId } = useAuth();
   const { mode, isLoaded, setMode } = useMode();
-  const { clearPairs, setPairs, setSourceLanguage, setTargetLanguage, setListType, setListName } =
+  const { clearPairs, setPairs, setSavedList, setSourceLanguage, setTargetLanguage, setListType, setListName } =
     usePairs();
-  const [lists, setLists] = useState<ListSummary[]>([]);
   const [catalog, setCatalog] = useState<EssentialsItem[]>([]);
   const [busyKey, setBusyKey] = useState<string | null>(null);
-  const [addingKey, setAddingKey] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   // "View words": which card is expanded, and the words already fetched for
   // each (keyed by category and language pair, so switching mode refetches).
@@ -64,16 +55,6 @@ export function EssentialsView() {
   const [loadingPreview, setLoadingPreview] = useState<string | null>(null);
   // Guards a double-tap on Quiz from opening the quiz screen twice.
   const isOpeningRef = useRef(false);
-
-  const load = useCallback(async () => {
-    if (!userId) return;
-    try {
-      const result = await apiRequest<{ lists: ListSummary[] }>("/lists");
-      setLists(result.lists);
-    } catch (e) {
-      setError(e instanceof Error ? e.message : t("error_loading_lists"));
-    }
-  }, [userId]);
 
   // The catalog follows the learning language, signed in or not.
   const targetLanguage = mode?.targetLanguage;
@@ -91,22 +72,6 @@ export function EssentialsView() {
       cancelled = true;
     };
   }, [targetLanguage]);
-
-  useFocusEffect(
-    useCallback(() => {
-      load();
-    }, [load])
-  );
-
-  function findAdded(englishName: string): ListSummary | undefined {
-    if (!mode) return undefined;
-    return lists.find(
-      (l) =>
-        l.name === englishName &&
-        l.source_language === mode.sourceLanguage &&
-        l.target_language === mode.targetLanguage
-    );
-  }
 
   async function togglePreview(categoryKey: string) {
     if (!mode) return;
@@ -161,9 +126,11 @@ export function EssentialsView() {
       : undefined;
   }
 
-  // One tap to a quiz, signed in or not: the words come straight from the
-  // built-in tables and live in memory only. Nothing is saved — that is what
-  // "Add to My Lists" is for.
+  // One tap to a quiz, signed in or not. The words come straight from the
+  // built-in tables. Signed in, the server also returns the learner's own
+  // record of the list (created on first use, never shown in My Lists) so the
+  // quiz keeps history and feedback; if that fails the quiz still runs, just
+  // unrecorded.
   async function handleQuiz(categoryKey: string) {
     if (!mode || isOpeningRef.current) return;
     isOpeningRef.current = true;
@@ -177,7 +144,19 @@ export function EssentialsView() {
       }>(`/essentials/${categoryKey}?${query}`);
       clearPairs();
       setPairs(result.pairs);
-      setListName(titleOf(catalog.find((c) => c.key === categoryKey) ?? { key: categoryKey, name: categoryKey }));
+      const title = titleOf(catalog.find((c) => c.key === categoryKey) ?? { key: categoryKey, name: categoryKey });
+      setListName(title);
+      if (userId) {
+        try {
+          const saved = await apiRequest<{ list_id: string }>("/sample-lists", {
+            method: "POST",
+            body: { category: categoryKey, source_language: mode.sourceLanguage, target_language: mode.targetLanguage },
+          });
+          setSavedList(saved.list_id, title);
+        } catch {
+          // unrecorded quiz — see above
+        }
+      }
       setSourceLanguage(mode.sourceLanguage);
       setTargetLanguage(mode.targetLanguage);
       const type = LIST_TYPES.find((lt) => lt.toLowerCase() === result.list_type);
@@ -191,29 +170,6 @@ export function EssentialsView() {
       isOpeningRef.current = false;
     } finally {
       setBusyKey(null);
-    }
-  }
-
-  // Signed in only: saves the list to My Lists (the server returns an
-  // existing copy untouched), where quizzes on it keep their history.
-  async function handleAdd(categoryKey: string) {
-    if (!mode) return;
-    setAddingKey(categoryKey);
-    setError(null);
-    try {
-      await apiRequest("/sample-lists", {
-        method: "POST",
-        body: {
-          category: categoryKey,
-          source_language: mode.sourceLanguage,
-          target_language: mode.targetLanguage,
-        },
-      });
-      await load();
-    } catch (e) {
-      setError(e instanceof Error ? e.message : t("error_loading_list"));
-    } finally {
-      setAddingKey(null);
     }
   }
 
@@ -240,7 +196,6 @@ export function EssentialsView() {
               .filter((e) => e.group === group.groupKey)
               .sort((a, b) => titleOf(a).localeCompare(titleOf(b)))
               .map((item) => {
-              const inMyLists = userId ? findAdded(item.name) : undefined;
               const isBusy = busyKey === item.key;
               return (
                 <View key={item.key} style={styles.card}>
@@ -267,21 +222,6 @@ export function EssentialsView() {
                     </View>
                   )}
                   <View style={styles.cardActions}>
-                    {!userId ? (
-                      <View />
-                    ) : inMyLists ? (
-                      <Text style={styles.addedText}>✓ {t("essentials_in_my_lists")}</Text>
-                    ) : (
-                      <PressButton
-                        style={[shared.secondaryButton, !!addingKey && shared.primaryButtonDisabled]}
-                        disabled={!!addingKey}
-                        onPress={() => handleAdd(item.key)}
-                      >
-                        <Text style={shared.secondaryButtonText}>
-                          {addingKey === item.key ? t("essentials_adding") : t("essentials_add_to_my_lists")}
-                        </Text>
-                      </PressButton>
-                    )}
                     <View style={styles.rightButtons}>
                       <PressButton
                         style={[shared.secondaryButton, styles.sizedButton]}
@@ -392,7 +332,7 @@ const styles = StyleSheet.create({
   cardActions: {
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "space-between",
+    justifyContent: "flex-end",
     marginTop: 6,
     gap: 10,
   },
@@ -408,10 +348,5 @@ const styles = StyleSheet.create({
   quizButton: {
     backgroundColor: colors.generateQuiz,
     borderBottomColor: colors.generateQuizShadow,
-  },
-  addedText: {
-    fontSize: 15,
-    fontWeight: "700",
-    color: colors.success,
   },
 });

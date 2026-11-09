@@ -17,6 +17,7 @@ type ListSummary = {
   target_language: string;
   created_at: string;
   last_modified: string;
+  source: string;
 };
 
 type SortBy = "name" | "date";
@@ -60,7 +61,8 @@ export function MyListsView({ onBrowseEssentials }: { onBrowseEssentials: () => 
     setError(null);
     try {
       const listsResult = await apiRequest<{ lists: ListSummary[] }>("/lists");
-      setLists(listsResult.lists.filter((l) => inMode(mode, l)));
+      // Built-in (Essentials) lists live in the Essentials tab, not here.
+      setLists(listsResult.lists.filter((l) => l.source !== "sample" && inMode(mode, l)));
     } catch (e) {
       setError(e instanceof Error ? e.message : t("error_loading_lists"));
     } finally {
