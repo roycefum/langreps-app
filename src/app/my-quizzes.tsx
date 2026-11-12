@@ -11,7 +11,7 @@ import { colors, shared } from "@/constants/styles";
 import { apiRequest } from "@/lib/api";
 import { useAuth } from "@/lib/auth-context";
 import { useI18n } from "@/lib/i18n";
-import { inMode, useMode } from "@/lib/mode-context";
+import { inMode, quizDirection, useMode } from "@/lib/mode-context";
 import { useQuiz } from "@/lib/quiz-context";
 import { TENSES_BY_LANGUAGE, type Question } from "@/lib/types";
 
@@ -140,11 +140,18 @@ export default function MyQuizzes() {
     } catch {
       // fall back to counting from zero rather than blocking the resume
     }
+    // The questions were written in the quiz's direction (see quizDirection).
+    const direction = quizDirection(
+      mode,
+      list?.source_language ?? "English",
+      list?.target_language ?? "English"
+    );
     startQuiz({
       questions: session.questions,
       sessionId: session.id,
-      sourceLanguage: list?.source_language ?? "English",
-      targetLanguage: list?.target_language ?? "English",
+      sourceLanguage: direction.sourceLanguage,
+      targetLanguage: direction.targetLanguage,
+      listType: list?.list_type ?? "vocab",
       startIndex: session.current_index,
       startCorrect: alreadyCorrect,
     });
@@ -360,12 +367,13 @@ export default function MyQuizzes() {
               <Text style={shared.hint}>{t("quizzes_in_progress_count_template", { count: sessions.length })}</Text>
               {selectMode ? (
                 <View style={styles.headerActions}>
-                  <Pressable onPress={toggleSelectAll}>
+                  <Pressable style={styles.tapTarget} onPress={toggleSelectAll}>
                     <Text style={styles.headerActionText}>
                       {selectedIds.size === sessions.length ? t("deselect_all_label") : t("select_all_label")}
                     </Text>
                   </Pressable>
                   <Pressable
+                    style={styles.tapTarget}
                     disabled={selectedIds.size === 0 || isBulkDeleting}
                     onPress={confirmBulkDelete}
                   >
@@ -379,25 +387,25 @@ export default function MyQuizzes() {
                       {isBulkDeleting ? t("bulk_deleting") : t("bulk_delete_selected_template", { count: selectedIds.size })}
                     </Text>
                   </Pressable>
-                  <Pressable onPress={toggleSelectMode}>
+                  <Pressable style={styles.tapTarget} onPress={toggleSelectMode}>
                     <Text style={styles.headerActionText}>{t("done_label")}</Text>
                   </Pressable>
                 </View>
               ) : (
-                <Pressable onPress={toggleSelectMode}>
-                  <Text style={shared.linkText}>{t("select_label")}</Text>
+                <Pressable style={styles.tapTarget} onPress={toggleSelectMode}>
+                  <Text style={styles.headerActionText}>{t("select_label")}</Text>
                 </Pressable>
               )}
             </View>
 
             <View style={styles.sortRow}>
               <Text style={shared.hint}>{t("sort_by_label")}</Text>
-              <Pressable onPress={() => setSortBy("date")}>
+              <Pressable style={styles.tapTarget} onPress={() => setSortBy("date")}>
                 <Text style={[styles.sortOption, sortBy === "date" && styles.sortOptionActive]}>
                   {t("sort_by_last_updated")}
                 </Text>
               </Pressable>
-              <Pressable onPress={() => setSortBy("name")}>
+              <Pressable style={styles.tapTarget} onPress={() => setSortBy("name")}>
                 <Text style={[styles.sortOption, sortBy === "name" && styles.sortOptionActive]}>
                   {t("sort_by_name")}
                 </Text>
@@ -449,7 +457,7 @@ export default function MyQuizzes() {
                       {t("last_updated_template", { date: new Date(session.last_active_at).toLocaleDateString() })}
                     </Text>
                   </Pressable>
-                  <Pressable onPress={() => confirmDelete(session)}>
+                  <Pressable style={styles.tapTarget} onPress={() => confirmDelete(session)}>
                     <Text style={styles.deleteText}>{t("delete")}</Text>
                   </Pressable>
                   {selectMode && (
@@ -476,7 +484,7 @@ export default function MyQuizzes() {
             {completedSessions.length > 0 &&
               (completedSelectMode ? (
                 <View style={styles.headerActions}>
-                  <Pressable onPress={toggleCompletedSelectAll}>
+                  <Pressable style={styles.tapTarget} onPress={toggleCompletedSelectAll}>
                     <Text style={styles.headerActionText}>
                       {completedSelectedIds.size === completedSessions.length
                         ? t("deselect_all_label")
@@ -484,6 +492,7 @@ export default function MyQuizzes() {
                     </Text>
                   </Pressable>
                   <Pressable
+                    style={styles.tapTarget}
                     disabled={completedSelectedIds.size === 0 || isBulkDeletingCompleted}
                     onPress={confirmBulkDeleteCompleted}
                   >
@@ -499,13 +508,13 @@ export default function MyQuizzes() {
                         : t("bulk_delete_selected_template", { count: completedSelectedIds.size })}
                     </Text>
                   </Pressable>
-                  <Pressable onPress={toggleCompletedSelectMode}>
+                  <Pressable style={styles.tapTarget} onPress={toggleCompletedSelectMode}>
                     <Text style={styles.headerActionText}>{t("done_label")}</Text>
                   </Pressable>
                 </View>
               ) : (
-                <Pressable onPress={toggleCompletedSelectMode}>
-                  <Text style={shared.linkText}>{t("select_label")}</Text>
+                <Pressable style={styles.tapTarget} onPress={toggleCompletedSelectMode}>
+                  <Text style={styles.headerActionText}>{t("select_label")}</Text>
                 </Pressable>
               ))}
           </View>
@@ -543,7 +552,7 @@ export default function MyQuizzes() {
                       {new Date(session.completed_at).toLocaleDateString()}
                     </Text>
                   </Pressable>
-                  <Pressable onPress={() => confirmDeleteCompleted(session)}>
+                  <Pressable style={styles.tapTarget} onPress={() => confirmDeleteCompleted(session)}>
                     <Text style={styles.deleteText}>{t("delete")}</Text>
                   </Pressable>
                   {completedSelectMode && (
@@ -594,15 +603,22 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
   },
+  // Everything tappable in the header, sort and row controls is at least 44pt
+  // tall (Apple's minimum for a finger) rather than just as big as its text.
+  tapTarget: {
+    minHeight: 44,
+    justifyContent: "center",
+    paddingHorizontal: 6,
+  },
   headerActions: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 12,
+    gap: 6,
   },
   headerActionText: {
     color: colors.tertiary,
     fontWeight: "600",
-    fontSize: 13,
+    fontSize: 16,
   },
   headerDeleteText: {
     color: colors.error,
@@ -613,11 +629,10 @@ const styles = StyleSheet.create({
   sortRow: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 12,
-    marginBottom: 4,
+    gap: 6,
   },
   sortOption: {
-    fontSize: 13,
+    fontSize: 16,
     opacity: 0.5,
     fontWeight: "600",
   },
@@ -639,7 +654,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     paddingVertical: 12,
     paddingHorizontal: 12,
-    gap: 8,
+    gap: 2,
   },
   rowMain: {
     flex: 1,
@@ -657,5 +672,6 @@ const styles = StyleSheet.create({
   deleteText: {
     color: colors.error,
     fontWeight: "600",
+    fontSize: 15,
   },
 });

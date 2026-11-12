@@ -22,7 +22,6 @@ import { SpeakButton } from "@/components/speak-button";
 import { PressButton } from "@/components/press-button";
 import { colors, shared } from "@/constants/styles";
 import { useI18n } from "@/lib/i18n";
-import { usePairs } from "@/lib/pairs-context";
 import { useQuiz } from "@/lib/quiz-context";
 import { removeAccents } from "@/lib/text";
 import { TENSES_BY_LANGUAGE } from "@/lib/types";
@@ -30,7 +29,6 @@ import { TENSES_BY_LANGUAGE } from "@/lib/types";
 export default function Quiz() {
   const router = useRouter();
   const { t } = useI18n();
-  const { targetLanguage } = usePairs();
   const {
     questions,
     currentIndex,
@@ -41,6 +39,7 @@ export default function Quiz() {
     submitAnswer,
     skipQuestion,
     nextQuestion,
+    targetLanguage,
   } = useQuiz();
   const [answer, setAnswer] = useState("");
   const [showWordList, setShowWordList] = useState(false);

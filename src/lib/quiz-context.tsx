@@ -3,7 +3,7 @@ import { createContext, useCallback, useContext, useMemo, useState, type ReactNo
 
 import { apiRequest } from "./api";
 import { getLanguagePairSettings } from "./settings-storage";
-import { normalizeApostrophes, removeAccents } from "./text";
+import { normalizeApostrophes, removeAccents, stripLeadingArticle } from "./text";
 import type { Question } from "./types";
 
 type QuizPhase = "question" | "feedback";
@@ -19,6 +19,8 @@ export type StartQuizOptions = {
   sessionId: string | null;
   sourceLanguage: string;
   targetLanguage: string;
+  // "vocab" | "verb" | "grammar" — only vocab answers ignore a leading article.
+  listType: string;
   // Only set when resuming a partly-finished session — where to jump back
   // in, and how many answers before that point were already correct, so
   // the final score counts them too.
@@ -38,6 +40,8 @@ type QuizState = {
   // GET /quiz-sessions/{sessionId}/attempts — null for an anonymous/unsaved
   // quiz, which has no persisted attempt history to show.
   sessionId: string | null;
+  // The direction this quiz was asked in (answers are in targetLanguage).
+  targetLanguage: string;
   startQuiz: (options: StartQuizOptions) => void;
   submitAnswer: (answer: string) => void;
   skipQuestion: () => void;
@@ -60,6 +64,9 @@ export function QuizProvider({ children }: { children: ReactNode }) {
   const [correctCount, setCorrectCount] = useState(0);
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [requireAccents, setRequireAccentsState] = useState(false);
+  const [quizTargetLanguage, setQuizTargetLanguage] = useState("");
+  const [quizSourceLanguage, setQuizSourceLanguage] = useState("");
+  const [quizListType, setQuizListType] = useState("vocab");
 
   const isComplete = questions.length > 0 && currentIndex >= questions.length;
 
@@ -70,6 +77,9 @@ export function QuizProvider({ children }: { children: ReactNode }) {
     setPhase("question");
     setCorrectCount(options.startCorrect ?? 0);
     setSessionId(newSessionId);
+    setQuizTargetLanguage(targetLanguage);
+    setQuizSourceLanguage(sourceLanguage);
+    setQuizListType(options.listType);
     // Re-read fresh (per this specific language pair, not a flat global
     // default) so a change made in Settings takes effect on the next
     // quiz, without needing to restart the app.
@@ -135,7 +145,10 @@ export function QuizProvider({ children }: { children: ReactNode }) {
     (answer: string) => {
       const current = questions[currentIndex];
       const normalize = (s: string) => {
-        const lowered = normalizeApostrophes(s.trim().toLowerCase());
+        // A saved "un citoyen" and a typed "citoyen" are the same word.
+        const bare =
+          quizListType === "vocab" ? stripLeadingArticle(s, [quizSourceLanguage, quizTargetLanguage]) : s;
+        const lowered = normalizeApostrophes(bare.trim().toLowerCase());
         return requireAccents ? lowered : removeAccents(lowered);
       };
       const correct = normalize(answer) === normalize(current.correct_answer);
@@ -153,7 +166,7 @@ export function QuizProvider({ children }: { children: ReactNode }) {
         // No-op on platforms/devices without haptic support (e.g. web).
       });
     },
-    [questions, currentIndex, recordAttempt, persistProgress, requireAccents]
+    [questions, currentIndex, recordAttempt, persistProgress, requireAccents, quizListType, quizSourceLanguage, quizTargetLanguage]
   );
 
   const skipQuestion = useCallback(() => {
@@ -191,6 +204,7 @@ export function QuizProvider({ children }: { children: ReactNode }) {
       correctCount,
       isComplete,
       sessionId,
+      targetLanguage: quizTargetLanguage,
       startQuiz,
       submitAnswer,
       skipQuestion,
@@ -206,6 +220,7 @@ export function QuizProvider({ children }: { children: ReactNode }) {
       correctCount,
       isComplete,
       sessionId,
+      quizTargetLanguage,
       startQuiz,
       submitAnswer,
       skipQuestion,

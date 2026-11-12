@@ -54,7 +54,7 @@ export function Dropdown({ value, onChange, options, disabled }: DropdownProps) 
     <>
       <View ref={fieldRef} collapsable={false}>
         <PressButton
-          style={[shared.input, styles.button, disabled && styles.disabled]}
+          style={[shared.input, styles.button, styles.selector, disabled && styles.disabled]}
           onPress={open}
         >
           <Text style={styles.value}>{value}</Text>
@@ -111,6 +111,11 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     gap: 8,
   },
+  selector: {
+    backgroundColor: colors.selectorBackground,
+    borderWidth: 2,
+    borderColor: colors.tertiary,
+  },
   disabled: {
     opacity: 0.5,
   },
@@ -121,7 +126,7 @@ const styles = StyleSheet.create({
   },
   chevron: {
     fontSize: 20,
-    color: colors.tertiary,
+    color: colors.tertiaryShadow,
     fontWeight: "700",
   },
   menu: {

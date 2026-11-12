@@ -9,6 +9,7 @@ import { apiRequest } from "@/lib/api";
 import { useI18n } from "@/lib/i18n";
 import { inMode, useMode } from "@/lib/mode-context";
 import { usePairs, type SavedList } from "@/lib/pairs-context";
+import { useStartNewList } from "@/lib/use-new-list";
 
 type ListSummary = {
   id: string;
@@ -34,6 +35,7 @@ export function MyListsView({ onBrowseEssentials }: { onBrowseEssentials: () => 
   const router = useRouter();
   const { t } = useI18n();
   const { loadList } = usePairs();
+  const startNewList = useStartNewList();
   const { mode } = useMode();
   const [lists, setLists] = useState<ListSummary[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -199,53 +201,58 @@ export function MyListsView({ onBrowseEssentials }: { onBrowseEssentials: () => 
 
       {!isLoading && (
         <View style={styles.section}>
-          <View style={styles.sectionHeaderRow}>
-            {lists.length > 0 &&
-              (selectMode ? (
-                <View style={styles.headerActions}>
-                  <Pressable onPress={toggleSelectAll}>
-                    <Text style={styles.headerActionText}>
-                      {selectedIds.size === lists.length ? t("deselect_all_label") : t("select_all_label")}
-                    </Text>
-                  </Pressable>
-                  <Pressable
-                    disabled={selectedIds.size === 0 || isBulkDeleting}
-                    onPress={confirmBulkDelete}
-                  >
-                    <Text
-                      style={[
-                        styles.headerActionText,
-                        styles.headerDeleteText,
-                        selectedIds.size === 0 && styles.disabled,
-                      ]}
-                    >
-                      {isBulkDeleting ? t("bulk_deleting") : t("bulk_delete_selected_template", { count: selectedIds.size })}
-                    </Text>
-                  </Pressable>
-                  <Pressable onPress={toggleSelectMode}>
-                    <Text style={styles.headerActionText}>{t("done_label")}</Text>
-                  </Pressable>
-                </View>
-              ) : (
-                <Pressable onPress={toggleSelectMode}>
-                  <Text style={shared.linkText}>{t("select_label")}</Text>
+          <PressButton style={shared.primaryButton} onPress={startNewList}>
+            <Text style={shared.primaryButtonText}>{t("add_words_manually")}</Text>
+          </PressButton>
+
+          {lists.length > 0 && selectMode && (
+            <View style={styles.sectionHeaderRow}>
+              <View style={styles.headerActions}>
+                <Pressable style={styles.tapTarget} onPress={toggleSelectAll}>
+                  <Text style={styles.headerActionText}>
+                    {selectedIds.size === lists.length ? t("deselect_all_label") : t("select_all_label")}
+                  </Text>
                 </Pressable>
-              ))}
-          </View>
+                <Pressable
+                  style={styles.tapTarget}
+                  disabled={selectedIds.size === 0 || isBulkDeleting}
+                  onPress={confirmBulkDelete}
+                >
+                  <Text
+                    style={[
+                      styles.headerActionText,
+                      styles.headerDeleteText,
+                      selectedIds.size === 0 && styles.disabled,
+                    ]}
+                  >
+                    {isBulkDeleting ? t("bulk_deleting") : t("bulk_delete_selected_template", { count: selectedIds.size })}
+                  </Text>
+                </Pressable>
+                <Pressable style={styles.tapTarget} onPress={toggleSelectMode}>
+                  <Text style={styles.headerActionText}>{t("done_label")}</Text>
+                </Pressable>
+              </View>
+            </View>
+          )}
 
           {lists.length > 0 && (
             <View style={styles.sortRow}>
               <Text style={shared.hint}>{t("sort_by_label")}</Text>
-              <Pressable onPress={() => setSortBy("date")}>
+              <Pressable style={styles.tapTarget} onPress={() => setSortBy("date")}>
                 <Text style={[styles.sortOption, sortBy === "date" && styles.sortOptionActive]}>
                   {t("sort_by_date")}
                 </Text>
               </Pressable>
-              <Pressable onPress={() => setSortBy("name")}>
+              <Pressable style={styles.tapTarget} onPress={() => setSortBy("name")}>
                 <Text style={[styles.sortOption, sortBy === "name" && styles.sortOptionActive]}>
                   {t("sort_by_name")}
                 </Text>
               </Pressable>
+              {!selectMode && (
+                <Pressable style={[styles.tapTarget, styles.selectButton]} onPress={toggleSelectMode}>
+                  <Text style={styles.headerActionText}>{t("select_label")}</Text>
+                </Pressable>
+              )}
             </View>
           )}
 
@@ -284,10 +291,13 @@ export function MyListsView({ onBrowseEssentials }: { onBrowseEssentials: () => 
                     pathname: "/list-history",
                     params: { listId: list.id, listName: list.name },
                   }}
+                  asChild
                 >
-                  <Text style={styles.historyText}>{t("progress_link")}</Text>
+                  <Pressable style={styles.tapTarget}>
+                    <Text style={styles.historyText}>{t("progress_link")}</Text>
+                  </Pressable>
                 </Link>
-                <Pressable onPress={() => confirmDelete(list)}>
+                <Pressable style={styles.tapTarget} onPress={() => confirmDelete(list)}>
                   <Text style={styles.deleteText}>{t("delete")}</Text>
                 </Pressable>
                 {selectMode && (
@@ -330,21 +340,30 @@ const styles = StyleSheet.create({
   emptyState: {
     gap: 10,
   },
+  // Everything tappable in the header, sort and row controls is at least 44pt
+  // tall (Apple's minimum for a finger) rather than just as big as its text.
+  tapTarget: {
+    minHeight: 44,
+    justifyContent: "center",
+    paddingHorizontal: 6,
+  },
   sortRow: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 12,
-    marginBottom: 4,
+    gap: 6,
+  },
+  selectButton: {
+    marginLeft: "auto",
   },
   headerActions: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 12,
+    gap: 6,
   },
   headerActionText: {
     color: colors.tertiary,
     fontWeight: "600",
-    fontSize: 13,
+    fontSize: 16,
   },
   headerDeleteText: {
     color: colors.error,
@@ -359,7 +378,7 @@ const styles = StyleSheet.create({
     fontSize: 30,
   },
   sortOption: {
-    fontSize: 13,
+    fontSize: 16,
     opacity: 0.5,
     fontWeight: "600",
   },
@@ -377,7 +396,7 @@ const styles = StyleSheet.create({
     borderTopColor: colors.cardAccent,
     paddingVertical: 12,
     paddingHorizontal: 12,
-    gap: 8,
+    gap: 2,
   },
   rowMain: {
     flex: 1,
@@ -390,9 +409,11 @@ const styles = StyleSheet.create({
   historyText: {
     color: colors.tertiary,
     fontWeight: "600",
+    fontSize: 15,
   },
   deleteText: {
     color: colors.error,
     fontWeight: "600",
+    fontSize: 15,
   },
 });

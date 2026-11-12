@@ -10,7 +10,7 @@ import { usePairs } from "@/lib/pairs-context";
 
 export default function ListDetails() {
   const { t } = useI18n();
-  const { pairs, addPair, savedListId, sourceLanguage, targetLanguage } = usePairs();
+  const { pairs, addPair, savedListId, sourceLanguage, targetLanguage, hasUnsavedChanges } = usePairs();
   const [sourceWord, setSourceWord] = useState("");
   const [targetWord, setTargetWord] = useState("");
 
@@ -22,21 +22,30 @@ export default function ListDetails() {
   }
 
   return (
-    <ScrollView style={shared.screen} contentContainerStyle={styles.content}>
-      <BackButton href="/" confirmLeave={() => !savedListId && pairs.length >= 3} />
+    // The keyboard used to cover the word boxes: on iOS the scroll view now
+    // makes room for it and scrolls the focused box into view, and taps on the
+    // Add button still register while the keyboard is up.
+    <ScrollView
+      style={shared.screen}
+      contentContainerStyle={styles.content}
+      automaticallyAdjustKeyboardInsets
+      keyboardShouldPersistTaps="handled"
+      keyboardDismissMode="interactive"
+    >
+      <BackButton href="/" confirmLeave={() => hasUnsavedChanges || (!savedListId && pairs.length >= 3)} />
       <Text style={shared.title}>{t("list_details_title")}</Text>
 
       <PairsReview source="manual">
-        <View style={shared.row}>
+        <View style={styles.wordEntry}>
           <TextInput
-            style={[shared.input, styles.rowInput]}
+            style={[shared.input, shared.wordInput]}
             placeholder={t("source_word_placeholder_dynamic", { language: sourceLanguage })}
             placeholderTextColor={colors.placeholder}
             value={sourceWord}
             onChangeText={setSourceWord}
           />
           <TextInput
-            style={[shared.input, styles.rowInput]}
+            style={[shared.input, shared.wordInput]}
             placeholder={t("target_word_placeholder_dynamic", { language: targetLanguage })}
             placeholderTextColor={colors.placeholder}
             value={targetWord}
@@ -53,8 +62,10 @@ export default function ListDetails() {
 }
 
 const styles = StyleSheet.create({
-  rowInput: {
-    flex: 1,
+  // One word box per line, full width, so the words get the room and the type
+  // size instead of sharing a row.
+  wordEntry: {
+    gap: 12,
   },
   content: {
     gap: 16,

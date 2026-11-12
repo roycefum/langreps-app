@@ -11,36 +11,21 @@ import { apiRequest } from "@/lib/api";
 import { useAuth } from "@/lib/auth-context";
 import { useI18n } from "@/lib/i18n";
 import { inMode, useMode } from "@/lib/mode-context";
-import { usePairs } from "@/lib/pairs-context";
 import {
   getContinuedAsGuest,
   getHasSeenOnboarding,
   hasShownOnboardingThisLaunch,
   markOnboardingShownThisLaunch,
 } from "@/lib/settings-storage";
+import { useStartNewList } from "@/lib/use-new-list";
 
 export default function Home() {
   const router = useRouter();
   const { t } = useI18n();
   const { userId, email, isLoading, logout } = useAuth();
-  const { clearPairs, setSourceLanguage, setTargetLanguage } = usePairs();
   const { isLoaded: modeLoaded, mode, setMode } = useMode();
 
-  // pairs-context is one shared "list currently being built," so it
-  // persists across navigation by design (that's what lets My Lists'
-  // tapping a saved list in My Lists loads it into List Details). But
-  // entering a builder screen from Home should always start fresh —
-  // otherwise backing out of a List Details session and opening a
-  // different builder screen would silently keep showing that list.
-  function startFreshList() {
-    clearPairs();
-    // A new list starts in the active language mode.
-    if (mode) {
-      setSourceLanguage(mode.sourceLanguage);
-      setTargetLanguage(mode.targetLanguage);
-    }
-    router.push("/list-details");
-  }
+  const startFreshList = useStartNewList();
 
   // Whether there are saved quizzes to come back to: a guest never has any
   // and a new account has none until a first quiz.

@@ -12,6 +12,35 @@ export function normalizeApostrophes(text: string): string {
   return text.replace(/[\u2018\u2019\u02BC]/g, "'");
 }
 
+// Leading articles per language. A learner may save a noun with its article
+// ("un citoyen") to see the gender when reviewing, but quizzes only test the
+// bare word, so the article is dropped when a quiz is built and when an
+// answer is checked. Longest first, so "une" wins over "un".
+const ARTICLES: Record<string, string[]> = {
+  English: ["the", "an", "a"],
+  Spanish: ["unos", "unas", "los", "las", "una", "un", "el", "la"],
+  French: ["de la", "de l'", "les", "des", "une", "un", "le", "la", "du", "l'"],
+};
+
+// Removes one leading article from a word, but only when something follows
+// it, so a lone "le" is left alone. Tries every given language's articles.
+export function stripLeadingArticle(text: string, languages: string[]): string {
+  const trimmed = text.trim();
+  const lower = normalizeApostrophes(trimmed).toLowerCase();
+  const articles = [...new Set(languages.flatMap((l) => ARTICLES[l] ?? []))].sort(
+    (a, b) => b.length - a.length
+  );
+  for (const article of articles) {
+    if (!lower.startsWith(article)) continue;
+    const rest = trimmed.slice(article.length);
+    // An elided article (l', de l') attaches directly to the word; the rest
+    // need a space after them (so "arbre" is not "a" + "rbre").
+    const attached = article.endsWith("'");
+    if (attached ? rest.trim() : /^\s+\S/.test(rest)) return rest.trim();
+  }
+  return trimmed;
+}
+
 // Flips which side of each pair is "known" vs "learning" — used when a
 // user tells LanguageOrderConfirm the app's initial column-order guess was
 // backwards (e.g. a textbook list puts the foreign/learning word first).

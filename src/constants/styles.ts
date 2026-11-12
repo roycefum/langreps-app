@@ -44,6 +44,9 @@ export const colors = {
   // other primary button, since it's the one action that actually costs
   // a Gemini call.
   generateQuiz: "#3D6646",
+  // Language/option selectors (Dropdown) — a filled soft-clay box with a
+  // tertiary border, so they read as pick-from-a-menu and not as a text field.
+  selectorBackground: "#F1DED7",
   generateQuizShadow: "#325439",
   background: "#F5EFD5",
   // Default body text color — dark brown rather than pure black, to sit
@@ -102,6 +105,17 @@ export const shared = StyleSheet.create({
     paddingVertical: 13,
     fontSize: 16,
     color: colors.text,
+  },
+  // The boxes words are typed into on the list builder: the main thing on that
+  // screen, so bigger type, more padding and a heavier near-black outline than
+  // the plain input.
+  wordInput: {
+    borderWidth: 2.5,
+    borderColor: colors.text,
+    borderRadius: 12,
+    paddingVertical: 20,
+    paddingHorizontal: 16,
+    fontSize: 24,
   },
   primaryButton: {
     backgroundColor: colors.primary,

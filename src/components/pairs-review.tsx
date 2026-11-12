@@ -11,6 +11,7 @@ import { colors, shared } from "@/constants/styles";
 import { apiRequest } from "@/lib/api";
 import { useAuth } from "@/lib/auth-context";
 import { useI18n } from "@/lib/i18n";
+import { quizDirection, useMode } from "@/lib/mode-context";
 import { usePairs, type VocabListPayload } from "@/lib/pairs-context";
 import { LIST_TYPES } from "@/lib/types";
 
@@ -44,8 +45,17 @@ export function PairsReview({ source, children }: PairsReviewProps) {
     savedListId,
     listName,
     setSavedList,
+    markSaved,
+    hasUnsavedChanges,
   } = usePairs();
   const { userId } = useAuth();
+  const { mode } = useMode();
+  // A list can be written with either language first, but the word being
+  // learned is always the bold one on a card and the one pronounced.
+  const { reversed } = quizDirection(mode, sourceLanguage, targetLanguage);
+  const learnKey = reversed ? "source word" : "target word";
+  const knownKey = reversed ? "target word" : "source word";
+  const learnLanguage = reversed ? sourceLanguage : targetLanguage;
   const [name, setName] = useState("");
   const [isSaving, setIsSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
@@ -74,11 +84,11 @@ export function PairsReview({ source, children }: PairsReviewProps) {
     });
     if (sortBy === "alpha") {
       return [...withIndex].sort((a, b) =>
-        a.pair["target word"].localeCompare(b.pair["target word"])
+        a.pair[learnKey].localeCompare(b.pair[learnKey])
       );
     }
     return withIndex;
-  }, [pairs, sortBy]);
+  }, [pairs, sortBy, learnKey]);
 
   function toggleSelectMode() {
     setSelectMode((v) => !v);
@@ -145,8 +155,8 @@ export function PairsReview({ source, children }: PairsReviewProps) {
     };
   }
 
-  async function handleSave() {
-    if (!name.trim()) return;
+  async function handleSave(): Promise<boolean> {
+    if (!name.trim()) return false;
     setIsSaving(true);
     setSaveError(null);
     setSaveMessage(null);
@@ -156,9 +166,12 @@ export function PairsReview({ source, children }: PairsReviewProps) {
         body: { name: name.trim(), ...buildListPayload() },
       });
       setSavedList(result.list_id, name.trim());
+      markSaved();
       setSaveMessage(t("saved_message"));
+      return true;
     } catch (e) {
       setSaveError(e instanceof Error ? e.message : t("error_saving"));
+      return false;
     } finally {
       setIsSaving(false);
     }
@@ -167,8 +180,8 @@ export function PairsReview({ source, children }: PairsReviewProps) {
   // Updates an already-saved list's pairs/metadata by id — never touches
   // the name, so editing words can't accidentally create a duplicate list
   // under a different name the way the old name-based upsert could.
-  async function handleSaveChanges() {
-    if (!savedListId) return;
+  async function handleSaveChanges(): Promise<boolean> {
+    if (!savedListId) return false;
     setIsSaving(true);
     setSaveError(null);
     setSaveMessage(null);
@@ -177,12 +190,30 @@ export function PairsReview({ source, children }: PairsReviewProps) {
         method: "PUT",
         body: buildListPayload(),
       });
+      markSaved();
       setSaveMessage(t("saved_message"));
+      return true;
     } catch (e) {
       setSaveError(e instanceof Error ? e.message : t("error_saving"));
+      return false;
     } finally {
       setIsSaving(false);
     }
+  }
+
+  // A quiz on a saved list is built from the server's copy, so unsaved edits
+  // would be missing from it (and lost): save first. A new list is saved too
+  // once it has a name; without one the quiz just runs on the unsaved words.
+  // If saving fails the error shows and the quiz does not start.
+  async function handleGenerateQuiz() {
+    if (userId && !isSaving) {
+      if (savedListId && hasUnsavedChanges) {
+        if (!(await handleSaveChanges())) return;
+      } else if (!savedListId && name.trim() && pairs.length > 0) {
+        if (!(await handleSave())) return;
+      }
+    }
+    router.push("/generate-quiz");
   }
 
   function startRenaming() {
@@ -210,13 +241,25 @@ export function PairsReview({ source, children }: PairsReviewProps) {
     }
   }
 
+  const saveStatus = (
+    <>
+      {saveMessage && <Text style={shared.hint}>{saveMessage}</Text>}
+      {saveError && <Text style={shared.errorText}>{saveError}</Text>}
+    </>
+  );
+
   return (
     <View style={styles.container}>
       {savedListId && listName && !isRenaming && (
         <View style={styles.headingRow}>
           <Text style={styles.savedListHeading}>{listName}</Text>
-          <Pressable onPress={startRenaming} hitSlop={8}>
-            <Text style={styles.renameLink}>{t("rename_link")}</Text>
+          <Pressable
+            style={styles.editButton}
+            onPress={startRenaming}
+            accessibilityRole="button"
+            accessibilityLabel={t("rename_link")}
+          >
+            <Text style={styles.editIcon}>✎</Text>
           </Pressable>
         </View>
       )}
@@ -305,23 +348,7 @@ export function PairsReview({ source, children }: PairsReviewProps) {
           </PressButton>
         </View>
       )}
-      {userId && savedListId && (
-        <PressButton
-          style={[
-            shared.secondaryButton,
-            shared.saveActionButton,
-            pairs.length === 0 && shared.primaryButtonDisabled,
-          ]}
-          disabled={isSaving || pairs.length === 0}
-          onPress={handleSaveChanges}
-        >
-          <Text style={[shared.secondaryButtonText, shared.accentButtonText]}>
-            {isSaving ? t("saving_ellipsis") : t("save_changes_button")}
-          </Text>
-        </PressButton>
-      )}
-      {saveMessage && <Text style={shared.hint}>{saveMessage}</Text>}
-      {saveError && <Text style={shared.errorText}>{saveError}</Text>}
+      {!savedListId && saveStatus}
 
       <PressButton
         style={[
@@ -329,8 +356,8 @@ export function PairsReview({ source, children }: PairsReviewProps) {
           shared.generateQuizButton,
           pairs.length < 3 && shared.primaryButtonDisabled,
         ]}
-        disabled={pairs.length < 3}
-        onPress={() => router.push("/generate-quiz")}
+        disabled={pairs.length < 3 || isSaving}
+        onPress={handleGenerateQuiz}
       >
         <Text style={shared.primaryButtonText}>
           {pairs.length < 3
@@ -352,6 +379,27 @@ export function PairsReview({ source, children }: PairsReviewProps) {
         </PressButton>
       </View>
 
+      {/* A saved list's Save Changes sits right under Undo and Clear, where
+          the words are being edited. */}
+      {userId && savedListId && (
+        <>
+          <PressButton
+            style={[
+              shared.secondaryButton,
+              shared.saveActionButton,
+              pairs.length === 0 && shared.primaryButtonDisabled,
+            ]}
+            disabled={isSaving || pairs.length === 0}
+            onPress={handleSaveChanges}
+          >
+            <Text style={[shared.secondaryButtonText, shared.accentButtonText]}>
+              {isSaving ? t("saving_ellipsis") : t("save_changes_button")}
+            </Text>
+          </PressButton>
+          {saveStatus}
+        </>
+      )}
+
       {/* Deliberately last — with a long list, the actions above (Save,
           Generate Quiz) would otherwise sit below the whole word list,
           forcing a scroll just to reach them. */}
@@ -362,12 +410,12 @@ export function PairsReview({ source, children }: PairsReviewProps) {
           <View style={styles.listToolbar}>
             <View style={styles.sortRow}>
               <Text style={shared.hint}>{t("sort_by_label")}</Text>
-              <Pressable onPress={() => setSortBy("order")}>
+              <Pressable style={styles.tapTarget} onPress={() => setSortBy("order")}>
                 <Text style={[styles.sortOption, sortBy === "order" && styles.sortOptionActive]}>
                   {t("sort_by_added_order")}
                 </Text>
               </Pressable>
-              <Pressable onPress={() => setSortBy("alpha")}>
+              <Pressable style={styles.tapTarget} onPress={() => setSortBy("alpha")}>
                 <Text style={[styles.sortOption, sortBy === "alpha" && styles.sortOptionActive]}>
                   {t("sort_by_name")}
                 </Text>
@@ -375,14 +423,14 @@ export function PairsReview({ source, children }: PairsReviewProps) {
             </View>
             {selectMode ? (
               <View style={styles.headerActions}>
-                <Pressable onPress={toggleSelectAll}>
+                <Pressable style={styles.tapTarget} onPress={toggleSelectAll}>
                   <Text style={styles.headerActionText}>
                     {selectedIndices.size === pairs.length
                       ? t("deselect_all_label")
                       : t("select_all_label")}
                   </Text>
                 </Pressable>
-                <Pressable disabled={selectedIndices.size === 0} onPress={confirmBulkDelete}>
+                <Pressable style={styles.tapTarget} disabled={selectedIndices.size === 0} onPress={confirmBulkDelete}>
                   <Text
                     style={[
                       styles.headerActionText,
@@ -393,13 +441,13 @@ export function PairsReview({ source, children }: PairsReviewProps) {
                     {t("bulk_delete_selected_template", { count: selectedIndices.size })}
                   </Text>
                 </Pressable>
-                <Pressable onPress={toggleSelectMode}>
+                <Pressable style={styles.tapTarget} onPress={toggleSelectMode}>
                   <Text style={styles.headerActionText}>{t("done_label")}</Text>
                 </Pressable>
               </View>
             ) : (
-              <Pressable onPress={toggleSelectMode}>
-                <Text style={shared.linkText}>{t("select_label")}</Text>
+              <Pressable style={styles.tapTarget} onPress={toggleSelectMode}>
+                <Text style={styles.headerActionText}>{t("select_label")}</Text>
               </Pressable>
             )}
           </View>
@@ -419,10 +467,10 @@ export function PairsReview({ source, children }: PairsReviewProps) {
                   disabled={!selectMode}
                 >
                   <View style={styles.cardTitleRow}>
-                    <Text style={styles.cardTargetWord}>{pair["target word"]}</Text>
-                    <SpeakButton text={pair["target word"]} language={targetLanguage} />
+                    <Text style={styles.cardTargetWord}>{pair[learnKey]}</Text>
+                    <SpeakButton text={pair[learnKey]} language={learnLanguage} />
                   </View>
-                  <Text style={styles.cardSubtitle}>{pair["source word"]}</Text>
+                  <Text style={styles.cardSubtitle}>{pair[knownKey]}</Text>
                 </Pressable>
                 {selectMode ? (
                   <Pressable
@@ -435,7 +483,7 @@ export function PairsReview({ source, children }: PairsReviewProps) {
                     </Text>
                   </Pressable>
                 ) : (
-                  <Pressable onPress={() => removePair(index)} hitSlop={8}>
+                  <Pressable style={styles.removeButton} onPress={() => removePair(index)}>
                     <Text style={styles.removeIcon}>✕</Text>
                   </Pressable>
                 )}
@@ -453,20 +501,27 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   headingRow: {
+    flexDirection: "row",
     alignItems: "center",
-    gap: 2,
+    justifyContent: "center",
+    gap: 4,
   },
   savedListHeading: {
+    flexShrink: 1,
     fontSize: 28,
     fontWeight: "800",
     color: colors.generateQuiz,
     textAlign: "center",
   },
-  renameLink: {
-    fontSize: 13,
-    fontWeight: "600",
+  editButton: {
+    minWidth: 44,
+    minHeight: 44,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  editIcon: {
+    fontSize: 24,
     color: colors.tertiary,
-    textDecorationLine: "underline",
   },
   renameBlock: {
     gap: 4,
@@ -511,9 +566,8 @@ const styles = StyleSheet.create({
     opacity: 0.65,
   },
   removeIcon: {
-    fontSize: 16,
+    fontSize: 18,
     color: colors.error,
-    paddingHorizontal: 8,
   },
   emptyText: {
     opacity: 0.5,
@@ -526,13 +580,27 @@ const styles = StyleSheet.create({
     flexWrap: "wrap",
     rowGap: 4,
   },
+  // Everything tappable in the toolbar, rename and remove controls is at
+  // least 44pt tall (Apple's minimum for a finger) rather than just as big
+  // as its text.
+  tapTarget: {
+    minHeight: 44,
+    justifyContent: "center",
+    paddingHorizontal: 6,
+  },
+  removeButton: {
+    minWidth: 44,
+    minHeight: 44,
+    alignItems: "center",
+    justifyContent: "center",
+  },
   sortRow: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 12,
+    gap: 6,
   },
   sortOption: {
-    fontSize: 13,
+    fontSize: 16,
     opacity: 0.5,
     fontWeight: "600",
   },
@@ -543,12 +611,12 @@ const styles = StyleSheet.create({
   headerActions: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 12,
+    gap: 6,
   },
   headerActionText: {
     color: colors.tertiary,
     fontWeight: "600",
-    fontSize: 13,
+    fontSize: 16,
   },
   headerDeleteText: {
     color: colors.error,

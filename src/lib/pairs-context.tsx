@@ -56,7 +56,16 @@ type PairsState = {
   setListName: (name: string | null) => void;
   setSavedList: (id: string, name: string) => void;
   loadList: (list: SavedList) => void;
+  // True when a saved list's words differ from what is on the server — words
+  // added or removed since it was loaded or last saved. Nothing auto-saves, so
+  // leaving the builder with this set would lose them.
+  hasUnsavedChanges: boolean;
+  // Call after the words are successfully saved, so they count as saved.
+  markSaved: () => void;
 };
+
+const wordsKey = (pairs: { "source word": string; "target word": string }[]) =>
+  pairs.map((p) => `${p["source word"]}\u0000${p["target word"]}`).join("\u0001");
 
 const PairsContext = createContext<PairsState | null>(null);
 
@@ -74,6 +83,8 @@ export function PairsProvider({ children }: { children: ReactNode }) {
   const [listType, setListType] = useState<ListType>(DEFAULT_LIST_TYPE);
   const [savedListId, setSavedListId] = useState<string | null>(null);
   const [listName, setListName] = useState<string | null>(null);
+  // The words as last loaded from or saved to the server (null: no saved list).
+  const [savedWordsKey, setSavedWordsKey] = useState<string | null>(null);
 
   const addPair = useCallback((sourceWord: string, targetWord: string) => {
     setPairsState((prev) => [...prev, { "source word": sourceWord, "target word": targetWord }]);
@@ -98,6 +109,7 @@ export function PairsProvider({ children }: { children: ReactNode }) {
     setPairsState([]);
     setSavedListId(null);
     setListName(null);
+    setSavedWordsKey(null);
     setListType(DEFAULT_LIST_TYPE);
   }, []);
 
@@ -120,6 +132,9 @@ export function PairsProvider({ children }: { children: ReactNode }) {
         "source word": p.source_term,
         "target word": p.target_term,
       }))
+    );
+    setSavedWordsKey(
+      wordsKey(list.pairs.map((p) => ({ "source word": p.source_term, "target word": p.target_term })))
     );
     setSourceLanguage(list.source_language);
     setTargetLanguage(list.target_language);
@@ -151,6 +166,8 @@ export function PairsProvider({ children }: { children: ReactNode }) {
         setListName,
         setSavedList,
         loadList,
+        hasUnsavedChanges: savedListId !== null && savedWordsKey !== null && wordsKey(pairs) !== savedWordsKey,
+        markSaved: () => setSavedWordsKey(wordsKey(pairs)),
       }}
     >
       {children}

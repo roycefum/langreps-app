@@ -26,10 +26,11 @@ import { colors, shared } from "@/constants/styles";
 import { apiRequest } from "@/lib/api";
 import { useAuth } from "@/lib/auth-context";
 import { LOCALE_NAMES, useI18n } from "@/lib/i18n";
+import { quizDirection, useMode } from "@/lib/mode-context";
 import { usePairs, type VocabPair } from "@/lib/pairs-context";
 import { useQuiz } from "@/lib/quiz-context";
 import { getAdaptiveQuizzesEnabled, getLanguagePairSettings } from "@/lib/settings-storage";
-import { chunk, dedupePairs, sample } from "@/lib/text";
+import { chunk, dedupePairs, sample, stripLeadingArticle } from "@/lib/text";
 import { DEFAULT_CEFR_LEVEL, TENSES_BY_LANGUAGE, type CefrLevel, type Question } from "@/lib/types";
 
 const BATCH_SIZE = 5;
@@ -50,7 +51,11 @@ type QuizInsight = {
 export default function GenerateQuiz() {
   const router = useRouter();
   const { t, locale } = useI18n();
-  const { pairs, sourceLanguage, targetLanguage, listType, savedListId, listName } = usePairs();
+  const { pairs, sourceLanguage: listSource, targetLanguage: listTarget, listType, savedListId, listName } = usePairs();
+  const { mode: languageMode } = useMode();
+  // The list's direction is only which column comes first; the quiz itself
+  // always asks for the language being learned (see quizDirection).
+  const { sourceLanguage, targetLanguage, reversed } = quizDirection(languageMode, listSource, listTarget);
   const { userId } = useAuth();
   const { startQuiz } = useQuiz();
   const [countText, setCountText] = useState(String(Math.min(pairs.length, DEFAULT_QUIZ_LENGTH)));
@@ -175,7 +180,23 @@ export default function GenerateQuiz() {
         selectedPairs = sample(dedupePairs(pairs), requestedCount);
       }
 
-      const chunks = chunk(selectedPairs, BATCH_SIZE);
+      const quizPairs = reversed
+        ? selectedPairs.map((p) => ({ ...p, "source word": p["target word"], "target word": p["source word"] }))
+        : selectedPairs;
+      // Saved with an article ("un citoyen") for review, but only the bare
+      // word is quizzed — vocab lists only, since for grammar the article is
+      // the answer.
+      const barePairs =
+        listType === "Vocab"
+          ? dedupePairs(
+              quizPairs.map((p) => ({
+                ...p,
+                "source word": stripLeadingArticle(p["source word"], [sourceLanguage]),
+                "target word": stripLeadingArticle(p["target word"], [targetLanguage]),
+              }))
+            )
+          : quizPairs;
+      const chunks = chunk(barePairs, BATCH_SIZE);
       setProgress({ done: 0, total: selectedPairs.length });
       // All batches go out at once — each takes several seconds on the
       // server, so running them one after another made a quiz take
@@ -226,7 +247,7 @@ export default function GenerateQuiz() {
         sessionId = session.session_id;
       }
 
-      startQuiz({ questions: allQuestions, sessionId, sourceLanguage, targetLanguage });
+      startQuiz({ questions: allQuestions, sessionId, sourceLanguage, targetLanguage, listType: listType.toLowerCase() });
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(() => {
         // No-op on platforms/devices without haptic support (e.g. web).
       });
