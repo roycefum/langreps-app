@@ -215,13 +215,9 @@
 241,my-lists.tsx,loading_ellipsis,Loading…,Cargando…,Chargement…,Reused wherever a screen shows a generic loading state
 242,login.tsx,forgot_password_link,Forgot password?,¿Olvidaste tu contraseña?,Mot de passe oublié ?,
 243,forgot-password.tsx,forgot_password_title,Forgot Password,Contraseña olvidada,Mot de passe oublié,
-244,forgot-password.tsx,forgot_password_sent_message,"If an account exists for that email, we've sent a link to reset your password. Check your inbox.","Si existe una cuenta con ese correo, te hemos enviado un enlace para restablecer tu contraseña. Revisa tu bandeja de entrada.","Si un compte existe pour cette adresse e-mail, nous t'avons envoyé un lien pour réinitialiser ton mot de passe. Vérifie ta boîte de réception.",Deliberately non-revealing — matches backend's response regardless of whether the email has an account
-245,forgot-password.tsx,forgot_password_instructions,Enter your email and we'll send you a link to reset your password.,Introduce tu correo y te enviaremos un enlace para restablecer tu contraseña.,Entre ton e-mail et nous t'enverrons un lien pour réinitialiser ton mot de passe.,
+245,forgot-password.tsx,forgot_password_instructions,Enter your email and we'll send you a code to reset your password.,Introduce tu correo y te enviaremos un código para restablecer tu contraseña.,Saisis ton e-mail et nous t'enverrons un code pour réinitialiser ton mot de passe.,
 246,forgot-password.tsx,sending_ellipsis,Sending…,Enviando…,Envoi en cours…,
-247,forgot-password.tsx,send_reset_link,Send Reset Link,Enviar enlace de restablecimiento,Envoyer le lien de réinitialisation,
 248,reset-password.tsx,reset_password_title,Reset Password,Restablecer contraseña,Réinitialiser le mot de passe,
-249,reset-password.tsx,reset_link_invalid_message,This link looks invalid or expired. Request a new reset link from the login screen.,Este enlace parece no válido o ha caducado. Solicita un nuevo enlace desde la pantalla de inicio de sesión.,Ce lien semble invalide ou expiré. Demande un nouveau lien depuis l'écran de connexion.,
-250,reset-password.tsx,set_new_password_title,Set a New Password,Establece una nueva contraseña,Définis un nouveau mot de passe,
 251,reset-password.tsx,new_password_placeholder,New password,Nueva contraseña,Nouveau mot de passe,
 252,reset-password.tsx,save_new_password,Save New Password,Guardar nueva contraseña,Enregistrer le nouveau mot de passe,
 253,list-details.tsx,sort_by_added_order,Order Added,Orden de añadido,Ordre d'ajout,Word-list sort option — mirrors My Lists' sort-by pattern; default order (insertion order)
@@ -317,3 +313,6 @@
 351,my-lists.tsx,sample_category_indefinite_articles,Indefinite Articles,Artículos indefinidos,Articles indéfinis,Grammar sample-list category label
 352,essentials.tsx,essentials_desc_indefinite_articles,"The words for any one of something: a, an, some.","Las palabras para uno cualquiera de algo: un, una, unos.","Les mots pour un élément quelconque : un, une, des.",Card description (language-neutral: the learner's target language varies)
 353,pairs-review.tsx,edit_word_label,Edit word,Editar palabra,Modifier le mot,Accessibility label of the ✎ button on a word card in the list builder
+354,forgot-password.tsx,send_reset_code,Send Code,Enviar código,Envoyer le code,Forgot-password button: emails the reset code
+355,reset-password.tsx,reset_code_instructions,Enter the code we emailed you and choose a new password.,Introduce el código que te enviamos por correo y elige una nueva contraseña.,Saisis le code que nous t'avons envoyé par e-mail et choisis un nouveau mot de passe.,Reset-password screen hint
+356,reset-password.tsx,code_placeholder,Code,Código,Code,Reset-password screen: the emailed one-time code

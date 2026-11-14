@@ -2,43 +2,36 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 import { useState } from "react";
 import { StyleSheet, Text, TextInput, View } from "react-native";
 
+import { BackButton } from "@/components/back-button";
 import { PressButton } from "@/components/press-button";
 import { colors, shared } from "@/constants/styles";
 import { apiRequest } from "@/lib/api";
 import { useI18n } from "@/lib/i18n";
 
-// Reached via the deep link in Supabase's password-reset email
-// (langrepsapp://reset-password, configured in
-// request_password_reset()) — Supabase attaches access_token/
-// refresh_token/type=recovery to that redirect after a "#", which Expo Router
-// hands over as one "#" param ("access_token=…&refresh_token=…") rather than as
-// separate params. Plain "?" params are accepted too.
+// The second half of "Forgot password": the recovery email holds a one-time
+// code (not a link, which mail apps, scanners and browsers kept breaking), and
+// it is typed in here along with the new password. The backend checks the code
+// and sets the password (POST /reset-password-with-code).
 export default function ResetPassword() {
   const router = useRouter();
   const { t } = useI18n();
-  const params = useLocalSearchParams<{
-    access_token?: string;
-    refresh_token?: string;
-    type?: string;
-    "#"?: string;
-  }>();
-  const fragment = new URLSearchParams(params["#"] ?? "");
-  const access_token = params.access_token ?? fragment.get("access_token") ?? undefined;
-  const refresh_token = params.refresh_token ?? fragment.get("refresh_token") ?? undefined;
+  const params = useLocalSearchParams<{ email?: string }>();
+  const [email, setEmail] = useState(params.email ?? "");
+  const [code, setCode] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const hasValidLink = !!access_token && !!refresh_token;
+  const canSubmit = !!email.trim() && !!code.trim() && !!newPassword && !isSubmitting;
 
   async function handleSubmit() {
-    if (!hasValidLink || !newPassword) return;
+    if (!canSubmit) return;
     setIsSubmitting(true);
     setError(null);
     try {
-      await apiRequest("/reset-password", {
+      await apiRequest("/reset-password-with-code", {
         method: "POST",
-        body: { access_token, refresh_token, new_password: newPassword },
+        body: { email: email.trim(), code: code.trim(), new_password: newPassword },
       });
       router.replace("/login");
     } catch (e) {
@@ -48,21 +41,35 @@ export default function ResetPassword() {
     }
   }
 
-  if (!hasValidLink) {
-    return (
-      <View style={shared.screenCentered}>
-        <Text style={[shared.title, styles.centerText]}>{t("reset_password_title")}</Text>
-        <Text style={[shared.hint, styles.centerText]}>{t("reset_link_invalid_message")}</Text>
-      </View>
-    );
-  }
-
   return (
     <View style={shared.screenCentered}>
-      <Text style={[shared.title, styles.centerText]}>{t("set_new_password_title")}</Text>
+      <BackButton href="/login" />
+      <Text style={[shared.title, styles.centerText]}>{t("reset_password_title")}</Text>
+      <Text style={[shared.hint, styles.centerText]}>{t("reset_code_instructions")}</Text>
 
       {error && <Text style={[shared.errorText, styles.centerText]}>{error}</Text>}
 
+      <TextInput
+        style={shared.input}
+        placeholder={t("email_placeholder")}
+        placeholderTextColor={colors.placeholder}
+        value={email}
+        onChangeText={setEmail}
+        autoCapitalize="none"
+        autoCorrect={false}
+        keyboardType="email-address"
+      />
+      <TextInput
+        style={shared.input}
+        placeholder={t("code_placeholder")}
+        placeholderTextColor={colors.placeholder}
+        value={code}
+        onChangeText={setCode}
+        autoCapitalize="none"
+        autoCorrect={false}
+        keyboardType="number-pad"
+        textContentType="oneTimeCode"
+      />
       <TextInput
         style={shared.input}
         placeholder={t("new_password_placeholder")}
@@ -75,11 +82,8 @@ export default function ResetPassword() {
       />
 
       <PressButton
-        style={[
-          shared.primaryButton,
-          (!newPassword || isSubmitting) && shared.primaryButtonDisabled,
-        ]}
-        disabled={!newPassword || isSubmitting}
+        style={[shared.primaryButton, !canSubmit && shared.primaryButtonDisabled]}
+        disabled={!canSubmit}
         onPress={handleSubmit}
       >
         <Text style={shared.primaryButtonText}>
