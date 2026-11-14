@@ -10,15 +10,21 @@ import { useI18n } from "@/lib/i18n";
 // Reached via the deep link in Supabase's password-reset email
 // (langrepsapp://reset-password, configured in
 // request_password_reset()) — Supabase attaches access_token/
-// refresh_token/type=recovery as URL params on that redirect.
+// refresh_token/type=recovery to that redirect after a "#", which Expo Router
+// hands over as one "#" param ("access_token=…&refresh_token=…") rather than as
+// separate params. Plain "?" params are accepted too.
 export default function ResetPassword() {
   const router = useRouter();
   const { t } = useI18n();
-  const { access_token, refresh_token } = useLocalSearchParams<{
+  const params = useLocalSearchParams<{
     access_token?: string;
     refresh_token?: string;
     type?: string;
+    "#"?: string;
   }>();
+  const fragment = new URLSearchParams(params["#"] ?? "");
+  const access_token = params.access_token ?? fragment.get("access_token") ?? undefined;
+  const refresh_token = params.refresh_token ?? fragment.get("refresh_token") ?? undefined;
   const [newPassword, setNewPassword] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);

@@ -317,4 +317,5 @@ export const es = {
   "essentials_desc_stressed_pronouns_spanish": "Los pronombres que se usan tras una preposición: mí, ti, conmigo.",
   "sample_category_indefinite_articles": "Artículos indefinidos",
   "essentials_desc_indefinite_articles": "Las palabras para uno cualquiera de algo: un, una, unos.",
+  "edit_word_label": "Editar palabra",
 };

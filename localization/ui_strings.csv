@@ -316,3 +316,4 @@
 350,essentials.tsx,essentials_desc_stressed_pronouns_spanish,"The pronouns used after a preposition: mí, ti, conmigo.","Los pronombres que se usan tras una preposición: mí, ti, conmigo.","Les pronoms utilisés après une préposition : mí, ti, conmigo.",Card description (Spanish target only: replaces the shared description)
 351,my-lists.tsx,sample_category_indefinite_articles,Indefinite Articles,Artículos indefinidos,Articles indéfinis,Grammar sample-list category label
 352,essentials.tsx,essentials_desc_indefinite_articles,"The words for any one of something: a, an, some.","Las palabras para uno cualquiera de algo: un, una, unos.","Les mots pour un élément quelconque : un, une, des.",Card description (language-neutral: the learner's target language varies)
+353,pairs-review.tsx,edit_word_label,Edit word,Editar palabra,Modifier le mot,Accessibility label of the ✎ button on a word card in the list builder

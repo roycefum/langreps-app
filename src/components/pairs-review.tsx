@@ -1,5 +1,5 @@
 import { Link, useRouter } from "expo-router";
-import { useMemo, useState, type ReactNode } from "react";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { Alert, Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 import Animated, { FadeInDown, LinearTransition, SlideOutLeft } from "react-native-reanimated";
 
@@ -56,6 +56,31 @@ export function PairsReview({ source, children }: PairsReviewProps) {
   const learnKey = reversed ? "source word" : "target word";
   const knownKey = reversed ? "target word" : "source word";
   const learnLanguage = reversed ? sourceLanguage : targetLanguage;
+  const knownLanguage = reversed ? targetLanguage : sourceLanguage;
+
+  // Editing a word in place: which card, and its two fields (the word being
+  // learned first, like the card). Words are shifted by add/remove/undo/clear,
+  // so any change in the count closes the editor instead of editing the wrong card.
+  const [editingIndex, setEditingIndex] = useState<number | null>(null);
+  const [editLearn, setEditLearn] = useState("");
+  const [editKnown, setEditKnown] = useState("");
+  useEffect(() => setEditingIndex(null), [pairs.length]);
+
+  function startEdit(index: number) {
+    setEditLearn(pairs[index][learnKey]);
+    setEditKnown(pairs[index][knownKey]);
+    setEditingIndex(index);
+  }
+
+  function saveEdit() {
+    if (editingIndex === null || !editLearn.trim() || !editKnown.trim()) return;
+    setPairs(
+      pairs.map((pair, i) =>
+        i === editingIndex ? { ...pair, [learnKey]: editLearn.trim(), [knownKey]: editKnown.trim() } : pair
+      )
+    );
+    setEditingIndex(null);
+  }
   const [name, setName] = useState("");
   const [isSaving, setIsSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
@@ -461,31 +486,84 @@ export function PairsReview({ source, children }: PairsReviewProps) {
                 exiting={SlideOutLeft.duration(220)}
                 layout={LinearTransition}
               >
-                <Pressable
-                  style={styles.cardText}
-                  onPress={() => selectMode && toggleSelected(index)}
-                  disabled={!selectMode}
-                >
-                  <View style={styles.cardTitleRow}>
-                    <Text style={styles.cardTargetWord}>{pair[learnKey]}</Text>
-                    <SpeakButton text={pair[learnKey]} language={learnLanguage} />
+                {editingIndex === index ? (
+                  <View style={styles.editBlock}>
+                    <TextInput
+                      style={[shared.input, shared.wordInput, styles.editInput]}
+                      placeholder={t("source_word_placeholder_dynamic", { language: learnLanguage })}
+                      placeholderTextColor={colors.placeholder}
+                      value={editLearn}
+                      onChangeText={setEditLearn}
+                      autoFocus
+                    />
+                    <TextInput
+                      style={[shared.input, shared.wordInput, styles.editInput]}
+                      placeholder={t("target_word_placeholder_dynamic", { language: knownLanguage })}
+                      placeholderTextColor={colors.placeholder}
+                      value={editKnown}
+                      onChangeText={setEditKnown}
+                    />
+                    <View style={shared.row}>
+                      <PressButton
+                        style={[
+                          shared.secondaryButton,
+                          shared.saveActionButton,
+                          styles.rowButton,
+                          (!editLearn.trim() || !editKnown.trim()) && shared.primaryButtonDisabled,
+                        ]}
+                        disabled={!editLearn.trim() || !editKnown.trim()}
+                        onPress={saveEdit}
+                      >
+                        <Text style={[shared.secondaryButtonText, shared.accentButtonText]}>
+                          {t("rename_save_button")}
+                        </Text>
+                      </PressButton>
+                      <PressButton
+                        style={[shared.secondaryButton, styles.rowButton]}
+                        onPress={() => setEditingIndex(null)}
+                      >
+                        <Text style={shared.secondaryButtonText}>{t("rename_cancel_button")}</Text>
+                      </PressButton>
+                    </View>
                   </View>
-                  <Text style={styles.cardSubtitle}>{pair[knownKey]}</Text>
-                </Pressable>
-                {selectMode ? (
-                  <Pressable
-                    style={styles.checkbox}
-                    onPress={() => toggleSelected(index)}
-                    hitSlop={8}
-                  >
-                    <Text style={styles.checkboxMark}>
-                      {selectedIndices.has(index) ? "☑" : "☐"}
-                    </Text>
-                  </Pressable>
                 ) : (
-                  <Pressable style={styles.removeButton} onPress={() => removePair(index)}>
-                    <Text style={styles.removeIcon}>✕</Text>
-                  </Pressable>
+                  <>
+                    <Pressable
+                      style={styles.cardText}
+                      onPress={() => (selectMode ? toggleSelected(index) : startEdit(index))}
+                    >
+                      <View style={styles.cardTitleRow}>
+                        <Text style={styles.cardTargetWord}>{pair[learnKey]}</Text>
+                        <SpeakButton text={pair[learnKey]} language={learnLanguage} />
+                      </View>
+                      <Text style={styles.cardSubtitle}>{pair[knownKey]}</Text>
+                    </Pressable>
+                    {selectMode ? (
+                      <Pressable
+                        style={styles.checkbox}
+                        onPress={() => toggleSelected(index)}
+                        hitSlop={8}
+                      >
+                        <Text style={styles.checkboxMark}>
+                          {selectedIndices.has(index) ? "☑" : "☐"}
+                        </Text>
+                      </Pressable>
+                    ) : (
+                      <>
+                        <Pressable
+                          style={styles.iconButton}
+                          onPress={() => startEdit(index)}
+                          accessibilityRole="button"
+                          accessibilityLabel={t("edit_word_label")}
+                        >
+                          <Text style={styles.editWordIcon}>✎</Text>
+                        </Pressable>
+                        <Pressable style={styles.iconButton} onPress={() => removePair(index)}>
+                          <Text style={styles.removeIcon}>✕</Text>
+                        </Pressable>
+                      </>
+                    )}
+                  </>
                 )}
               </Animated.View>
             ))}
@@ -565,6 +643,18 @@ const styles = StyleSheet.create({
     color: colors.text,
     opacity: 0.65,
   },
+  editBlock: {
+    flex: 1,
+    gap: 10,
+  },
+  editInput: {
+    fontSize: 20,
+    paddingVertical: 14,
+  },
+  editWordIcon: {
+    fontSize: 20,
+    color: colors.tertiary,
+  },
   removeIcon: {
     fontSize: 18,
     color: colors.error,
@@ -588,7 +678,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     paddingHorizontal: 6,
   },
-  removeButton: {
+  iconButton: {
     minWidth: 44,
     minHeight: 44,
     alignItems: "center",

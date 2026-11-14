@@ -317,4 +317,5 @@ export const en = {
   "essentials_desc_stressed_pronouns_spanish": "The pronouns used after a preposition: mí, ti, conmigo.",
   "sample_category_indefinite_articles": "Indefinite Articles",
   "essentials_desc_indefinite_articles": "The words for any one of something: a, an, some.",
+  "edit_word_label": "Edit word",
 };

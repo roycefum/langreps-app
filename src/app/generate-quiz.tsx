@@ -58,7 +58,11 @@ export default function GenerateQuiz() {
   const { sourceLanguage, targetLanguage, reversed } = quizDirection(languageMode, listSource, listTarget);
   const { userId } = useAuth();
   const { startQuiz } = useQuiz();
-  const [countText, setCountText] = useState(String(Math.min(pairs.length, DEFAULT_QUIZ_LENGTH)));
+  // A quiz asks each word at most once, so the count can't exceed the number
+  // of distinct words — the box stops there instead of accepting a number the
+  // quiz would quietly ignore.
+  const maxQuestions = dedupePairs(pairs).length;
+  const [countText, setCountText] = useState(String(Math.min(maxQuestions, DEFAULT_QUIZ_LENGTH)));
   // Defaults from Settings' per-language pair settings (device-local), but
   // changing it here only affects this one quiz — it's never written back
   // to the stored default.
@@ -135,7 +139,7 @@ export default function GenerateQuiz() {
     };
   }, [userId, savedListId, pairs.length]);
 
-  const requestedCount = Math.max(1, Math.min(parseInt(countText, 10) || 1, pairs.length));
+  const requestedCount = Math.max(1, Math.min(parseInt(countText, 10) || 1, maxQuestions));
   const cannotGenerate = pairs.length < 3;
 
   async function handleGenerate(mode: "similar" | "targeted" = "similar") {
@@ -311,7 +315,10 @@ export default function GenerateQuiz() {
             <TextInput
               style={[shared.input, styles.countInput]}
               value={countText}
-              onChangeText={setCountText}
+              onChangeText={(text) => {
+                const n = parseInt(text.replace(/\D/g, ""), 10);
+                setCountText(Number.isNaN(n) || n === 0 ? "" : String(Math.min(n, maxQuestions)));
+              }}
               keyboardType="number-pad"
             />
           </View>
