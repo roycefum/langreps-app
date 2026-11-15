@@ -1,3 +1,4 @@
+import * as Linking from "expo-linking";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useState } from "react";
 import { StyleSheet, Text, TextInput, View } from "react-native";
@@ -23,7 +24,11 @@ export default function ResetPassword() {
     type?: string;
     "#"?: string;
   }>();
-  const fragment = new URLSearchParams(params["#"] ?? "");
+  // The raw URL the app was opened with is the reliable source: it always
+  // carries the "#access_token=…&refresh_token=…" part intact.
+  const url = Linking.useURL();
+  const rawFragment = url?.split("#")[1] ?? params["#"] ?? "";
+  const fragment = new URLSearchParams(rawFragment);
   const access_token = params.access_token ?? fragment.get("access_token") ?? undefined;
   const refresh_token = params.refresh_token ?? fragment.get("refresh_token") ?? undefined;
   const [newPassword, setNewPassword] = useState("");
@@ -31,6 +36,9 @@ export default function ResetPassword() {
   const [error, setError] = useState<string | null>(null);
 
   const hasValidLink = !!access_token && !!refresh_token;
+  // Why the link failed, when it did: Supabase's own error code from the link
+  // (e.g. otp_expired), or a note that the app received no link data at all.
+  const linkProblem = fragment.get("error_code") ?? (url ? "no_token_in_link" : "no_link_received");
 
   async function handleSubmit() {
     if (!hasValidLink || !newPassword) return;
@@ -55,6 +63,7 @@ export default function ResetPassword() {
         <BackButton href="/login" />
         <Text style={[shared.title, styles.centerText]}>{t("reset_password_title")}</Text>
         <Text style={[shared.hint, styles.centerText]}>{t("reset_link_invalid_message")}</Text>
+        <Text style={[shared.hint, styles.centerText]}>({linkProblem})</Text>
       </View>
     );
   }
