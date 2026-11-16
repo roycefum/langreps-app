@@ -26,7 +26,7 @@ export default function ResetPassword() {
   }>();
   // The raw URL the app was opened with is the reliable source: it always
   // carries the "#access_token=…&refresh_token=…" part intact.
-  const url = Linking.useURL();
+  const url = Linking.useLinkingURL();
   const rawFragment = url?.split("#")[1] ?? params["#"] ?? "";
   const fragment = new URLSearchParams(rawFragment);
   const access_token = params.access_token ?? fragment.get("access_token") ?? undefined;
